@@ -45,7 +45,7 @@ export default {
   		},
   		fontFamily: {
   			host: [
-  				'Host Grotesk"',
+  				'Host Grotesk',
   				'sans-serif'
   			],
   			inter: [
@@ -61,11 +61,11 @@ export default {
   				'sans-serif'
   			],
   			libreFranklin: [
-  				'Libre Franklin"',
+  				'Libre Franklin',
   				'sans-serif'
   			],
   			openSans: [
-  				'Open Sans"',
+  				'Open Sans',
   				'sans-serif'
   			]
   		},
