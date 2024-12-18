@@ -56,7 +56,7 @@ export const DarkModeToggle = ({ onClick }) => {
     <>
       {/* Mobile/Small Screen - NavLink Style */}
       <li 
-        className="sm:hidden flex items-center justify-between cursor-pointer focus:outline-none focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
+        className="md:hidden flex items-center justify-between cursor-pointer focus:outline-none focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
         onClick={handleClick}
         aria-label={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
       >
@@ -70,7 +70,7 @@ export const DarkModeToggle = ({ onClick }) => {
 
       {/* Desktop/Large Screen - Button Style */}
       <button 
-        className="hidden sm:flex items-center p-1 rounded-full focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-700 text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100"
+        className="hidden md:inline-flex p-1.5 rounded-full focus:outline-none focus:ring-2 focus:ring-neutral-300 dark:focus:ring-neutral-700 text-neutral-700 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100"
         onClick={handleClick}
         style={{ fontSize: "20px" }}
         aria-label={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}

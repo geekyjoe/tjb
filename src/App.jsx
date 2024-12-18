@@ -5,34 +5,52 @@ import Home from './pages/Home';
 import Cart from './pages/Cart';
 import AdminPanel from './components/AdminPanel';
 import { DarkModeProvider } from './DarkModeToggle';
-import { CartProvider } from './components/CartContext.jsx'; // Add this import
+import { CartProvider } from './components/CartContext'; 
 import Products from './pages/Products';
 import AdminLogin from './components/AdminLogin';
 import Admin from './pages/Admin';
 import { AdminAuthProvider } from './context/AdminAuthContext';
-import AdminGuard from './components/AdminGuard.jsx'
-import AdminSignup from './components/AdminSignup.jsx';
+import AdminGuard from './components/AdminGuard';
+import AdminSignup from './components/AdminSignup';
 
 const App = () => {
   return (
     <AdminAuthProvider>
-    <DarkModeProvider>
-      <CartProvider> {/* Wrap everything with CartProvider */}
-        <Router>
-          <Header />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            <Route path="/admin-signup" element={<AdminSignup />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/admin" element={<AdminGuard><Admin /></AdminGuard>} />
-          </Routes>
-        </Router>
-      </CartProvider>
-    </DarkModeProvider>
+      <DarkModeProvider>
+        <CartProvider>
+          <Router>
+            <Header />
+            <Routes>
+              {/* Public Routes */}
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<Products />} />
+              <Route path="/cart" element={<Cart />} />
+              
+              {/* Admin Authentication Routes */}
+              <Route path="/admin-login" element={<AdminLogin />} />
+              <Route path="/admin-signup" element={<AdminSignup />} />
+              
+              {/* Protected Admin Routes */}
+              <Route 
+                path="/admin" 
+                element={
+                  <AdminGuard>
+                    <Admin />
+                  </AdminGuard>
+                } 
+              />
+              <Route 
+                path="/admin-panel" 
+                element={
+                  <AdminGuard>
+                    <AdminPanel />
+                  </AdminGuard>
+                } 
+              />
+            </Routes>
+          </Router>
+        </CartProvider>
+      </DarkModeProvider>
     </AdminAuthProvider>
   );
 };

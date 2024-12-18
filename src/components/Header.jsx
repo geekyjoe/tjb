@@ -1,10 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { MenuOutlined, CloseOutlined, ProductOutlined } from "@ant-design/icons";
+import {
+  MenuOutlined,
+  CloseOutlined,
+  ProductOutlined,
+} from "@ant-design/icons";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { DarkModeToggle } from "../DarkModeToggle";
 import ProfileDropdown from "./ProfileDropdown";
-import { useAdminAuth } from '../context/AdminAuthContext';
+import { useAdminAuth } from "../context/AdminAuthContext";
 import { Home } from "lucide-react";
 
 const Header = () => {
@@ -15,14 +19,17 @@ const Header = () => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target)) {
+      if (
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target)
+      ) {
         setIsMobileMenuOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -41,50 +48,57 @@ const Header = () => {
   const NavLinks = ({ isMobile = false }) => (
     <>
       <NavLink
-        to="/"
-        className={({ isActive }) =>
-          `${linkBaseStyle} ${isActive ? activeLinkStyle : ""} ${
-            isMobile ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between" : ""
-          }`
-        }
-        onClick={isMobile ? toggleMobileMenu : undefined}
-      >
-        <Home className="md:hidden ml-2" size={20} />
-        Home
-      </NavLink>
-      <NavLink
         to="/products"
         className={({ isActive }) =>
           `${linkBaseStyle} ${isActive ? activeLinkStyle : ""} ${
-            isMobile ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between" : ""
+            isMobile
+              ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between"
+              : ""
           }`
         }
         onClick={isMobile ? toggleMobileMenu : undefined}
       >
-        <ProductOutlined className="md:hidden ml-2" style={{ fontSize: "20px" }} />
+        <ProductOutlined
+          className="md:hidden ml-2"
+          style={{ fontSize: "20px" }}
+        />
         Products
       </NavLink>
       <NavLink
         to="/cart"
         className={({ isActive }) =>
           `${linkBaseStyle} ${isActive ? activeLinkStyle : ""} ${
-            isMobile ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between" : ""
+            isMobile
+              ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between"
+              : ""
           }`
         }
         onClick={isMobile ? toggleMobileMenu : undefined}
       >
-        <ShoppingCartOutlined className="md:hidden ml-2" style={{ fontSize: "20px" }} />
+        <ShoppingCartOutlined
+          className="md:hidden ml-2"
+          style={{ fontSize: "20px" }}
+        />
         Cart
       </NavLink>
       {isAdmin && (
-        <div className={`${
-          isMobile 
-            ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700" 
-            : "inline-flex space-x-2"
-        }`}>
+        <div
+          className={`${
+            isMobile
+              ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+              : "inline-flex space-x-2"
+          }`}
+        >
           <ProfileDropdown />
-          <button 
-            onClick={isMobile ? () => { logoutAdmin(); toggleMobileMenu(); } : logoutAdmin} 
+          <button
+            onClick={
+              isMobile
+                ? () => {
+                    logoutAdmin();
+                    toggleMobileMenu();
+                  }
+                : logoutAdmin
+            }
             className="text-red-500"
           >
             Logout
@@ -100,11 +114,11 @@ const Header = () => {
   );
 
   return (
-    <header className="h-10 inline-flex justify-between items-center font-inter p-2 w-full bg-amber-400 dark:bg-amber-600 relative">
+    <header className="h-10 inline-flex justify-between items-center font-inter p-2 w-full bg-cornsilk dark:bg-yellow-900 relative">
       {/* Logo */}
-      <h2 className="font-karla dark:text-neutral-100">
-        The JewellerBee Store
-      </h2>
+      <a href="/" className="font-karla p-1 font-bold dark:text-neutral-100">
+        <h2 className="text-xl">The JewellerBee Store</h2>
+      </a>
 
       {/* Desktop Navigation */}
       <nav className="hidden md:flex space-x-4 items-center">
@@ -119,26 +133,26 @@ const Header = () => {
       {/* Mobile Menu Container */}
       <div className="md:hidden relative" ref={mobileMenuRef}>
         {/* Mobile Menu Toggle with Animation */}
-        <button 
-          onClick={toggleMobileMenu} 
+        <button
+          onClick={toggleMobileMenu}
           className="flex focus:outline-none relative w-6 h-6"
         >
           {/* Menu Icon */}
-          <span 
+          <span
             className={`absolute inset-0 transition-all duration-150 ease-in-out ${
-              isMobileMenuOpen 
-                ? "rotate-45 opacity-0 scale-0" 
+              isMobileMenuOpen
+                ? "rotate-45 opacity-0 scale-0"
                 : "rotate-0 opacity-100 scale-100"
             }`}
           >
             <MenuOutlined />
           </span>
-          
+
           {/* Close Icon */}
-          <span 
+          <span
             className={`absolute inset-0 transition-all duration-150 ease-in-out ${
-              isMobileMenuOpen 
-                ? "rotate-0 opacity-100 scale-100" 
+              isMobileMenuOpen
+                ? "rotate-0 opacity-100 scale-100"
                 : "-rotate-45 opacity-0 scale-0"
             }`}
           >
@@ -147,10 +161,10 @@ const Header = () => {
         </button>
 
         {/* Mobile Dropdown Menu */}
-        <div 
+        <div
           className={`absolute top-full right-0 mt-2 w-56 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg z-50 transition-all duration-75 ease-in-out ${
-            isMobileMenuOpen 
-              ? "opacity-100 origin-top-right scale-1" 
+            isMobileMenuOpen
+              ? "opacity-100 origin-top-right scale-1"
               : "opacity-25 origin-top-right scale-0"
           }`}
         >

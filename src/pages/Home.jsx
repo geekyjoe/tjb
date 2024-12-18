@@ -1,16 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import {
-  StarOutlined,
-  CopyrightCircleOutlined,
-} from "@ant-design/icons";
+import { StarOutlined, CopyrightCircleOutlined } from "@ant-design/icons";
 import { GiGlobeRing } from "react-icons/gi";
 import { SiAffinitydesigner } from "react-icons/si";
 import { FaGifts } from "react-icons/fa6";
 import { ImGift } from "react-icons/im";
-import { BsBox2HeartFill  } from "react-icons/bs";
+import { BsBox2HeartFill } from "react-icons/bs";
 import { IoHeartCircleSharp } from "react-icons/io5";
-
 
 const Home = () => {
   const featuredCollections = [
@@ -32,12 +28,13 @@ const Home = () => {
   ];
 
   return (
-    <div className="min-h-screen font-host bg-white dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen font-host bg-cornsilk dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
       {/* Hero Section */}
       <section
         className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed h-screen"
         style={{
-          backgroundImage: "url(https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
+          backgroundImage:
+            "url(https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
           backgroundBlendMode: "overlay",
           backgroundColor: "rgba(0,0,0,0.25)",
         }}
@@ -53,13 +50,17 @@ const Home = () => {
           <div className="space-x-4">
             <Link
               to="/products"
-              className="px-6 py-3 bg-amber-400 dark:bg-amber-500 hover:bg-amber-600 text-white dark:text-neutral-700 rounded-full transition duration-300"
+              className="relative px-6 py-3 bg-cornsilk dark:bg-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900 text-black dark:text-white rounded-xl transition duration-75 group"
             >
-              Shop Now
+              <span className="relative">
+                Shop Now
+                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-black dark:bg-white transition-all duration-300 group-hover:w-full"></span>
+              </span>
             </Link>
+
             <Link
-              to="/collections"
-              className="px-6 py-3 border-2 border-white hover:bg-white hover:text-black rounded-full transition duration-300"
+              to="/admin"
+              className="px-6 py-3 border-2 border-white hover:bg-white hover:text-black rounded-xl transition duration-75"
             >
               View Collections
             </Link>
@@ -76,7 +77,7 @@ const Home = () => {
           {featuredCollections.map((collection, index) => (
             <div
               key={index}
-              className="text-center p-6 bg-gray-100 dark:bg-neutral-800 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+              className="text-center p-6 bg-gray-100 dark:bg-neutral-800 rounded-lg shadow-lg hover:shadow-xl transition duration-75"
             >
               <div className="mb-4 flex justify-center">{collection.icon}</div>
               <h3 className="text-2xl font-semibold mb-3 dark:text-white">
@@ -94,7 +95,8 @@ const Home = () => {
       <section className="bg-gray-50 dark:bg-neutral-800 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 dark:text-white">
-            Why Choose<br/> The JewellerBee
+            Why Choose
+            <br /> The JewellerBee
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
@@ -104,7 +106,9 @@ const Home = () => {
                 description: "Handcrafted with the finest materials",
               },
               {
-                icon: <SiAffinitydesigner className="text-4xl text-fuchsia-500" />,
+                icon: (
+                  <SiAffinitydesigner className="text-4xl text-fuchsia-500" />
+                ),
                 title: "Unique Designs",
                 description: "Exclusive collections you won't find elsewhere",
               },
@@ -164,14 +168,14 @@ const Home = () => {
                   subject
                 )}&body=${encodeURIComponent(body)}`;
               }}
-              className="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-r-full transition duration-300"
+              className="px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-r-full transition duration-75"
             >
               Subscribe
             </button>
           </div>
         </div>
       </section>
-      <footer className="p-2 h-fit bg-neutral-300 dark:bg-neutral-600 ">
+      <footer className="p-2 h-fit bg-cornsilk dark:bg-neutral-600 ">
         <div className="flex justify-center space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
           <CopyrightCircleOutlined className="text-sm p-0.5" />
           <h2 className="">

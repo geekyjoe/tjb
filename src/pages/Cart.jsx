@@ -1,19 +1,39 @@
-import { CopyrightCircleOutlined } from "@ant-design/icons";
 import React from "react";
-import { Button } from "antd";
-import { useCart } from "../components/CartContext"; // We'll create this file
+import { CopyrightCircleOutlined } from "@ant-design/icons";
+import { Button, Empty } from "antd";
+import { useCart } from "../components/CartContext";
+import CartItemCard from "../components/CartItemCard";
+import OrderSummaryCard from "../components/OrderSummaryCard";
 
 const Cart = () => {
-  const { cartItems, removeFromCart, updateQuantity, calculateTotal } =
-    useCart();
+  const { 
+    cartItems, 
+    removeFromCart, 
+    updateQuantity, 
+    calculateTotal, 
+    clearCart,
+    totalItems 
+  } = useCart();
 
   return (
-    <div className="bg-emerald-50 dark:bg-neutral-900">
-      <div className="min-h-screen flex flex-col items-center justify-center text-neutral-800 dark:text-neutral-200 p-2">
-        {/* <h2 className="text-xl p-2 grid text-center underline underline-offset-4">Your Cart</h2> */}
+    <div className="bg-cornsilk dark:bg-neutral-900 min-h-screen flex flex-col">
+      <div className="flex-grow container mx-auto px-4 py-8 text-neutral-800 dark:text-neutral-200">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold">Your Cart</h2>
+          {cartItems.length > 0 && (
+            <Button 
+              type="danger" 
+              onClick={clearCart}
+              className="bg-red-500 text-white hover:bg-red-600"
+            >
+              Clear Cart
+            </Button>
+          )}
+        </div>
+
         {cartItems.length === 0 ? (
-          <p>
-            <svg
+          <div className="flex flex-col items-center justify-center flex-grow">
+             <svg
               className="p-5"
               height={150}
               width={150}
@@ -56,52 +76,35 @@ const Cart = () => {
               </g>
               <g id="Layer_1" />
             </svg>
-            Your cart is empty.
-          </p>
+            <p>Your Cart is empty</p>
+          </div>
         ) : (
-          cartItems.map((item) => (
-            <div
-              key={item.id}
-              className="cart-item flex items-center space-x-4 p-2 border-b"
-            >
-              <img
-                src={item.image}
-                alt={item.title}
-                className="w-20 h-20 object-cover"
-              />
-              <div className="flex-grow">
-                <h4>{item.title}</h4>
-                <p>Price: ${item.price}</p>
-                <div className="flex items-center space-x-2">
-                  <Button
-                    onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                  >
-                    -
-                  </Button>
-                  <span>{item.quantity}</span>
-                  <Button
-                    onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                  >
-                    +
-                  </Button>
-                </div>
-              </div>
-              <Button type="danger" onClick={() => removeFromCart(item.id)}>
-                Remove
-              </Button>
+          <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Cart Items */}
+            <div className="space-y-4">
+              {cartItems.map((item) => (
+                <CartItemCard 
+                  key={item.id}
+                  item={item}
+                  onUpdateQuantity={updateQuantity}
+                  onRemove={removeFromCart}
+                />
+              ))}
             </div>
-          ))
-        )}
-        {cartItems.length > 0 && (
-          <div className="total-section mt-4">
-            <h3>Total: ${calculateTotal()}</h3>
+
+            {/* Order Summary */}
+            <OrderSummaryCard 
+              totalItems={totalItems} 
+              totalCost={calculateTotal()} 
+            />
           </div>
         )}
       </div>
-      <footer className="p-2 h-fit bg-neutral-300 dark:bg-neutral-600 ">
-        <div className="flex justify-center space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
-          <CopyrightCircleOutlined className="text-sm p-0.5" />
-          <h2 className="">The JewellerBee</h2>
+
+      <footer className="bg-neutral-300 dark:bg-neutral-600 p-4 mt-auto">
+        <div className="flex justify-center items-center space-x-2 text-neutral-800 dark:text-neutral-300">
+          <CopyrightCircleOutlined />
+          <span>The JewellerBee 2024</span>
         </div>
       </footer>
     </div>
