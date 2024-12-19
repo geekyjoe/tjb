@@ -9,7 +9,8 @@ import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { ScrollArea } from "../components/ui/scroll-area";
-import { LayoutGrid, LayoutList, SlidersHorizontal, X } from "lucide-react";
+import { Filter, LayoutGrid, LayoutList, X } from "lucide-react";
+import { MdShoppingBag } from "react-icons/md";
 import {
   Select,
   SelectContent,
@@ -17,8 +18,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
+import { Link } from "react-router-dom";
+import * as Separator from "@radix-ui/react-separator";
 
 const Products = () => {
+  // In Products.jsx
+  const { totalItems } = useCart(); // Add this to your existing useCart destructuring
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +31,7 @@ const Products = () => {
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [pagination, setPagination] = useState({
     limit: 12,
     skip: 0,
@@ -41,26 +47,24 @@ const Products = () => {
         categories && categories.size > 0 ? Array.from(categories)[0] : null
       );
 
-      if (categories && categories.size > 0 && fetchedProducts.length === 0) {
-        setSelectedCategories(new Set());
-        const initialProducts = await fetchProducts(limit, 0);
-        setProducts(initialProducts);
+      if (skip === 0) {
+        setProducts(fetchedProducts);
       } else {
-        if (skip === 0) {
-          setProducts(fetchedProducts);
-        } else {
-          setProducts((prevProducts) => [...prevProducts, ...fetchedProducts]);
-        }
+        setProducts((prevProducts) => [...prevProducts, ...fetchedProducts]);
       }
+
+
+      setHasMore(fetchedProducts.length === limit);
 
       setPagination((prev) => ({
         ...prev,
         skip: skip,
-        total: fetchedProducts.length,
+        total: skip + fetchedProducts.length,
       }));
     } catch (error) {
       console.error("Error fetching products:", error);
       setProducts([]);
+      setHasMore(false);
     } finally {
       setLoading(false);
     }
@@ -118,6 +122,8 @@ const Products = () => {
     }
 
     setSelectedCategories(newSelectedCategories);
+    setPagination({ ...pagination, skip: 0 }); // Reset pagination
+    setHasMore(true); // Reset hasMore state
     await fetchProductsData(pagination.limit, 0, newSelectedCategories);
   };
 
@@ -131,6 +137,7 @@ const Products = () => {
   };
 
   const handleLoadMore = async () => {
+    if (!hasMore || loading) return;
     const newSkip = pagination.skip + pagination.limit;
     await fetchProductsData(pagination.limit, newSkip, selectedCategories);
   };
@@ -220,7 +227,7 @@ const Products = () => {
       <div className="container mx-auto">
         <div className="flex gap-6">
           {/* Desktop Sidebar */}
-          <aside className="hidden md:block w-64 flex-shrink-0">
+          <aside className="max-lg:hidden w-64 flex-shrink-0">
             <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg shadow">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-lg">Categories</h3>
@@ -266,8 +273,8 @@ const Products = () => {
           <div className="flex-1">
             {/* Header with sorting and view options */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-              <div className="flex items-center gap-4 w-full sm:w-auto">
-                <h2 className="text-2xl sm:text-3xl font-bold">
+              <div className="flex items-center max-lg:justify-between gap-4 w-full sm:w-auto">
+                <h2 className="max-sm:text-lg text-2xl font-bold">
                   {selectedCategories.size > 0
                     ? `${
                         Array.from(selectedCategories)[0]
@@ -277,20 +284,22 @@ const Products = () => {
                       } Collection`
                     : "Our Collection"}
                 </h2>
-
-                {/* Mobile Filters Button */}
-                <div className="md:hidden ml-auto">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => setIsSidebarOpen(true)}
-                  >
-                    <SlidersHorizontal className="h-4 w-4" />
-                  </Button>
-                </div>
+                <Link to="..\cart" className="relative">
+                  <MdShoppingBag size={30} />
+                  {totalItems > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                      {totalItems}
+                    </span>
+                  )}
+                </Link>
               </div>
-
-              <div className="flex items-center gap-4 w-full sm:w-auto">
+              <div className="flex items-center max-sm:justify-between gap-4 w-full sm:w-auto">
+                <Separator.Root
+                  className="bg-gray-300 md:hidden dark:bg-gray-600 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+                  orientation="horizontal"
+                />
+              </div>
+              <div className="flex items-center flex-row-reverse justify-between gap-4 w-full sm:w-auto">
                 <Select
                   value={sortBy}
                   onValueChange={(value) => {
@@ -301,7 +310,7 @@ const Products = () => {
                     }
                   }}
                 >
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-fit max-l:text-[12px] border-2 max-l:rounded-md dark:border-zinc-500">
                     <SelectValue placeholder="Sort by..." />
                   </SelectTrigger>
                   <SelectContent>
@@ -322,6 +331,15 @@ const Products = () => {
 
                 <div className="flex gap-2">
                   <Button
+                    className="max-l:rounded-lg"
+                    variant="outline"
+                    size="icon"
+                    onClick={() => setIsSidebarOpen(true)}
+                  >
+                    <Filter className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    className="max-l:rounded-md"
                     variant={viewMode === "grid" ? "default" : "outline"}
                     size="icon"
                     onClick={() => setViewMode("grid")}
@@ -329,6 +347,7 @@ const Products = () => {
                     <LayoutGrid className="h-4 w-4" />
                   </Button>
                   <Button
+                    className="max-l:rounded-md"
                     variant={viewMode === "list" ? "default" : "outline"}
                     size="icon"
                     onClick={() => setViewMode("list")}
@@ -345,7 +364,7 @@ const Products = () => {
                 <div
                   className={
                     viewMode === "grid"
-                      ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                      ? "grid grid-cols-2 lg:grid-cols-3 gap-4"
                       : "space-y-4"
                   }
                 >
@@ -358,15 +377,23 @@ const Products = () => {
                   ))}
                 </div>
 
-                <div className="text-center mt-8">
-                  <Button
-                    onClick={handleLoadMore}
-                    className="bg-stone-800 hover:bg-stone-700 text-white"
-                    disabled={loading}
-                  >
-                    {loading ? "Loading..." : "Load More"}
-                  </Button>
-                </div>
+                {hasMore && (
+                  <div className="text-center mt-8">
+                    <Button
+                      onClick={handleLoadMore}
+                      className="bg-stone-800 hover:bg-stone-700 text-white"
+                      disabled={loading}
+                    >
+                      {loading ? "Loading..." : "Load More"}
+                    </Button>
+                  </div>
+                )}
+                {!hasMore && products.length > pagination.limit && (
+                  <p className="text-center mt-8 text-gray-500 dark:text-gray-400">
+                    No more products to display{" "}
+                    {selectedCategories.size > 0 ? "in this category" : ""}
+                  </p>
+                )}
               </>
             ) : (
               <div className="flex justify-center items-center min-h-[calc(100vh-300px)]">

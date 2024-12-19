@@ -69,7 +69,7 @@ const Header = () => {
         className={({ isActive }) =>
           `${linkBaseStyle} ${isActive ? activeLinkStyle : ""} ${
             isMobile
-              ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between"
+              ? "hidden px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between"
               : "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-none focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
           }`
         }
@@ -114,10 +114,10 @@ const Header = () => {
   );
 
   return (
-    <header className="inline-flex justify-between items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
+    <header className="max-md:py-1 max-md:px-2 max-md:pr-3 inline-flex justify-between items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
       {/* Logo */}
       <a href="/" className="py-1 font-karla font-bold dark:text-neutral-100">
-        <h2 className="text-xl p-2">The JewellerBee Store</h2>
+        <h2 className="max-xl:text-xl max-md:text-sm p-2">The JewellerBee Store</h2>
       </a>
 
       {/* Desktop Navigation */}

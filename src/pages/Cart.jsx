@@ -1,9 +1,10 @@
 import React from "react";
 import { CopyrightCircleOutlined } from "@ant-design/icons";
-import { Button, Empty } from "antd";
+import { Button } from "../components/ui/button";
 import { useCart } from "../components/CartContext";
 import CartItemCard from "../components/CartItemCard";
 import OrderSummaryCard from "../components/OrderSummaryCard";
+import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { 
@@ -76,7 +77,10 @@ const Cart = () => {
               </g>
               <g id="Layer_1" />
             </svg>
-            <p>Your Cart is empty</p>
+            <p className="max-l:text-sm">Your Cart is empty</p>
+            <Link className="mt-5 p-2 focus:bg-indigo-300 rounded-md" to="..\products">
+              <p className="max-l:text-xs">Start Shopping</p>
+            </Link>
           </div>
         ) : (
           <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
