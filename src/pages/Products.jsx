@@ -26,7 +26,8 @@ const Products = () => {
   const { totalItems } = useCart(); // Add this to your existing useCart destructuring
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(new Set());
   const [viewMode, setViewMode] = useState("grid");
   const [sortBy, setSortBy] = useState("");
@@ -52,7 +53,6 @@ const Products = () => {
       } else {
         setProducts((prevProducts) => [...prevProducts, ...fetchedProducts]);
       }
-
 
       setHasMore(fetchedProducts.length === limit);
 
@@ -89,6 +89,7 @@ const Products = () => {
   useEffect(() => {
     const loadInitialData = async () => {
       try {
+        setInitialLoading(true);
         const [initialProducts, initialCategories] = await Promise.all([
           fetchProducts(pagination.limit, pagination.skip),
           fetchCategories(),
@@ -99,7 +100,7 @@ const Products = () => {
       } catch (error) {
         console.error("Error fetching initial data:", error);
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
       }
     };
 
@@ -213,7 +214,7 @@ const Products = () => {
     );
   };
 
-  if (loading && products.length === 0) {
+  if (setInitialLoading && products.length === 0) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-amber-500"></div>
@@ -284,7 +285,7 @@ const Products = () => {
                       } Collection`
                     : "Our Collection"}
                 </h2>
-                <Link to="..\cart" className="relative">
+                <Link to="..\cart" className="relative md:hidden">
                   <MdShoppingBag size={30} />
                   {totalItems > 0 && (
                     <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -384,7 +385,13 @@ const Products = () => {
                       className="bg-stone-800 hover:bg-stone-700 text-white"
                       disabled={loading}
                     >
-                      {loading ? "Loading..." : "Load More"}
+                      {loading ? (
+                        <div className="flex justify-center items-center min-h-screen">
+                          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-amber-500"></div>
+                        </div>
+                      ) : (
+                        "Load More"
+                      )}
                     </Button>
                   </div>
                 )}
