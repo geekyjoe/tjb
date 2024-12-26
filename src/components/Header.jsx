@@ -165,7 +165,7 @@ const Header = () => {
             <CloseOutlined />
           </span>
         </button>
-        <Link to="..\cart" className="relative md:hidden">
+        <Link to="..\cart" className="ml-2 relative md:hidden">
           <MdShoppingBag size={23} />
           {totalItems > 0 && (
             <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
