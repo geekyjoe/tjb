@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { Link } from "react-router-dom";
 import { StarOutlined, CopyrightCircleOutlined } from "@ant-design/icons";
 import { GiGlobeRing } from "react-icons/gi";
@@ -26,6 +26,10 @@ const Home = () => {
       icon: <FaGifts className="text-6xl text-emerald-500" />,
     },
   ];
+
+  useEffect(() => {
+    document.title = "Home - TJB Store"; // Set the document title
+  }, []);
 
   return (
     <div className="min-h-screen font-host bg-cornsilk dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
@@ -77,7 +81,7 @@ const Home = () => {
           {featuredCollections.map((collection, index) => (
             <div
               key={index}
-              className="text-center p-6 bg-gray-100 dark:bg-neutral-800 rounded-lg shadow-lg hover:shadow-xl transition duration-75"
+              className="text-center p-6 bg-white dark:bg-neutral-800 rounded-xl shadow-md hover:shadow-lg transition duration-75"
             >
               <div className="mb-4 flex justify-center">{collection.icon}</div>
               <h3 className="text-2xl font-semibold mb-3 dark:text-white">
@@ -125,7 +129,7 @@ const Home = () => {
             ].map((feature, index) => (
               <div
                 key={index}
-                className="text-center p-6 bg-white dark:bg-neutral-700 rounded-lg shadow-md"
+                className="text-center p-6 bg-white dark:bg-neutral-700 rounded-xl shadow hover:shadow-md"
               >
                 <div className="mb-4 flex justify-center">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-3 dark:text-white">
@@ -150,7 +154,7 @@ const Home = () => {
           collections, exclusive offers, and special events.
         </p>
         <div className="max-w-md mx-auto">
-          <div className="flex">
+          <div className="flex rounded-full shadow">
             <input
               id="emailInput"
               type="email"
@@ -178,8 +182,8 @@ const Home = () => {
       <footer className="p-2 h-fit bg-cornsilk dark:bg-neutral-600 ">
         <div className="flex justify-center space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
           <CopyrightCircleOutlined className="text-sm p-0.5" />
-          <h2 className="">
-            The JewellerBee <p className="inline-flex text-xs">2025</p>
+          <h2 className="text-md">
+            2025<p className="inline-flex ml-2 text-md">The Jeweller Bee</p>
           </h2>
         </div>
         <div className="flex justify-between"></div>

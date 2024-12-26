@@ -27,7 +27,17 @@ export const fetchProducts = async (limit = 12, skip = 0, category = null) => {
 export const fetchProductById = async (id) => {
   try {
     const response = await axios.get(`${BASE_URL}/products/${id}`);
-    return response.data;
+    // Add the additional fields that aren't provided by the API
+    return {
+      ...response.data,
+      materials: ["Aluminum", "Glass", "Ceramic Shield"],
+      specifications: {
+        dimensions: "146.7 x 71.5 x 7.4 mm",
+        weight: "174g",
+        display: "6.1-inch Super Retina XDR",
+        processor: "A15 Bionic chip"
+      }
+    };
   } catch (error) {
     console.error(`Error fetching product ${id}:`, error);
     return null;

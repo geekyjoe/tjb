@@ -1,29 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { CopyrightCircleOutlined } from "@ant-design/icons";
 import { Button } from "../components/ui/button";
+import { Separator } from "../components/ui/separator";
 import { useCart } from "../components/CartContext";
 import CartItemCard from "../components/CartItemCard";
 import OrderSummaryCard from "../components/OrderSummaryCard";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
-  const { 
-    cartItems, 
-    removeFromCart, 
-    updateQuantity, 
-    calculateTotal, 
+  const {
+    cartItems,
+    removeFromCart,
+    updateQuantity,
+    calculateTotal,
     clearCart,
-    totalItems 
+    totalItems,
   } = useCart();
 
+  useEffect(() => {
+    document.title = "Shopping Bag";
+  }, []);
+
   return (
-    <div className="bg-cornsilk dark:bg-neutral-900 min-h-screen flex flex-col">
-      <div className="flex-grow container mx-auto px-4 py-8 text-neutral-800 dark:text-neutral-200">
+    <div className="min-h-screen flex flex-col">
+      <div className="flex-grow px-2 py-4 text-neutral-800 dark:text-neutral-200">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">Your Cart</h2>
           {cartItems.length > 0 && (
-            <Button 
-              type="danger" 
+            <Button
+              type="danger"
               onClick={clearCart}
               className="bg-red-500 text-white hover:bg-red-600"
             >
@@ -34,7 +39,7 @@ const Cart = () => {
 
         {cartItems.length === 0 ? (
           <div className="flex flex-col items-center justify-center flex-grow">
-             <svg
+            <svg
               className="p-5"
               height={150}
               width={150}
@@ -78,16 +83,19 @@ const Cart = () => {
               <g id="Layer_1" />
             </svg>
             <p className="max-l:text-sm">Your Cart is empty</p>
-            <Link className="mt-5 p-2 focus:bg-indigo-300 rounded-md" to="..\products">
+            <Link
+              className="mt-5 p-2 focus:bg-indigo-300 rounded-md"
+              to="..\products"
+            >
               <p className="max-l:text-xs">Start Shopping</p>
             </Link>
           </div>
         ) : (
-          <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Cart Items */}
-            <div className="space-y-4">
+            <div className="space-y-2 flex-1">
               {cartItems.map((item) => (
-                <CartItemCard 
+                <CartItemCard
                   key={item.id}
                   item={item}
                   onUpdateQuantity={updateQuantity}
@@ -96,20 +104,31 @@ const Cart = () => {
               ))}
             </div>
 
+            {/* Separator */}
+            <Separator orientation="vertical" className="h-auto hidden lg:block" />
+            
+            {/* Responsive Separator */}
+            <Separator className="my-4 lg:hidden" />
+
             {/* Order Summary */}
-            <OrderSummaryCard 
-              totalItems={totalItems} 
-              totalCost={calculateTotal()} 
-            />
+            <div className="lg:w-1/3">
+              <OrderSummaryCard
+                totalItems={totalItems}
+                totalCost={calculateTotal()}
+              />
+            </div>
           </div>
         )}
       </div>
 
-      <footer className="bg-neutral-300 dark:bg-neutral-600 p-4 mt-auto">
-        <div className="flex justify-center items-center space-x-2 text-neutral-800 dark:text-neutral-300">
-          <CopyrightCircleOutlined />
-          <span>The JewellerBee 2024</span>
+      <footer className="p-2 h-fit bg-cornsilk dark:bg-neutral-600 ">
+        <div className="flex justify-center space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
+          <CopyrightCircleOutlined className="text-sm p-0.5" />
+          <h2 className="text-md">
+            2025<p className="inline-flex ml-2 text-md">The Jeweller Bee</p>
+          </h2>
         </div>
+        <div className="flex justify-between"></div>
       </footer>
     </div>
   );

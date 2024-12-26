@@ -69,7 +69,7 @@ export default {
       },
       colors: {
         cornsilk: {
-          hover: "#F8EEB4",
+          hover: "#fff6cc",
           DEFAULT: "#fefae0",
           dark: "#bb4d00",
           dhover: "#bb4d00",

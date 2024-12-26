@@ -10,7 +10,7 @@ import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { ScrollArea } from "../components/ui/scroll-area";
 import { Filter, LayoutGrid, LayoutList, X } from "lucide-react";
-import { MdShoppingBag } from "react-icons/md";
+
 import {
   Select,
   SelectContent,
@@ -223,13 +223,13 @@ const Products = () => {
   }
 
   return (
-    <div className="pt-5 w-full min-h-screen px-4 sm:px-6 lg:px-8 bg-cornsilk dark:bg-neutral-800 text-gray-700 dark:text-gray-200">
+    <div className="pt-5 w-full min-h-screen text-gray-700 dark:text-gray-200">
       <Toaster richColors />
-      <div className="container mx-auto">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex gap-6">
           {/* Desktop Sidebar */}
           <aside className="max-lg:hidden w-64 flex-shrink-0">
-            <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg shadow">
+            <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg border">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-lg">Categories</h3>
                 <Button
@@ -283,16 +283,8 @@ const Products = () => {
                           .toUpperCase() +
                         Array.from(selectedCategories)[0].slice(1)
                       } Collection`
-                    : "Our Collection"}
+                    : "All Collection"}
                 </h2>
-                <Link to="..\cart" className="relative md:hidden">
-                  <MdShoppingBag size={30} />
-                  {totalItems > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                      {totalItems}
-                    </span>
-                  )}
-                </Link>
               </div>
               <div className="flex items-center max-sm:justify-between gap-4 w-full sm:w-auto">
                 <Separator.Root
@@ -332,7 +324,7 @@ const Products = () => {
 
                 <div className="flex gap-2">
                   <Button
-                    className="max-l:rounded-lg"
+                    className="max-l:rounded-lg md:hidden"
                     variant="outline"
                     size="icon"
                     onClick={() => setIsSidebarOpen(true)}
@@ -365,7 +357,7 @@ const Products = () => {
                 <div
                   className={
                     viewMode === "grid"
-                      ? "grid grid-cols-2 lg:grid-cols-3 gap-4"
+                      ? "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
                       : "space-y-4"
                   }
                 >
@@ -418,14 +410,16 @@ const Products = () => {
             )}
           </div>
         </div>
-
-        <footer className="py-6 mt-6 text-center">
-          <p className="text-gray-500 dark:text-gray-200">
-            <CopyrightCircleOutlined className="text-emerald-800 dark:text-emerald-100 mr-2 inline-block" />
-            The JewellerBee 2024
-          </p>
-        </footer>
       </div>
+      <footer className="p-5 border-t mt-5">
+        <div className="flex space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
+          <CopyrightCircleOutlined className="text-sm p-0.5" />
+          <h2 className="text-md">
+            2025<p className="inline-flex ml-2 text-md">The Jeweller Bee</p>
+          </h2>
+        </div>
+        <div className="flex justify-between"></div>
+      </footer>
     </div>
   );
 };

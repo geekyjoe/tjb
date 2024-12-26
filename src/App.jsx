@@ -12,6 +12,7 @@ import Admin from './pages/Admin';
 import { AdminAuthProvider } from './context/AdminAuthContext';
 import AdminGuard from './components/AdminGuard';
 import AdminSignup from './components/AdminSignup';
+import ProductDetailPage from './pages/ProductDetailPage';
 
 const App = () => {
   return (
@@ -24,6 +25,7 @@ const App = () => {
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/products/:id" element={<ProductDetailPage />} />
               <Route path="/cart" element={<Cart />} />
               
               {/* Admin Authentication Routes */}

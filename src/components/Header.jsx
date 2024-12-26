@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import {
   MenuOutlined,
   CloseOutlined,
@@ -9,9 +9,12 @@ import { ShoppingCartOutlined } from "@ant-design/icons";
 import { DarkModeToggle } from "../DarkModeToggle";
 import ProfileDropdown from "./ProfileDropdown";
 import { useAdminAuth } from "../context/AdminAuthContext";
-import { Home } from "lucide-react";
+import { MdShoppingBag } from "react-icons/md";
+import { useCart } from "./CartContext";
+import { MenuSquare } from "lucide-react";
 
 const Header = () => {
+  const { totalItems } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { isAdmin, logoutAdmin } = useAdminAuth();
   const mobileMenuRef = useRef(null);
@@ -34,8 +37,7 @@ const Header = () => {
   }, []);
 
   // Shared link styling
-  const linkBaseStyle =
-    "";
+  const linkBaseStyle = "";
   const activeLinkStyle =
     "text-neutral-900 dark:text-neutral-100 underline underline-offset-4";
 
@@ -117,7 +119,9 @@ const Header = () => {
     <header className="max-md:py-1 max-md:px-2 max-md:pr-3 inline-flex justify-between items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
       {/* Logo */}
       <a href="/" className="py-1 font-karla font-bold dark:text-neutral-100">
-        <h2 className="max-xl:text-xl max-md:text-sm p-2">The JewellerBee Store</h2>
+        <h2 className="max-xl:text-xl max-md:text-sm p-2">
+          The JewellerBee Store
+        </h2>
       </a>
 
       {/* Desktop Navigation */}
@@ -133,7 +137,7 @@ const Header = () => {
       </nav>
 
       {/* Mobile Menu Container */}
-      <div className="md:hidden relative" ref={mobileMenuRef}>
+      <div className="md:hidden flex relative" ref={mobileMenuRef}>
         {/* Mobile Menu Toggle with Animation */}
         <button
           onClick={toggleMobileMenu}
@@ -147,7 +151,7 @@ const Header = () => {
                 : "rotate-0 opacity-100 scale-100"
             }`}
           >
-            <MenuOutlined />
+            <MenuSquare />
           </span>
 
           {/* Close Icon */}
@@ -161,7 +165,14 @@ const Header = () => {
             <CloseOutlined />
           </span>
         </button>
-
+        <Link to="..\cart" className="relative md:hidden">
+          <MdShoppingBag size={23} />
+          {totalItems > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+              {totalItems}
+            </span>
+          )}
+        </Link>
         {/* Mobile Dropdown Menu */}
         <div
           className={`absolute top-full right-0 mt-2 w-56 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg z-50 transition-all duration-75 ease-in-out ${
