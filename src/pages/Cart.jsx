@@ -17,7 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
-import Footer from "../components/footer";
+import Footer from "../components/Footer";
 
 const Cart = () => {
   const {
