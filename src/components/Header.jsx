@@ -61,7 +61,7 @@ const Header = () => {
           {isSearchOpen ? <X size={20} /> : <Search size={20} />}
         </button>
       </PopoverTrigger>
-      <PopoverContent className="w-fit p-1 rounded-xl" align={"end"}>
+      <PopoverContent className="w-fit p-0.5 rounded-lg" align={"end"}>
         <SearchBar />
       </PopoverContent>
     </Popover>
@@ -141,7 +141,7 @@ const Header = () => {
         href="/"
         className="hidden md:block py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
       >
-        <h2 className="max-xl:text-xl max-md:text-sm p-2">
+        <h2 className="max-xl:text-xl max-md:text-sm p-2 pl-4">
           The Jeweller Bee Store
         </h2>
       </a>
@@ -179,7 +179,7 @@ const Header = () => {
                   : "rotate-0 opacity-100 scale-100"
               }`}
             >
-              <MenuSquare className="text-neutral-700" />
+              <MenuSquare className="text-neutral-700 dark:text-neutral-200" />
             </span>
 
             <span
@@ -189,7 +189,7 @@ const Header = () => {
                   : "-rotate-45 opacity-0 scale-0"
               }`}
             >
-              <CloseOutlined className="text-neutral-700" />
+              <CloseOutlined className="text-neutral-700 dark:text-neutral-200" />
             </span>
           </button>
           <a

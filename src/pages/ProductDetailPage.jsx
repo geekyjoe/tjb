@@ -242,7 +242,7 @@ const ProductDetailPage = () => {
             {!isInCart ? (
               <Button
                 onClick={handleAddToCart}
-                className="w-fit bg-stone-800 hover:bg-stone-700 text-white"
+                className="w-fit bg-yellow-500 hover:bg-yellow-600 text-neutral-700 hover:text-neutral-50"
                 disabled={product.stock === 0}
               >
                 {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
@@ -250,7 +250,7 @@ const ProductDetailPage = () => {
             ) : (
               <Button
                 onClick={goToCart}
-                className="w-fit bg-stone-800 hover:bg-stone-700 text-white"
+                className="w-fit bg-yellow-500 hover:bg-yellow-600 text-neutral-700 hover:text-neutral-50"
               >
                 <span className="max-l:text-xs">Go to Cart</span>
                 <ArrowRight className="w-4 h-4" />
@@ -311,7 +311,7 @@ const ProductDetailPage = () => {
                 }}
                 className="w-40 dark:ring-zinc-400"
               />
-              <Button onClick={checkDelivery} variant="ghost">
+              <Button onClick={checkDelivery} variant="outline" className="rounded-md dark:bg-stone-800">
                 Check
               </Button>
             </div>
