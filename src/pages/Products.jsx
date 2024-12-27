@@ -2,14 +2,13 @@ import React, { useEffect, useState } from "react";
 import { fetchProducts, fetchCategories } from "../api/api";
 import ProductCard from "../components/ProductCard";
 import { useCart } from "../components/CartContext";
-import { CopyrightCircleOutlined } from "@ant-design/icons";
 import { Empty } from "antd";
 import { Toaster } from "../components/ui/sonner";
 import { toast } from "sonner";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
 import { ScrollArea } from "../components/ui/scroll-area";
-import { Filter, LayoutGrid, LayoutList, X } from "lucide-react";
+import { Filter, LayoutGrid, LayoutList, Loader, X } from "lucide-react";
 
 import {
   Select,
@@ -18,9 +17,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select";
-import { Link } from "react-router-dom";
 import * as Separator from "@radix-ui/react-separator";
-import { IoLogoInstagram } from "react-icons/io5";
+import Footer from "../components/Footer";
 
 const Products = () => {
   // In Products.jsx
@@ -43,24 +41,38 @@ const Products = () => {
   const fetchProductsData = async (limit, skip, categories = null) => {
     try {
       setLoading(true);
-      const fetchedProducts = await fetchProducts(
-        limit,
-        skip,
-        categories && categories.size > 0 ? Array.from(categories)[0] : null
-      );
-
-      if (skip === 0) {
-        setProducts(fetchedProducts);
+      let allProducts = [];
+      
+      if (categories && categories.size > 0) {
+        // Fetch products for each selected category
+        const categoryPromises = Array.from(categories).map(category =>
+          fetchProducts(limit, skip, category)
+        );
+        
+        const productsArrays = await Promise.all(categoryPromises);
+        
+        // Combine and deduplicate products
+        allProducts = Array.from(new Set(
+          productsArrays.flat().map(product => JSON.stringify(product))
+        )).map(product => JSON.parse(product));
+        
+        // Apply pagination to the combined results
+        allProducts = allProducts.slice(skip, skip + limit);
       } else {
-        setProducts((prevProducts) => [...prevProducts, ...fetchedProducts]);
+        allProducts = await fetchProducts(limit, skip, null);
       }
 
-      setHasMore(fetchedProducts.length === limit);
+      if (skip === 0) {
+        setProducts(allProducts);
+      } else {
+        setProducts(prevProducts => [...prevProducts, ...allProducts]);
+      }
 
-      setPagination((prev) => ({
+      setHasMore(allProducts.length === limit);
+      setPagination(prev => ({
         ...prev,
         skip: skip,
-        total: skip + fetchedProducts.length,
+        total: skip + allProducts.length,
       }));
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -224,24 +236,25 @@ const Products = () => {
   }
 
   return (
-    <div className="pt-5 w-full min-h-screen text-gray-700 dark:text-gray-200">
+    <div className="pt-3 w-full min-h-screen text-gray-700 dark:text-gray-200">
       <Toaster richColors />
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex gap-6">
+      <div className="px-1 lg:px-2">
+        <div className="flex gap-2">
           {/* Desktop Sidebar */}
           <aside className="max-lg:hidden w-64 flex-shrink-0">
             <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg border dark:border-neutral-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-lg">Categories</h3>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClearCategories}
-                  className="text-sm hover:text-red-500"
-                  disabled={selectedCategories.size === 0}
-                >
-                  Clear All
-                </Button>
+                {selectedCategories.size > 0 && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearCategories}
+                    className="text-sm hover:text-red-500"
+                  >
+                    Clear All
+                  </Button>
+                )}
               </div>
               <ScrollArea className="h-60">
                 <div className="space-y-3 p-1.5">
@@ -266,6 +279,7 @@ const Products = () => {
             </div>
           </aside>
 
+
           {/* Mobile Sidebar */}
           <MobileSidebar
             isOpen={isSidebarOpen}
@@ -275,16 +289,13 @@ const Products = () => {
           {/* Main Content */}
           <div className="flex-1">
             {/* Header with sorting and view options */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <div className="font-oSans flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center max-lg:justify-between gap-4 w-full sm:w-auto">
-                <h2 className="max-sm:text-lg text-2xl font-bold">
+              <h2 className="max-sm:text-lg text-2xl pl-2 font-inter font-medium">
                   {selectedCategories.size > 0
-                    ? `${
-                        Array.from(selectedCategories)[0]
-                          .charAt(0)
-                          .toUpperCase() +
-                        Array.from(selectedCategories)[0].slice(1)
-                      } Collection`
+                    ? `${Array.from(selectedCategories).map(cat => 
+                        cat.charAt(0).toUpperCase() + cat.slice(1)
+                      ).join(', ')} Collection`
                     : "All Collection"}
                 </h2>
               </div>
@@ -294,7 +305,7 @@ const Products = () => {
                   orientation="horizontal"
                 />
               </div>
-              <div className="flex items-center flex-row-reverse justify-between gap-4 w-full sm:w-auto">
+              <div className="flex items-center flex-row-reverse justify-between gap-4 px-2 w-full sm:w-auto">
                 <Select
                   value={sortBy}
                   onValueChange={(value) => {
@@ -360,7 +371,7 @@ const Products = () => {
                   className={
                     viewMode === "grid"
                       ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 lg:gap-1"
-                      : "space-y-4"
+                      : "space-y-2"
                   }
                 >
                   {products.map((product) => (
@@ -379,7 +390,9 @@ const Products = () => {
                       className="bg-stone-800 hover:bg-stone-700 text-white"
                       disabled={loading}
                     >
-                      {loading ? "Loading..." : (
+                      {loading ? (
+                        <Loader className="animate-spin" />
+                      ) : (
                         "Load More"
                       )}
                     </Button>
@@ -409,17 +422,7 @@ const Products = () => {
           </div>
         </div>
       </div>
-      <footer className="flex justify-between font-host p-5 border-t mt-5">
-        <div className="flex text-neutral-800 dark:text-neutral-300">
-          <CopyrightCircleOutlined className="text-sm p-0.5" />
-          <h2 className="text-sm">
-            2025<p className="inline-flex ml-2 text-base">The Jeweller Bee</p>
-          </h2>
-        </div>
-        <div className="grid grid-cols-1">
-          <a className="flex items-center gap-1 text-md" href="https://www.instagram.com/_thejewelerbee_" target="_blank"><IoLogoInstagram size={16}/>Instagram</a>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

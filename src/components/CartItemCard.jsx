@@ -12,12 +12,9 @@ import {
   AlertDialogTrigger,
 } from "./ui/alert-dialog";
 import { X } from "lucide-react";
+import * as Separator  from "@radix-ui/react-separator";
 
-const CartItemCard = ({ 
-  item, 
-  onUpdateQuantity, 
-  onRemove 
-}) => (
+const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => (
   <div className="flex items-center bg-white dark:bg-neutral-800 border-2 rounded-lg p-4 space-x-4">
     <img
       src={item.thumbnail}
@@ -41,18 +38,26 @@ const CartItemCard = ({
                 <X />
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className="p-0 rounded-xl w-5/6 sm:w-full">
               <AlertDialogHeader>
-                <AlertDialogTitle>Remove Item</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Are you sure you want to remove "{item.title}" from your cart?
+                <AlertDialogTitle className="text-left text-lg p-2 pb-0">
+                  Remove Item
+                </AlertDialogTitle>
+                <Separator.Root
+                  className="bg-gray-300 dark:bg-gray-600 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+                  orientation="horizontal"
+                />
+                <AlertDialogDescription className="text-sm md:text-md px-5 pt-5 w-full">
+                  Are you sure you want to remove "<span className="font-semibold">{item.title}</span>" from your cart?
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction 
+              <AlertDialogFooter className={"flex flex-row-reverse items-center gap-1 space-y-5 px-2.5 pb-2.5"}>
+                <AlertDialogCancel className="rounded-lg mt-5">
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
                   onClick={() => onRemove(item.id)}
-                  className="bg-red-500 hover:bg-red-600"
+                  className="rounded-lg m-0"
                 >
                   Remove
                 </AlertDialogAction>
@@ -60,7 +65,7 @@ const CartItemCard = ({
             </AlertDialogContent>
           </AlertDialog>
         ) : (
-          <Button 
+          <Button
             className="hover:ring-2 hover:ring-offset-1 hover:ring-neutral-300 focus:ring-2 focus:ring-offset-2 focus:ring-stone-200"
             size="icon"
             variant="secondary"
@@ -70,7 +75,7 @@ const CartItemCard = ({
           </Button>
         )}
         <span className="text-lg">{item.quantity}</span>
-        <Button 
+        <Button
           className="hover:ring-2 hover:ring-offset-1 hover:ring-neutral-300 focus:ring-2 focus:ring-offset-2 focus:ring-stone-200"
           size="icon"
           variant="secondary"

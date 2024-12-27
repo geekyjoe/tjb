@@ -13,6 +13,11 @@ import { MdShoppingBag } from "react-icons/md";
 import { useCart } from "./CartContext";
 import { MenuSquare, Search, X } from "lucide-react";
 import SearchBar from "./SearchBar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../components/ui/popover";
 
 const Header = () => {
   const { totalItems } = useCart();
@@ -20,18 +25,14 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { isAdmin, logoutAdmin } = useAdminAuth();
   const mobileMenuRef = useRef(null);
-  const searchContainerRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(event.target) &&
-        searchContainerRef.current &&
-        !searchContainerRef.current.contains(event.target)
+        !mobileMenuRef.current.contains(event.target)
       ) {
         setIsMobileMenuOpen(false);
-        setIsSearchOpen(false);
       }
     };
 
@@ -50,30 +51,20 @@ const Header = () => {
     setIsSearchOpen(false);
   };
 
-  const toggleSearch = () => {
-    setIsSearchOpen(!isSearchOpen);
-    setIsMobileMenuOpen(false);
-  };
-
   const MobileSearch = () => (
-    <div 
-      className={`absolute -right-7 flex items-center transition-all duration-300 ease-in-out overflow-visible ${
-        isSearchOpen ? "w-64 opacity-100" : "w-0 opacity-0 pointer-events-none hidden"
-      }`}
-      style={{
-        zIndex: isSearchOpen ? 50 : -1
-      }}
-    >
-      <div className="w-fit relative">
+    <Popover open={isSearchOpen} onOpenChange={setIsSearchOpen}>
+      <PopoverTrigger asChild>
+        <button
+          className="p-2 hover:bg-cornsilk-hover dark:hover:bg-neutral-700 rounded-full transition-transform duration-200"
+          aria-label={isSearchOpen ? "Close search" : "Open search"}
+        >
+          {isSearchOpen ? <X size={20} /> : <Search size={20} />}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-fit p-1 rounded-xl" align={"end"}>
         <SearchBar />
-      </div>
-      <button
-        onClick={toggleSearch}
-        className="p-2 ml-1 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full flex-shrink-0"
-      >
-        <X size={20} />
-      </button>
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 
   const NavLinks = ({ isMobile = false }) => (
@@ -83,7 +74,7 @@ const Header = () => {
         className={({ isActive }) =>
           `${linkBaseStyle} ${isActive ? activeLinkStyle : ""} ${
             isMobile
-              ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between"
+              ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
               : "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-none focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
           }`
         }
@@ -145,13 +136,13 @@ const Header = () => {
   );
 
   return (
-    <header className="border-b-2 dark:border-stone-500 max-md:py-1 max-md:px-2 max-md:pr-3 md:flex md:justify-between md:items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
+    <header className="max-sm:sticky max-sm:top-0 max-sm:inset-x-0 z-10 border-b-2 dark:border-stone-500 max-md:py-1 max-md:px-2 max-md:pr-3 md:flex md:justify-between md:items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
       <a
         href="/"
         className="hidden md:block py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
       >
         <h2 className="max-xl:text-xl max-md:text-sm p-2">
-          The JewellerBee Store
+          The Jeweller Bee Store
         </h2>
       </a>
 
@@ -167,29 +158,38 @@ const Header = () => {
         )}
       </nav>
 
-      <div className="md:hidden flex justify-between items-center relative" ref={mobileMenuRef}>
-        <div className="inline-flex items-center">
+      <div
+        className="md:hidden flex justify-between items-center relative"
+        ref={mobileMenuRef}
+      >
+        <div className="flex gap-1 items-center">
           <button
             onClick={toggleMobileMenu}
-            className="flex focus:outline-none relative w-6 h-6"
+            className="relative h-8 w-8 rounded-md focus:outline-none"
+            aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
+            <span className="sr-only">
+              {isMobileMenuOpen ? "Close menu" : "Open menu"}
+            </span>
+
             <span
-              className={`absolute inset-0 transition-all duration-150 ease-in-out ${
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
                 isMobileMenuOpen
                   ? "rotate-45 opacity-0 scale-0"
                   : "rotate-0 opacity-100 scale-100"
               }`}
             >
-              <MenuSquare />
+              <MenuSquare className="text-neutral-700" />
             </span>
+
             <span
-              className={`absolute inset-0 transition-all duration-150 ease-in-out ${
+              className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
                 isMobileMenuOpen
                   ? "rotate-0 opacity-100 scale-100"
                   : "-rotate-45 opacity-0 scale-0"
               }`}
             >
-              <CloseOutlined />
+              <CloseOutlined className="text-neutral-700" />
             </span>
           </button>
           <a
@@ -197,29 +197,21 @@ const Header = () => {
             className="py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
           >
             <h2 className="max-xl:text-xl max-md:text-sm p-2">
-              The JewellerBee Store
+              The Jeweller Bee Store
             </h2>
           </a>
         </div>
 
-        <div className="flex items-center" ref={searchContainerRef}>
-          <div className="relative flex items-center">
-            <MobileSearch />
-            {!isSearchOpen && (
-              <button
-                onClick={toggleSearch}
-                className="p-2 hover:bg-cornsilk-hover dark:hover:bg-neutral-700 rounded-full"
-                aria-label="Toggle search"
-              >
-                <Search size={20} />
-              </button>
-            )}
-          </div>
+        <div className="flex items-center">
+          <MobileSearch />
 
-          <Link to="..\cart" className="relative md:hidden hover:bg-cornsilk-hover p-2 rounded-full">
+          <Link
+            to="..\cart"
+            className="relative md:hidden hover:bg-cornsilk-hover p-2 rounded-full"
+          >
             <MdShoppingBag size={23} />
             {totalItems > 0 && (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+              <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
                 {totalItems}
               </span>
             )}

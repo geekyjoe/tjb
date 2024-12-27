@@ -63,15 +63,15 @@ const SearchBar = () => {
   };
 
   return (
-    <div className="relative" ref={searchRef}>
-      <div className="relative">
+    <div className="relative w-fit p-0" ref={searchRef}>
+      <div className="relative w-fit p-0">
         <input
           type="text"
           value={query}
           onChange={handleInputChange}
           onFocus={() => setShowResults(true)}
           placeholder="Search products..."
-          className="w-48 px-4 py-2 pl-10 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-neutral-500"
+          className="w-58 px-4 py-2 pl-10 rounded-lg border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-neutral-500"
         />
         <Search className="absolute left-3 top-2.5 h-5 w-5 text-neutral-400" />
       </div>

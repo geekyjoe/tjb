@@ -7,6 +7,7 @@ import { FaGifts } from "react-icons/fa6";
 import { ImGift } from "react-icons/im";
 import { BsBox2HeartFill } from "react-icons/bs";
 import { IoHeartCircleSharp, IoLogoInstagram } from "react-icons/io5";
+import Footer from "../components/Footer";
 
 const Home = () => {
   const featuredCollections = [
@@ -43,10 +44,10 @@ const Home = () => {
           backgroundColor: "rgba(0,0,0,0.25)",
         }}
       >
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative z-10 px-4 text-white">
+        <div className="absolute inset-0 bg-black/20 "></div>
+        <div className="relative z-0 px-4 text-white">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">
-            The JewellerBee
+            The Jeweller Bee
           </h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
             Crafting Elegance, Celebrating Individuality
@@ -179,7 +180,8 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <footer className="flex justify-between p-5 border-t mt-5">
+      <Footer />
+      {/* <footer className="flex justify-between p-5 border-t mt-5">
         <div className="flex space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
           <CopyrightCircleOutlined className="text-sm p-0.5" />
           <h2 className="text-md">
@@ -188,7 +190,7 @@ const Home = () => {
         </div>
         <div className="grid grid-cols-1">
           <a
-            className="flex items-center gap-1 text-md"
+            className="flex items-center gap-1 text-md hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
             href="https://www.instagram.com/_thejewelerbee_"
             target="_blank"
           >
@@ -196,7 +198,7 @@ const Home = () => {
             Instagram
           </a>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };

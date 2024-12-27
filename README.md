@@ -3,7 +3,7 @@
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 
-my-vite-app/
+my-store/
 ├── backend/                     # Backend code (Node.js + Express)
 │   ├── controllers/              # Logic for handling requests
 │   ├── models/                   # Mongoose models (if using MongoDB, or other DB models)
@@ -15,8 +15,10 @@ my-vite-app/
 ├── public/                       # Static files (frontend)
 │   └── index.html                # Main HTML file
 ├── src/                          # Frontend code (React + Vite)
+│   ├── api/                      # dummyjson api for testing
 │   ├── assets/                   # Static assets like images
 │   ├── components/               # React components
+│   ├── pages/                    # Routes to pages (contains products, carts, user login and admin login page)
 │   ├── App.jsx                   # Main app component
 │   ├── main.jsx                  # Entry point for React app
 │   └── ...

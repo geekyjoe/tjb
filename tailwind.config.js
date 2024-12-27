@@ -60,7 +60,7 @@ export default {
         jost: ["Jost", "sans-serif"],
         karla: ["Karla", "sans-serif"],
         libreFranklin: ["Libre Franklin", "sans-serif"],
-        openSans: ["Open Sans", "sans-serif"],
+        oSans: ["Open Sans", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -77,5 +77,5 @@ export default {
       },
     },
   },
-  plugins: ["tailwind-scrollbar", "tailwindcss-animate"],
+  plugins: [require('tailwind-scrollbar'), "tailwindcss-animate"],
 };

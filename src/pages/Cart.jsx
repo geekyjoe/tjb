@@ -17,6 +17,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
+import Footer from "../components/footer";
 
 const Cart = () => {
   const {
@@ -33,33 +34,45 @@ const Cart = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <div className="flex-grow px-2 py-4 text-neutral-800 dark:text-neutral-200">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold">Your Cart</h2>
+    <div className="min-h-full">
+      <div className="h-full font-inter flex-grow text-neutral-800 dark:text-neutral-200">
+        <div className="flex justify-between items-center p-5">
+          <h2 className="text-2xl font-semibold text-left">Your Cart</h2>
           {cartItems.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
-                  type="danger"
-                  className="bg-red-500 text-white hover:bg-red-600"
+                  type="destructive"
+                  className="bg-red-400 text-white w-fit hover:bg-red-600"
                 >
                   Clear Cart
                 </Button>
               </AlertDialogTrigger>
-              <AlertDialogContent>
+              <AlertDialogContent className="p-0 rounded-xl w-5/6 sm:w-full">
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Clear Cart</AlertDialogTitle>
-                  <AlertDialogDescription>
+                  <AlertDialogTitle className="text-left text-lg p-2 pb-0">
+                    Clear Cart
+                  </AlertDialogTitle>
+                  <Separator
+                    className="bg-gray-300 dark:bg-gray-600 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+                    orientation="horizontal"
+                  />
+                  <AlertDialogDescription className="text-sm md:text-md px-5 pt-5 w-full">
                     Are you sure you want to remove all the items from your
                     cart?
                   </AlertDialogDescription>
                 </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogFooter
+                  className={
+                    "flex flex-row-reverse items-center gap-1 space-y-5 px-2.5 pb-2.5"
+                  }
+                >
+                  <AlertDialogCancel className="rounded-lg mt-5">
+                    Cancel
+                  </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={clearCart}
-                    className="bg-red-500 hover:bg-red-600"
+                    className="rounded-lg m-0"
                   >
                     Remove
                   </AlertDialogAction>
@@ -68,9 +81,13 @@ const Cart = () => {
             </AlertDialog>
           )}
         </div>
+        <Separator
+          className="bg-gray-300 dark:bg-gray-600 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
+          orientation="horizontal"
+        />
 
         {cartItems.length === 0 ? (
-          <div className="flex flex-col items-center justify-center flex-grow">
+          <div className="grid place-content-center space-y-2 my-24 xl:my-7 2xl:my-20 h-96">
             <svg
               className="p-5"
               height={150}
@@ -114,16 +131,15 @@ const Cart = () => {
               </g>
               <g id="Layer_1" />
             </svg>
-            <p className="max-l:text-sm">Your Cart is empty</p>
-            <Link
-              className="mt-5 p-2 focus:bg-indigo-300 rounded-md"
-              to="..\products"
-            >
-              <p className="max-l:text-xs">Start Shopping</p>
-            </Link>
+            <p className="text-md">Your Cart is empty</p>
+            <Button variant="link">
+              <Link className="mt-5 p-2 rounded-md" to="..\products">
+                <p className="text-sm">Start Shopping</p>
+              </Link>
+            </Button>
           </div>
         ) : (
-          <div className="flex flex-col lg:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4 mt-5 mx-5">
             {/* Cart Items */}
             <div className="space-y-2 flex-1">
               {cartItems.map((item) => (
@@ -156,15 +172,7 @@ const Cart = () => {
         )}
       </div>
 
-      <footer className="p-2 h-fit bg-cornsilk dark:bg-neutral-600 ">
-        <div className="flex justify-center space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
-          <CopyrightCircleOutlined className="text-sm p-0.5" />
-          <h2 className="text-md">
-            2025<p className="inline-flex ml-2 text-md">The Jeweller Bee</p>
-          </h2>
-        </div>
-        <div className="flex justify-between"></div>
-      </footer>
+      <Footer />
     </div>
   );
 };

@@ -91,7 +91,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
 
   return (
     <Card
-      className={`w-38 rounded-md border-none my-1 mx-1 hover:border dark:shadow-neutral-600 cursor-pointer ${className}`}
+        className={`w-38 rounded-md border-none my-1 mx-1 dark:shadow-neutral-600 cursor-pointer ${className}`}
       onClick={handleProductClick}
     >
       <CardHeader className="p-0 border rounded-t-md">
