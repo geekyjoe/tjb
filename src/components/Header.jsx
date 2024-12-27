@@ -4,15 +4,14 @@ import {
   MenuOutlined,
   CloseOutlined,
   ProductOutlined,
-  SearchOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
-import { ShoppingCartOutlined } from "@ant-design/icons";
 import { DarkModeToggle } from "../DarkModeToggle";
 import ProfileDropdown from "./ProfileDropdown";
 import { useAdminAuth } from "../context/AdminAuthContext";
 import { MdShoppingBag } from "react-icons/md";
 import { useCart } from "./CartContext";
-import { MenuSquare, X } from "lucide-react";
+import { MenuSquare, Search, X } from "lucide-react";
 import SearchBar from "./SearchBar";
 
 const Header = () => {
@@ -21,13 +20,15 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { isAdmin, logoutAdmin } = useAdminAuth();
   const mobileMenuRef = useRef(null);
-  const searchInputRef = useRef(null);
+  const searchContainerRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
         mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(event.target)
+        !mobileMenuRef.current.contains(event.target) &&
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(event.target)
       ) {
         setIsMobileMenuOpen(false);
         setIsSearchOpen(false);
@@ -39,12 +40,6 @@ const Header = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [isSearchOpen]);
 
   const linkBaseStyle = "";
   const activeLinkStyle =
@@ -59,6 +54,27 @@ const Header = () => {
     setIsSearchOpen(!isSearchOpen);
     setIsMobileMenuOpen(false);
   };
+
+  const MobileSearch = () => (
+    <div 
+      className={`absolute -right-7 flex items-center transition-all duration-300 ease-in-out overflow-visible ${
+        isSearchOpen ? "w-64 opacity-100" : "w-0 opacity-0 pointer-events-none hidden"
+      }`}
+      style={{
+        zIndex: isSearchOpen ? 50 : -1
+      }}
+    >
+      <div className="w-fit relative">
+        <SearchBar />
+      </div>
+      <button
+        onClick={toggleSearch}
+        className="p-2 ml-1 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full flex-shrink-0"
+      >
+        <X size={20} />
+      </button>
+    </div>
+  );
 
   const NavLinks = ({ isMobile = false }) => (
     <>
@@ -186,33 +202,21 @@ const Header = () => {
           </a>
         </div>
 
-        <div className="flex items-center">
+        <div className="flex items-center" ref={searchContainerRef}>
           <div className="relative flex items-center">
-            <div
-              className={`absolute right-0 flex items-center bg-cornsilk dark:bg-zinc-800 transition-all duration-300 ease-in-out overflow-hidden ${
-                isSearchOpen ? "w-64 opacity-100" : "w-0 opacity-0"
-              }`}
-            >
-              <SearchBar />
-              <button
-                onClick={toggleSearch}
-                className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full"
-              >
-                <X size={20} />
-              </button>
-            </div>
+            <MobileSearch />
             {!isSearchOpen && (
               <button
                 onClick={toggleSearch}
-                className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full"
+                className="p-2 hover:bg-cornsilk-hover dark:hover:bg-neutral-700 rounded-full"
                 aria-label="Toggle search"
               >
-                <SearchOutlined style={{ fontSize: "20px" }} />
+                <Search size={20} />
               </button>
             )}
           </div>
 
-          <Link to="..\cart" className="ml-2 relative md:hidden">
+          <Link to="..\cart" className="relative md:hidden hover:bg-cornsilk-hover p-2 rounded-full">
             <MdShoppingBag size={23} />
             {totalItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
