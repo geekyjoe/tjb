@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from "../components/ui/alert-dialog";
 import Footer from "../components/Footer";
+import { Toaster } from "../components/ui/sonner";
 
 const Cart = () => {
   const {
@@ -35,6 +36,7 @@ const Cart = () => {
 
   return (
     <div className="min-h-full">
+      <Toaster richcolors/>
       <div className="h-full font-inter flex-grow text-neutral-800 dark:text-neutral-200">
         <div className="flex justify-between items-center p-5">
           <h2 className="text-2xl font-semibold text-left">Your Cart</h2>
@@ -42,22 +44,23 @@ const Cart = () => {
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button
-                  type="destructive"
-                  className="bg-red-400 text-white w-fit hover:bg-red-600"
+                  variant="destructive"
+                  size="sm"
+                  className="bg-red-400 hover:ring-2 hover:ring-offset-1 hover:ring-red-400 focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
                 >
                   Clear Cart
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent className="p-0 rounded-xl w-5/6 sm:w-full">
                 <AlertDialogHeader>
-                  <AlertDialogTitle className="text-left text-lg p-2 pb-0">
+                  <AlertDialogTitle className="text-left text-lg p-3 pb-0">
                     Clear Cart
                   </AlertDialogTitle>
                   <Separator
                     className="bg-gray-300 dark:bg-gray-600 data-[orientation=horizontal]:h-px data-[orientation=horizontal]:w-full data-[orientation=vertical]:h-full data-[orientation=vertical]:w-px"
                     orientation="horizontal"
                   />
-                  <AlertDialogDescription className="text-sm md:text-md px-5 pt-5 w-full">
+                  <AlertDialogDescription className="text-sm md:text-md text-center px-5 pt-5 w-full">
                     Are you sure you want to remove all the items from your
                     cart?
                   </AlertDialogDescription>

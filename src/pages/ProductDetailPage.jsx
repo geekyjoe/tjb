@@ -18,7 +18,7 @@ import {
   ArrowRight,
   Loader2,
 } from "lucide-react";
-import { toast } from "sonner";
+import { Toaster, toast } from "sonner";
 import { calculateDeliveryDate } from "../components/ddc";
 
 const ProductDetailPage = () => {
@@ -37,29 +37,30 @@ const ProductDetailPage = () => {
 
   const handleMouseMove = (e) => {
     if (!imageContainerRef.current) return;
-    
-    const { left, top, width, height } = imageContainerRef.current.getBoundingClientRect();
-    
+
+    const { left, top, width, height } =
+      imageContainerRef.current.getBoundingClientRect();
+
     // Calculate the cursor position relative to image boundaries
     let mouseX = e.pageX - left;
     let mouseY = e.pageY - top;
-    
+
     // Account for scroll position
     mouseX = mouseX - window.pageXOffset;
     mouseY = mouseY - window.pageYOffset;
-    
+
     // Convert to a scale from -1 to 1 for smoother zooming
     const ratioX = (mouseX / width) * 2 - 1;
     const ratioY = (mouseY / height) * 2 - 1;
-    
+
     // Apply constraints to keep zoom within bounds
     const boundedX = Math.max(-1, Math.min(1, ratioX));
     const boundedY = Math.max(-1, Math.min(1, ratioY));
-    
+
     // Convert to percentage with adjustment for centered zoom
     const zoomX = (boundedX + 1) * 50;
     const zoomY = (boundedY + 1) * 50;
-    
+
     setMousePosition({ x: zoomX, y: zoomY });
   };
 
@@ -154,6 +155,7 @@ const ProductDetailPage = () => {
 
   return (
     <div className="mx-auto px-4 py-8">
+      <Toaster richColors />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Image Gallery with Left Thumbnails */}
         <div className="flex gap-4">
@@ -182,7 +184,7 @@ const ProductDetailPage = () => {
           <div className="flex-1">
             <div
               ref={imageContainerRef}
-              className="border border-fuchsia-200 dark:border-neutral-500 aspect-square w-full rounded-lg overflow-hidden relative cursor-zoom-in"
+              className="border border-neutral-200 dark:border-neutral-500 aspect-square w-full rounded-lg overflow-hidden relative cursor-zoom-in"
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
               onMouseMove={handleMouseMove}

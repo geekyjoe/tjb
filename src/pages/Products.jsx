@@ -42,20 +42,22 @@ const Products = () => {
     try {
       setLoading(true);
       let allProducts = [];
-      
+
       if (categories && categories.size > 0) {
         // Fetch products for each selected category
-        const categoryPromises = Array.from(categories).map(category =>
+        const categoryPromises = Array.from(categories).map((category) =>
           fetchProducts(limit, skip, category)
         );
-        
+
         const productsArrays = await Promise.all(categoryPromises);
-        
+
         // Combine and deduplicate products
-        allProducts = Array.from(new Set(
-          productsArrays.flat().map(product => JSON.stringify(product))
-        )).map(product => JSON.parse(product));
-        
+        allProducts = Array.from(
+          new Set(
+            productsArrays.flat().map((product) => JSON.stringify(product))
+          )
+        ).map((product) => JSON.parse(product));
+
         // Apply pagination to the combined results
         allProducts = allProducts.slice(skip, skip + limit);
       } else {
@@ -65,11 +67,11 @@ const Products = () => {
       if (skip === 0) {
         setProducts(allProducts);
       } else {
-        setProducts(prevProducts => [...prevProducts, ...allProducts]);
+        setProducts((prevProducts) => [...prevProducts, ...allProducts]);
       }
 
       setHasMore(allProducts.length === limit);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         skip: skip,
         total: skip + allProducts.length,
@@ -185,20 +187,21 @@ const Products = () => {
               </Button>
             </div>
 
-            <div className="p-4 border-b dark:border-neutral-700">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => {
-                  handleClearCategories();
-                  onClose();
-                }}
-                className="text-sm hover:text-red-500 w-full justify-start"
-                disabled={selectedCategories.size === 0}
-              >
-                Clear All Filters
-              </Button>
-            </div>
+            {selectedCategories.size > 0 && (
+              <div className="p-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    handleClearCategories();
+                    onClose();
+                  }}
+                  className="text-sm hover:text-red-500 w-fit justify-start"
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
 
             <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
@@ -279,7 +282,6 @@ const Products = () => {
             </div>
           </aside>
 
-
           {/* Mobile Sidebar */}
           <MobileSidebar
             isOpen={isSidebarOpen}
@@ -291,11 +293,13 @@ const Products = () => {
             {/* Header with sorting and view options */}
             <div className="font-oSans flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center max-lg:justify-between gap-4 w-full sm:w-auto">
-              <h2 className="max-sm:text-lg text-2xl pl-2 font-inter font-medium">
+                <h2 className="max-sm:text-lg text-2xl pl-2 font-inter font-medium">
                   {selectedCategories.size > 0
-                    ? `${Array.from(selectedCategories).map(cat => 
-                        cat.charAt(0).toUpperCase() + cat.slice(1)
-                      ).join(', ')} Collection`
+                    ? `${Array.from(selectedCategories)
+                        .map(
+                          (cat) => cat.charAt(0).toUpperCase() + cat.slice(1)
+                        )
+                        .join(", ")} Collection`
                     : "All Collection"}
                 </h2>
               </div>
