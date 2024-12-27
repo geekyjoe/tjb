@@ -56,12 +56,12 @@ export const DarkModeToggle = ({ onClick }) => {
         onClick={handleClick}
         aria-label={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
       >
+        {darkMode ? "Toggle Light Mode" : "Toggle Dark Mode"}
         {darkMode ? (
           <Sun className="ml-2 h-5 w-5" />
         ) : (
           <Moon className="ml-2 h-5 w-5" />
         )}
-        {darkMode ? "Toggle Light Mode" : "Toggle Dark Mode"}
       </li>
 
       {/* Desktop/Large Screen - Button Style */}

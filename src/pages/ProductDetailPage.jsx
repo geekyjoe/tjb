@@ -293,61 +293,57 @@ const ProductDetailPage = () => {
             </TabsContent>
           </Tabs>
 
-          {/* Delivery Check */}
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center space-x-4">
-                <Input
-                  type="text"
-                  placeholder="Enter Pincode"
-                  value={pincode}
-                  onChange={(e) =>
-                    setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))
+          {/* Delivery Check - Modified */}
+          <div className="p-4">
+            <div className="flex items-center space-x-4">
+              <Input
+                type="text"
+                placeholder="Enter Pincode"
+                value={pincode}
+                onChange={(e) =>
+                  setPincode(e.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    checkDelivery();
                   }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      checkDelivery();
-                    }
-                  }}
-                  className="w-40"
-                />
-                <Button onClick={checkDelivery} variant="outline">
-                  Check
-                </Button>
+                }}
+                className="w-40 dark:ring-zinc-400"
+              />
+              <Button onClick={checkDelivery} variant="ghost">
+                Check
+              </Button>
+            </div>
+            {deliveryDate && (
+              <div className="mt-4 flex items-center space-x-2">
+                <Calendar className="w-4 h-4" />
+                <span>Estimated delivery by {deliveryDate}</span>
               </div>
-              {deliveryDate && (
-                <div className="mt-4 flex items-center space-x-2">
-                  <Calendar className="w-4 h-4" />
-                  <span>Estimated delivery by {deliveryDate}</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+            )}
+          </div>
 
-          {/* Offers */}
-          <Card>
-            <CardContent className="p-4">
-              <h3 className="text-lg font-semibold mb-4">Available Offers</h3>
-              <ul className="space-y-3">
-                {product.discountPercentage > 0 && (
-                  <li className="flex items-center">
-                    <Package className="w-4 h-4 mr-2" />
-                    <span>
-                      Special discount of {product.discountPercentage}% applied
-                    </span>
-                  </li>
-                )}
+          {/* Offers - Modified */}
+          <div className="border-2 border-neutral-200 dark:border-neutral-700 rounded-xl p-4">
+            <h3 className="text-lg font-semibold mb-4">Available Offers</h3>
+            <ul className="space-y-3">
+              {product.discountPercentage > 0 && (
                 <li className="flex items-center">
                   <Package className="w-4 h-4 mr-2" />
-                  <span>Free shipping on orders above $999</span>
+                  <span>
+                    Special discount of {product.discountPercentage}% applied
+                  </span>
                 </li>
-                <li className="flex items-center">
-                  <Truck className="w-4 h-4 mr-2" />
-                  <span>Express delivery available</span>
-                </li>
-              </ul>
-            </CardContent>
-          </Card>
+              )}
+              <li className="flex items-center">
+                <Package className="w-4 h-4 mr-2" />
+                <span>Free shipping on orders above $999</span>
+              </li>
+              <li className="flex items-center">
+                <Truck className="w-4 h-4 mr-2" />
+                <span>Express delivery available</span>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>

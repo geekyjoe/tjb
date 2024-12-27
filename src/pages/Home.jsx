@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { StarOutlined, CopyrightCircleOutlined } from "@ant-design/icons";
 import { GiGlobeRing } from "react-icons/gi";
@@ -6,7 +6,7 @@ import { SiAffinitydesigner } from "react-icons/si";
 import { FaGifts } from "react-icons/fa6";
 import { ImGift } from "react-icons/im";
 import { BsBox2HeartFill } from "react-icons/bs";
-import { IoHeartCircleSharp } from "react-icons/io5";
+import { IoHeartCircleSharp, IoLogoInstagram } from "react-icons/io5";
 
 const Home = () => {
   const featuredCollections = [
@@ -179,14 +179,23 @@ const Home = () => {
           </div>
         </div>
       </section>
-      <footer className="p-2 h-fit bg-cornsilk dark:bg-neutral-600 ">
-        <div className="flex justify-center space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
+      <footer className="flex justify-between p-5 border-t mt-5">
+        <div className="flex space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
           <CopyrightCircleOutlined className="text-sm p-0.5" />
           <h2 className="text-md">
             2025<p className="inline-flex ml-2 text-md">The Jeweller Bee</p>
           </h2>
         </div>
-        <div className="flex justify-between"></div>
+        <div className="grid grid-cols-1">
+          <a
+            className="flex items-center gap-1 text-md"
+            href="https://www.instagram.com/_thejewelerbee_"
+            target="_blank"
+          >
+            <IoLogoInstagram size={16} />
+            Instagram
+          </a>
+        </div>
       </footer>
     </div>
   );

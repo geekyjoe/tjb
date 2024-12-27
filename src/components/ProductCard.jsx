@@ -38,7 +38,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
   if (viewMode === "list") {
     return (
       <div 
-        className="flex gap-4 bg-white dark:bg-neutral-700 p-4 rounded-lg hover:shadow cursor-pointer"
+        className="flex gap-4 border dark:border-neutral-600 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 p-4 rounded-lg hover:shadow cursor-pointer"
         onClick={handleProductClick}
       >
         <div className="s:w-16 s:h-16 m:w-24 m:h-24 flex-shrink-0">
@@ -63,7 +63,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
               </span>
             </div>
           </div>
-          <div className="mt-auto flex justify-between items-center">
+          <div className="mt-2 flex justify-between items-center">
             <span className="max-l:text-sm text-xl font-bold text-gray-800 dark:text-gray-100">
               ${product.price.toFixed(2)}
             </span>
@@ -91,15 +91,15 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
 
   return (
     <Card
-      className={`w-38 border hover:shadow dark:shadow-neutral-600 cursor-pointer ${className}`}
+      className={`w-38 rounded-md border-none my-1 mx-1 hover:border dark:shadow-neutral-600 cursor-pointer ${className}`}
       onClick={handleProductClick}
     >
-      <CardHeader className="p-0">
+      <CardHeader className="p-0 border rounded-t-md">
         <div className="flex-shrink-0">
           <img
             src={product.thumbnail}
             alt={product.title}
-            className="w-full h-full rounded-t-lg"
+            className="w-full h-full pointer-events-none rounded-t-lg"
           />
         </div>
       </CardHeader>

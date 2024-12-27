@@ -6,6 +6,17 @@ import { useCart } from "../components/CartContext";
 import CartItemCard from "../components/CartItemCard";
 import OrderSummaryCard from "../components/OrderSummaryCard";
 import { Link } from "react-router-dom";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "../components/ui/alert-dialog";
 
 const Cart = () => {
   const {
@@ -27,13 +38,34 @@ const Cart = () => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold">Your Cart</h2>
           {cartItems.length > 0 && (
-            <Button
-              type="danger"
-              onClick={clearCart}
-              className="bg-red-500 text-white hover:bg-red-600"
-            >
-              Clear Cart
-            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  type="danger"
+                  className="bg-red-500 text-white hover:bg-red-600"
+                >
+                  Clear Cart
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Clear Cart</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Are you sure you want to remove all the items from your
+                    cart?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={clearCart}
+                    className="bg-red-500 hover:bg-red-600"
+                  >
+                    Remove
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           )}
         </div>
 
@@ -105,8 +137,11 @@ const Cart = () => {
             </div>
 
             {/* Separator */}
-            <Separator orientation="vertical" className="h-auto hidden lg:block" />
-            
+            <Separator
+              orientation="vertical"
+              className="h-auto hidden lg:block"
+            />
+
             {/* Responsive Separator */}
             <Separator className="my-4 lg:hidden" />
 

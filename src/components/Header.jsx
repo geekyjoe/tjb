@@ -4,6 +4,7 @@ import {
   MenuOutlined,
   CloseOutlined,
   ProductOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { ShoppingCartOutlined } from "@ant-design/icons";
 import { DarkModeToggle } from "../DarkModeToggle";
@@ -11,15 +12,17 @@ import ProfileDropdown from "./ProfileDropdown";
 import { useAdminAuth } from "../context/AdminAuthContext";
 import { MdShoppingBag } from "react-icons/md";
 import { useCart } from "./CartContext";
-import { MenuSquare } from "lucide-react";
+import { MenuSquare, X } from "lucide-react";
+import SearchBar from "./SearchBar";
 
 const Header = () => {
   const { totalItems } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const { isAdmin, logoutAdmin } = useAdminAuth();
   const mobileMenuRef = useRef(null);
+  const searchInputRef = useRef(null);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -27,6 +30,7 @@ const Header = () => {
         !mobileMenuRef.current.contains(event.target)
       ) {
         setIsMobileMenuOpen(false);
+        setIsSearchOpen(false);
       }
     };
 
@@ -36,17 +40,26 @@ const Header = () => {
     };
   }, []);
 
-  // Shared link styling
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
   const linkBaseStyle = "";
   const activeLinkStyle =
     "text-neutral-900 dark:text-neutral-100 underline underline-offset-4";
 
-  // Mobile menu toggle handler
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
+    setIsSearchOpen(false);
   };
 
-  // Render navigation links
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+    setIsMobileMenuOpen(false);
+  };
+
   const NavLinks = ({ isMobile = false }) => (
     <>
       <NavLink
@@ -60,11 +73,11 @@ const Header = () => {
         }
         onClick={isMobile ? toggleMobileMenu : undefined}
       >
+        Products
         <ProductOutlined
           className="md:hidden ml-2"
           style={{ fontSize: "20px" }}
         />
-        Products
       </NavLink>
       <NavLink
         to="/cart"
@@ -116,17 +129,19 @@ const Header = () => {
   );
 
   return (
-    <header className="max-md:py-1 max-md:px-2 max-md:pr-3 inline-flex justify-between items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
-      {/* Logo */}
-      <a href="/" className="py-1 font-karla font-bold dark:text-neutral-100">
+    <header className="border-b-2 dark:border-stone-500 max-md:py-1 max-md:px-2 max-md:pr-3 md:flex md:justify-between md:items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
+      <a
+        href="/"
+        className="hidden md:block py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
+      >
         <h2 className="max-xl:text-xl max-md:text-sm p-2">
           The JewellerBee Store
         </h2>
       </a>
 
-      {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center">
         <div className="md:flex items-center space-x-1">
+          <SearchBar />
           <NavLinks />
         </div>
         {!isAdmin && (
@@ -136,49 +151,82 @@ const Header = () => {
         )}
       </nav>
 
-      {/* Mobile Menu Container */}
-      <div className="md:hidden flex relative" ref={mobileMenuRef}>
-        {/* Mobile Menu Toggle with Animation */}
-        <button
-          onClick={toggleMobileMenu}
-          className="flex focus:outline-none relative w-6 h-6"
-        >
-          {/* Menu Icon */}
-          <span
-            className={`absolute inset-0 transition-all duration-150 ease-in-out ${
-              isMobileMenuOpen
-                ? "rotate-45 opacity-0 scale-0"
-                : "rotate-0 opacity-100 scale-100"
-            }`}
+      <div className="md:hidden flex justify-between items-center relative" ref={mobileMenuRef}>
+        <div className="inline-flex items-center">
+          <button
+            onClick={toggleMobileMenu}
+            className="flex focus:outline-none relative w-6 h-6"
           >
-            <MenuSquare />
-          </span>
-
-          {/* Close Icon */}
-          <span
-            className={`absolute inset-0 transition-all duration-150 ease-in-out ${
-              isMobileMenuOpen
-                ? "rotate-0 opacity-100 scale-100"
-                : "-rotate-45 opacity-0 scale-0"
-            }`}
-          >
-            <CloseOutlined />
-          </span>
-        </button>
-        <Link to="..\cart" className="ml-2 relative md:hidden">
-          <MdShoppingBag size={23} />
-          {totalItems > 0 && (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-              {totalItems}
+            <span
+              className={`absolute inset-0 transition-all duration-150 ease-in-out ${
+                isMobileMenuOpen
+                  ? "rotate-45 opacity-0 scale-0"
+                  : "rotate-0 opacity-100 scale-100"
+              }`}
+            >
+              <MenuSquare />
             </span>
-          )}
-        </Link>
-        {/* Mobile Dropdown Menu */}
+            <span
+              className={`absolute inset-0 transition-all duration-150 ease-in-out ${
+                isMobileMenuOpen
+                  ? "rotate-0 opacity-100 scale-100"
+                  : "-rotate-45 opacity-0 scale-0"
+              }`}
+            >
+              <CloseOutlined />
+            </span>
+          </button>
+          <a
+            href="/"
+            className="py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
+          >
+            <h2 className="max-xl:text-xl max-md:text-sm p-2">
+              The JewellerBee Store
+            </h2>
+          </a>
+        </div>
+
+        <div className="flex items-center">
+          <div className="relative flex items-center">
+            <div
+              className={`absolute right-0 flex items-center bg-cornsilk dark:bg-zinc-800 transition-all duration-300 ease-in-out overflow-hidden ${
+                isSearchOpen ? "w-64 opacity-100" : "w-0 opacity-0"
+              }`}
+            >
+              <SearchBar />
+              <button
+                onClick={toggleSearch}
+                className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            {!isSearchOpen && (
+              <button
+                onClick={toggleSearch}
+                className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-full"
+                aria-label="Toggle search"
+              >
+                <SearchOutlined style={{ fontSize: "20px" }} />
+              </button>
+            )}
+          </div>
+
+          <Link to="..\cart" className="ml-2 relative md:hidden">
+            <MdShoppingBag size={23} />
+            {totalItems > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                {totalItems}
+              </span>
+            )}
+          </Link>
+        </div>
+
         <div
-          className={`absolute top-full right-0 mt-2 w-56 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg z-50 transition-all duration-75 ease-in-out ${
+          className={`absolute top-full left-0 mt-2 w-56 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg z-50 transition-all duration-75 ease-in-out ${
             isMobileMenuOpen
-              ? "opacity-100 origin-top-right scale-1"
-              : "opacity-25 origin-top-right scale-0"
+              ? "opacity-100 origin-top-left scale-1"
+              : "opacity-25 origin-top-left scale-0"
           }`}
         >
           {isMobileMenuOpen && (

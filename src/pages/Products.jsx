@@ -20,6 +20,7 @@ import {
 } from "../components/ui/select";
 import { Link } from "react-router-dom";
 import * as Separator from "@radix-ui/react-separator";
+import { IoLogoInstagram } from "react-icons/io5";
 
 const Products = () => {
   // In Products.jsx
@@ -229,7 +230,7 @@ const Products = () => {
         <div className="flex gap-6">
           {/* Desktop Sidebar */}
           <aside className="max-lg:hidden w-64 flex-shrink-0">
-            <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg border">
+            <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg border dark:border-neutral-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-lg">Categories</h3>
                 <Button
@@ -242,11 +243,12 @@ const Products = () => {
                   Clear All
                 </Button>
               </div>
-              <ScrollArea className="h-[300px]">
-                <div className="space-y-3">
+              <ScrollArea className="h-60">
+                <div className="space-y-3 p-1.5">
                   {categories.map((category) => (
                     <div key={category} className="flex items-center space-x-2">
                       <Checkbox
+                        className="border-none ring ring-1 ring-zinc-300"
                         id={category}
                         checked={selectedCategories.has(category)}
                         onCheckedChange={() => handleCategoryChange(category)}
@@ -357,7 +359,7 @@ const Products = () => {
                 <div
                   className={
                     viewMode === "grid"
-                      ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"
+                      ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 lg:gap-1"
                       : "space-y-4"
                   }
                 >
@@ -377,11 +379,7 @@ const Products = () => {
                       className="bg-stone-800 hover:bg-stone-700 text-white"
                       disabled={loading}
                     >
-                      {loading ? (
-                        <div className="flex justify-center items-center min-h-screen">
-                          <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-amber-500"></div>
-                        </div>
-                      ) : (
+                      {loading ? "Loading..." : (
                         "Load More"
                       )}
                     </Button>
@@ -411,14 +409,16 @@ const Products = () => {
           </div>
         </div>
       </div>
-      <footer className="p-5 border-t mt-5">
-        <div className="flex space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
+      <footer className="flex justify-between font-host p-5 border-t mt-5">
+        <div className="flex text-neutral-800 dark:text-neutral-300">
           <CopyrightCircleOutlined className="text-sm p-0.5" />
-          <h2 className="text-md">
-            2025<p className="inline-flex ml-2 text-md">The Jeweller Bee</p>
+          <h2 className="text-sm">
+            2025<p className="inline-flex ml-2 text-base">The Jeweller Bee</p>
           </h2>
         </div>
-        <div className="flex justify-between"></div>
+        <div className="grid grid-cols-1">
+          <a className="flex items-center gap-1 text-md" href="https://www.instagram.com/_thejewelerbee_" target="_blank"><IoLogoInstagram size={16}/>Instagram</a>
+        </div>
       </footer>
     </div>
   );
