@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { StarOutlined, CopyrightCircleOutlined } from "@ant-design/icons";
+import { StarOutlined } from "@ant-design/icons";
 import { GiGlobeRing } from "react-icons/gi";
 import { SiAffinitydesigner } from "react-icons/si";
 import { FaGifts } from "react-icons/fa6";
 import { ImGift } from "react-icons/im";
 import { BsBox2HeartFill } from "react-icons/bs";
-import { IoHeartCircleSharp, IoLogoInstagram } from "react-icons/io5";
+import { IoHeartCircleSharp} from "react-icons/io5";
 import Footer from "../components/Footer";
 
 const Home = () => {
@@ -38,14 +38,13 @@ const Home = () => {
       <section
         className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed h-screen"
         style={{
-          backgroundImage:
-            "url(https://images.unsplash.com/photo-1506630448388-4e683c67ddb0?q=80&w=1887&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D)",
+          backgroundImage: "url('/src/assets/hero.webp')",
           backgroundBlendMode: "overlay",
           backgroundColor: "rgba(0,0,0,0.25)",
         }}
       >
-        <div className="absolute inset-0 bg-black/20 "></div>
-        <div className="relative z-0 px-4 text-white">
+        <div className="absolute inset-0 bg-black/40 dark:bg-black/60 "></div>
+        <div className="relative z-0 px-6 pt-5 pb-8 rounded-xl text-white bg-black/60">
           <h1 className="text-5xl md:text-6xl font-bold mb-4">
             The Jeweller Bee
           </h1>
