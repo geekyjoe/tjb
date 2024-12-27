@@ -1,112 +1,344 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import Cookies from 'js-cookie';
 
-// Create a CartContext
-const CartContext = createContext();
+// Type definitions
+const StoragePreference = {
+  COOKIES: 'cookies',
+  LOCAL_STORAGE: 'localStorage',
+  BOTH: 'both'
+};
 
-// Cart Provider Component
-export const CartProvider = ({ children }) => {
+const ErrorType = {
+  INIT_ERROR: 'INIT_ERROR',
+  SYNC_ERROR: 'SYNC_ERROR',
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  CALCULATION_ERROR: 'CALCULATION_ERROR',
+  CLEAR_ERROR: 'CLEAR_ERROR',
+  CONTEXT_ERROR: 'CONTEXT_ERROR'
+};
+
+// Configuration
+const STORAGE_KEYS = {
+  CART: 'cart',
+  PREFERENCES: 'cartPreferences'
+};
+
+const COOKIE_OPTIONS = {
+  expires: 7,
+  secure: process.env.NODE_ENV === 'production',
+  sameSite: 'strict'
+};
+
+// Custom error class
+class CartError extends Error {
+  constructor(message, type) {
+    super(message);
+    this.name = 'CartError';
+    this.type = type;
+  }
+}
+
+// Context definitions with initial values
+const CartContext = createContext({
+  cartItems: [],
+  totalItems: 0,
+  addToCart: () => {},
+  removeFromCart: () => {},
+  updateQuantity: () => {},
+  calculateTotal: () => '0.00',
+  clearCart: () => {},
+  isInCart: () => false,
+  getItemQuantity: () => 0,
+  isLoading: false
+});
+
+const CartMetaContext = createContext({
+  lastUpdate: null,
+  errors: [],
+  clearErrors: () => {},
+  storagePreference: StoragePreference.BOTH
+});
+
+export const CartProvider = ({ 
+  children, 
+  storagePreference = StoragePreference.BOTH,
+  onError = (error) => console.error(error)
+}) => {
   const [cartItems, setCartItems] = useState([]);
   const [totalItems, setTotalItems] = useState(0);
+  const [lastUpdate, setLastUpdate] = useState(null);
+  const [errors, setErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Load cart from localStorage on initial render
-  useEffect(() => {
-    const savedCart = localStorage.getItem('cart');
-    if (savedCart) {
-      const parsedCart = JSON.parse(savedCart);
-      setCartItems(parsedCart);
+  const safelyParseJSON = (json) => {
+    try {
+      return json ? JSON.parse(json) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const validateProduct = (product) => {
+    return product && 
+           typeof product === 'object' && 
+           'id' in product && 
+           'price' in product &&
+           typeof product.price === 'number' &&
+           product.price >= 0;
+  };
+
+  const syncStorage = async (items) => {
+    try {
+      const cartString = JSON.stringify(items);
+
+      if (storagePreference === StoragePreference.COOKIES || 
+          storagePreference === StoragePreference.BOTH) {
+        Cookies.set(STORAGE_KEYS.CART, cartString, COOKIE_OPTIONS);
+      }
       
-      // Update total items count
-      const totalCount = parsedCart.reduce((total, item) => total + item.quantity, 0);
-      setTotalItems(totalCount);
-    }
-  }, []);
+      if (storagePreference === StoragePreference.LOCAL_STORAGE || 
+          storagePreference === StoragePreference.BOTH) {
+        localStorage.setItem(STORAGE_KEYS.CART, cartString);
+      }
 
-  // Save cart to localStorage whenever it changes
+      updateTotalItems(items);
+      setLastUpdate(new Date().toISOString());
+    } catch (error) {
+      handleError(new CartError('Failed to sync cart storage', ErrorType.SYNC_ERROR));
+    }
+  };
+
   useEffect(() => {
-    localStorage.setItem('cart', JSON.stringify(cartItems));
-    
-    // Update total items count
-    const totalCount = cartItems.reduce((total, item) => total + item.quantity, 0);
-    setTotalItems(totalCount);
-  }, [cartItems]);
+    const initializeCart = async () => {
+      setIsLoading(true);
+      try {
+        let savedCart = null;
+        
+        if (storagePreference === StoragePreference.COOKIES || 
+            storagePreference === StoragePreference.BOTH) {
+          savedCart = safelyParseJSON(Cookies.get(STORAGE_KEYS.CART));
+        }
+        
+        if (!savedCart && 
+            (storagePreference === StoragePreference.LOCAL_STORAGE || 
+             storagePreference === StoragePreference.BOTH)) {
+          savedCart = safelyParseJSON(localStorage.getItem(STORAGE_KEYS.CART));
+        }
 
-  // Add to cart function
-  const addToCart = (product) => {
-    // Check if product already exists in cart
-    const existingProductIndex = cartItems.findIndex(
-      (item) => item.id === product.id
-    );
+        if (savedCart && Array.isArray(savedCart)) {
+          setCartItems(savedCart);
+          updateTotalItems(savedCart);
+        }
+      } catch (error) {
+        handleError(new CartError('Failed to initialize cart', ErrorType.INIT_ERROR));
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-    if (existingProductIndex > -1) {
-      // If product exists, increase quantity
-      const updatedCart = [...cartItems];
-      updatedCart[existingProductIndex] = {
-        ...updatedCart[existingProductIndex],
-        quantity: updatedCart[existingProductIndex].quantity + 1
-      };
-      setCartItems(updatedCart);
-    } else {
-      // If product is new, add to cart with quantity 1
-      setCartItems([...cartItems, { 
-        ...product, 
-        quantity: 1 
-      }]);
+    initializeCart();
+  }, [storagePreference]);
+
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      syncStorage(cartItems);
+    }
+  }, [cartItems, storagePreference]);
+
+  const updateTotalItems = (items) => {
+    const total = items.reduce((sum, item) => sum + (Number(item.quantity) || 0), 0);
+    setTotalItems(total);
+  };
+
+  const handleError = (error) => {
+    setErrors(prev => [...prev.slice(-4), error]); // Keep last 5 errors
+    onError(error);
+  };
+
+  const addToCart = async (product) => {
+    setIsLoading(true);
+    try {
+      if (!validateProduct(product)) {
+        throw new CartError('Invalid product data', ErrorType.VALIDATION_ERROR);
+      }
+
+      const newItems = [...cartItems];
+      const existingProductIndex = newItems.findIndex(item => item.id === product.id);
+      
+      if (existingProductIndex > -1) {
+        newItems[existingProductIndex] = {
+          ...newItems[existingProductIndex],
+          quantity: (Number(newItems[existingProductIndex].quantity) || 0) + 1,
+          lastUpdated: new Date().toISOString()
+        };
+      } else {
+        newItems.push({
+          ...product,
+          quantity: 1,
+          addedAt: new Date().toISOString(),
+          lastUpdated: new Date().toISOString()
+        });
+      }
+
+      await syncStorage(newItems);
+      setCartItems(newItems);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Remove from cart function
-  const removeFromCart = (productId) => {
-    setCartItems(cartItems.filter((item) => item.id !== productId));
+  const removeFromCart = async (productId) => {
+    setIsLoading(true);
+    try {
+      if (!productId) {
+        throw new CartError('Invalid product ID', ErrorType.VALIDATION_ERROR);
+      }
+
+      const newItems = cartItems.filter(item => item.id !== productId);
+      await syncStorage(newItems);
+      setCartItems(newItems);
+
+      // Explicitly update cookies when removing items
+      if (storagePreference === StoragePreference.COOKIES || 
+          storagePreference === StoragePreference.BOTH) {
+        if (newItems.length === 0) {
+          Cookies.remove(STORAGE_KEYS.CART);
+        } else {
+          Cookies.set(STORAGE_KEYS.CART, JSON.stringify(newItems), COOKIE_OPTIONS);
+        }
+      }
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  // Update quantity function
-  const updateQuantity = (productId, newQuantity) => {
-    if (newQuantity < 1) {
-      removeFromCart(productId);
-    } else {
-      const updatedCart = cartItems.map((item) => 
-        item.id === productId 
-          ? { ...item, quantity: newQuantity } 
+  const updateQuantity = async (productId, newQuantity) => {
+    setIsLoading(true);
+    try {
+      if (!productId || typeof newQuantity !== 'number' || newQuantity < 0) {
+        throw new CartError('Invalid quantity update parameters', ErrorType.VALIDATION_ERROR);
+      }
+
+      if (newQuantity === 0) {
+        await removeFromCart(productId);
+        return;
+      }
+
+      const newItems = cartItems.map(item =>
+        item.id === productId
+          ? {
+              ...item,
+              quantity: newQuantity,
+              lastUpdated: new Date().toISOString()
+            }
           : item
       );
-      setCartItems(updatedCart);
+
+      await syncStorage(newItems);
+      setCartItems(newItems);
+    } catch (error) {
+      handleError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Calculate total cart value
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => 
-      total + (item.price * item.quantity), 0
-    ).toFixed(2);
+    try {
+      return cartItems.reduce((total, item) => {
+        const quantity = Number(item.quantity) || 0;
+        const price = Number(item.price) || 0;
+        return total + (price * quantity);
+      }, 0).toFixed(2);
+    } catch (error) {
+      handleError(new CartError('Failed to calculate total', ErrorType.CALCULATION_ERROR));
+      return '0.00';
+    }
   };
 
-  // Clear entire cart
-  const clearCart = () => {
-    setCartItems([]);
+  const clearCart = async () => {
+    setIsLoading(true);
+    try {
+      setCartItems([]);
+      if (storagePreference === StoragePreference.COOKIES || 
+          storagePreference === StoragePreference.BOTH) {
+        Cookies.remove(STORAGE_KEYS.CART);
+      }
+      if (storagePreference === StoragePreference.LOCAL_STORAGE || 
+          storagePreference === StoragePreference.BOTH) {
+        localStorage.removeItem(STORAGE_KEYS.CART);
+      }
+      await syncStorage([]);
+    } catch (error) {
+      handleError(new CartError('Failed to clear cart', ErrorType.CLEAR_ERROR));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const isInCart = (productId) => {
+    return productId ? cartItems.some(item => item.id === productId) : false;
+  };
+  
+  const getItemQuantity = (productId) => {
+    if (!productId) return 0;
+    const item = cartItems.find(item => item.id === productId);
+    return item ? Number(item.quantity) || 0 : 0;
+  };
+
+  const cartContextValue = {
+    cartItems,
+    totalItems,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    calculateTotal,
+    clearCart,
+    isInCart,
+    getItemQuantity,
+    isLoading
+  };
+
+  const cartMetaContextValue = {
+    lastUpdate,
+    errors,
+    clearErrors: () => setErrors([]),
+    storagePreference
   };
 
   return (
-    <CartContext.Provider 
-      value={{ 
-        cartItems, 
-        addToCart, 
-        removeFromCart, 
-        updateQuantity,
-        calculateTotal,
-        clearCart,
-        totalItems
-      }}
-    >
-      {children}
-    </CartContext.Provider>
+    <CartMetaContext.Provider value={cartMetaContextValue}>
+      <CartContext.Provider value={cartContextValue}>
+        {children}
+      </CartContext.Provider>
+    </CartMetaContext.Provider>
   );
 };
 
-// Custom hook to use cart context
 export const useCart = () => {
   const context = useContext(CartContext);
   if (!context) {
-    throw new Error('useCart must be used within a CartProvider');
+    throw new CartError(
+      'useCart must be used within a CartProvider',
+      ErrorType.CONTEXT_ERROR
+    );
   }
   return context;
 };
+
+export const useCartMeta = () => {
+  const context = useContext(CartMetaContext);
+  if (!context) {
+    throw new CartError(
+      'useCartMeta must be used within a CartProvider',
+      ErrorType.CONTEXT_ERROR
+    );
+  }
+  return context;
+};
+
+export { StoragePreference, ErrorType };
