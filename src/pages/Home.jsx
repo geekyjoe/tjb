@@ -64,7 +64,7 @@ const Home = () => {
             </Link>
 
             <Link
-              to="/pp"
+              to="#"
               className="px-4 py-2 md:px-6 md:py-3 max-sm:text-sm border-2 border-white hover:bg-white hover:text-black rounded-xl transition duration-75"
             >
               View Collections
