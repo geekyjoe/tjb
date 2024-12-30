@@ -18,6 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "../components/ui/popover";
+import MobileMenu from "./MobileMenu";
 
 const Header = () => {
   const { totalItems } = useCart();
@@ -181,16 +182,6 @@ const Header = () => {
             >
               <MenuSquare className="text-neutral-700 dark:text-neutral-200" />
             </span>
-
-            <span
-              className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
-                isMobileMenuOpen
-                  ? "rotate-0 opacity-100 scale-100"
-                  : "-rotate-45 opacity-0 scale-0"
-              }`}
-            >
-              <CloseOutlined className="text-neutral-700 dark:text-neutral-200" />
-            </span>
           </button>
           <a
             href="/"
@@ -217,20 +208,12 @@ const Header = () => {
             )}
           </Link>
         </div>
-
-        <div
-          className={`absolute top-full left-0 mt-2 w-56 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-lg shadow-lg z-50 transition-all duration-75 ease-in-out ${
-            isMobileMenuOpen
-              ? "opacity-100 origin-top-left scale-1"
-              : "opacity-25 origin-top-left scale-0"
-          }`}
-        >
-          {isMobileMenuOpen && (
-            <div className="flex flex-col py-1 space-y-1">
-              <NavLinks isMobile={true} />
-            </div>
-          )}
-        </div>
+        <MobileMenu
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+          isAdmin={isAdmin}
+          logoutAdmin={logoutAdmin}
+        />
       </div>
     </header>
   );

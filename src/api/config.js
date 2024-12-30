@@ -1,0 +1,1 @@
+export const API_BASE_URL = 'gs://tjb-24.firebasestorage.app/products';

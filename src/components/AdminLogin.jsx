@@ -57,7 +57,7 @@ const AdminLogin = () => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-cornsilk dark:bg-gray-900 p-4">
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md bg-white shadow-md rounded-xl">
         <CardHeader>
           <CardTitle>Admin <a variant="link" className="p-0" onClick={() => navigate('/admin-signup')}>Login</a></CardTitle>
           <CardDescription>Enter your credentials to access the admin panel</CardDescription>

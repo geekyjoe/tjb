@@ -13,6 +13,7 @@ import { AdminAuthProvider } from "./context/AdminAuthContext";
 import AdminGuard from "./components/AdminGuard";
 import AdminSignup from "./components/AdminSignup";
 import ProductDetailPage from "./pages/ProductDetailPage";
+import ProductPanel from "./pages/ProductPanel";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/pp" element={<ProductPanel />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
               <Route path="/cart" element={<Cart />} />
 

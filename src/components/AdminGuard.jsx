@@ -5,7 +5,7 @@ import { useAdminAuth } from '../context/AdminAuthContext';
 const AdminGuard = ({ children }) => {
   const { isAdmin } = useAdminAuth();
 
-  if (!isAdmin) {
+  if (isAdmin) {
     // Redirect to login page if not authenticated
     return <Navigate to="/admin-login" replace />;
   }

@@ -8,6 +8,7 @@ import { ImGift } from "react-icons/im";
 import { BsBox2HeartFill } from "react-icons/bs";
 import { IoHeartCircleSharp} from "react-icons/io5";
 import Footer from "../components/Footer";
+import BgImage from "/hero.webp";
 
 const Home = () => {
   const featuredCollections = [
@@ -36,25 +37,25 @@ const Home = () => {
     <div className="min-h-screen font-host bg-cornsilk dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
       {/* Hero Section */}
       <section
-        className="relative h-screen flex items-center justify-center text-center bg-cover bg-center bg-fixed h-screen"
+        className="relative h-screen flex items-center justify-center text-center bg-auto md:bg-cover bg-center bg-fixed h-screen"
         style={{
-          backgroundImage: "url('/src/assets/hero.webp')",
+          backgroundImage: `url(${BgImage})`,
           backgroundBlendMode: "overlay",
           backgroundColor: "rgba(0,0,0,0.25)",
         }}
       >
         <div className="absolute inset-0 bg-black/40 dark:bg-black/60 "></div>
         <div className="relative z-0 px-6 pt-5 pb-8 rounded-xl text-white bg-black/60">
-          <h1 className="text-5xl md:text-6xl font-bold mb-4">
+          <h1 className="text-3xl md:text-6xl font-bold mb-4">
             The Jeweller Bee
           </h1>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
+          <p className="text- md:text-xl mb-8 max-w-2xl mx-auto">
             Crafting Elegance, Celebrating Individuality
           </p>
           <div className="space-x-4">
             <Link
               to="/products"
-              className="relative px-6 py-3 bg-cornsilk dark:bg-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900 text-black dark:text-white rounded-xl transition duration-75 group"
+              className="relative px-4 py-2.5 md:px-6 md:py-3 max-sm:text-sm bg-cornsilk dark:bg-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900 text-black dark:text-white rounded-xl transition duration-75 group"
             >
               <span className="relative">
                 Shop Now
@@ -63,8 +64,8 @@ const Home = () => {
             </Link>
 
             <Link
-              to="/admin"
-              className="px-6 py-3 border-2 border-white hover:bg-white hover:text-black rounded-xl transition duration-75"
+              to="/pp"
+              className="px-4 py-2 md:px-6 md:py-3 max-sm:text-sm border-2 border-white hover:bg-white hover:text-black rounded-xl transition duration-75"
             >
               View Collections
             </Link>
