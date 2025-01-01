@@ -37,7 +37,7 @@ const Home = () => {
     <div className="min-h-screen font-host bg-cornsilk dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
       {/* Hero Section */}
       <section
-        className="relative h-screen flex items-center justify-center text-center bg-auto md:bg-cover bg-center bg-fixed h-screen"
+        className="relative h-screen flex items-center justify-center text-center md:bg-cover bg-center bg-fixed h-screen"
         style={{
           backgroundImage: `url(${BgImage})`,
           backgroundBlendMode: "overlay",
@@ -55,7 +55,7 @@ const Home = () => {
           <div className="space-x-4">
             <Link
               to="/products"
-              className="relative px-4 py-2.5 md:px-6 md:py-3 max-sm:text-sm bg-cornsilk dark:bg-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900 text-black dark:text-white rounded-xl transition duration-75 group"
+              className="relative px-4 py-2.5 md:px-6 md:py-3 max-sm:text-sm bg-yellow-500 hover:bg-yellow-400 text-black dark:text-white rounded-xl transition duration-75 group"
             >
               <span className="relative">
                 Shop Now
@@ -173,7 +173,7 @@ const Home = () => {
                   subject
                 )}&body=${encodeURIComponent(body)}`;
               }}
-              className="px-6 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-r-full transition duration-75"
+              className="px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-r-full transition duration-75"
             >
               Subscribe
             </button>
