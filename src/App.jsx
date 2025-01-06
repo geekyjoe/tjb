@@ -4,7 +4,7 @@ import Header from "./components/Header";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import AdminPanel from "./components/AdminPanel";
-import { DarkModeProvider } from "./DarkModeToggle";
+import { ThemeProvider } from "./ThemeToggle";
 import { CartProvider } from "./components/CartContext";
 import Products from "./pages/Products";
 import AdminLogin from "./components/AdminLogin";
@@ -14,11 +14,13 @@ import AdminGuard from "./components/AdminGuard";
 import AdminSignup from "./components/AdminSignup";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import ProductPanel from "./pages/ProductPanel";
+import Profile from "./pages/Profile";
+import CookieConsent from "./components/CookieConsent";
 
 const App = () => {
   return (
     <AdminAuthProvider>
-      <DarkModeProvider>
+      <ThemeProvider>
         <CartProvider storagePreference="both">
           <Router>
             <Header />
@@ -26,6 +28,7 @@ const App = () => {
               {/* Public Routes */}
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/pp" element={<ProductPanel />} />
               <Route path="/products/:id" element={<ProductDetailPage />} />
               <Route path="/cart" element={<Cart />} />
@@ -52,9 +55,10 @@ const App = () => {
                 }
               />
             </Routes>
+            <CookieConsent />
           </Router>
         </CartProvider>
-      </DarkModeProvider>
+      </ThemeProvider>
     </AdminAuthProvider>
   );
 };

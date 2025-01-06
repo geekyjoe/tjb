@@ -1,24 +1,21 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import {
-  MenuOutlined,
-  CloseOutlined,
-  ProductOutlined,
-  ShoppingCartOutlined,
-} from "@ant-design/icons";
-import { DarkModeToggle } from "../DarkModeToggle";
+import { ProductOutlined, ShoppingCartOutlined } from "@ant-design/icons";
+import { ThemeToggle } from "../ThemeToggle";
 import ProfileDropdown from "./ProfileDropdown";
 import { useAdminAuth } from "../context/AdminAuthContext";
-import { MdShoppingBag } from "react-icons/md";
+import { MdOutlineShoppingBag } from "react-icons/md";
 import { useCart } from "./CartContext";
-import { MenuSquare, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import SearchBar from "./SearchBar";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "../components/ui/popover";
+import { TbMenu } from "react-icons/tb";
 import MobileMenu from "./MobileMenu";
+import AuthButton from "../auth/LoginButton";
 
 const Header = () => {
   const { totalItems } = useCart();
@@ -147,14 +144,15 @@ const Header = () => {
         </h2>
       </a>
 
+      <div className="hidden md:flex items-center space-x-1">
+        <SearchBar />
+        <NavLinks />
+      </div>
       <nav className="hidden md:flex items-center">
-        <div className="md:flex items-center space-x-1">
-          <SearchBar />
-          <NavLinks />
-        </div>
+        <AuthButton />
         {!isAdmin && (
           <div className="inline-flex space-x-2 mr-2">
-            <DarkModeToggle />
+            <ThemeToggle />
           </div>
         )}
       </nav>
@@ -163,25 +161,16 @@ const Header = () => {
         className="md:hidden flex justify-between items-center relative"
         ref={mobileMenuRef}
       >
-        <div className="flex gap-1 items-center">
+        <div className="flex items-center">
           <button
             onClick={toggleMobileMenu}
-            className="relative h-8 w-8 rounded-md focus:outline-none"
+            className="p-1 rounded-md focus:outline-none"
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
-            <span className="sr-only">
-              {isMobileMenuOpen ? "Close menu" : "Open menu"}
-            </span>
-
-            <span
-              className={`absolute inset-0 flex items-center justify-center transition-all duration-200 ${
-                isMobileMenuOpen
-                  ? "rotate-45 opacity-0 scale-0"
-                  : "rotate-0 opacity-100 scale-100"
-              }`}
-            >
-              <MenuSquare className="text-neutral-700 dark:text-neutral-200" />
-            </span>
+            <TbMenu
+              size={24}
+              className="text-neutral-700 dark:text-neutral-200"
+            />
           </button>
           <a
             href="/"
@@ -200,7 +189,7 @@ const Header = () => {
             to="..\cart"
             className="relative md:hidden hover:bg-cornsilk-hover p-2 rounded-full"
           >
-            <MdShoppingBag size={23} />
+            <MdOutlineShoppingBag size={23} />
             {totalItems > 0 && (
               <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
                 {totalItems}

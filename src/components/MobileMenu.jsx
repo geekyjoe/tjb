@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { ProductOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { X } from "lucide-react";
-import { DarkModeToggle } from "../DarkModeToggle";
+import { ThemeToggle } from "../ThemeToggle";
 import ProfileDropdown from "./ProfileDropdown";
+import HeaderProfile from "../context/HeaderProfile";
+import AuthButton from "../auth/LoginButton";
 
 const MobileMenu = ({ isOpen, onClose, isAdmin, logoutAdmin }) => {
   const [showOverlay, setShowOverlay] = useState(false);
@@ -113,8 +115,9 @@ const MobileMenu = ({ isOpen, onClose, isAdmin, logoutAdmin }) => {
 
           {/* Footer */}
           <div className="px-6 py-4 border-t border-neutral-200 dark:border-neutral-700">
-            <div className="flex items-center justify-end">
-              <DarkModeToggle />
+            <div className="flex items-center justify-between">
+              <AuthButton />
+              <ThemeToggle />
             </div>
           </div>
         </div>
