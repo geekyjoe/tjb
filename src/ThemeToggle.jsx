@@ -84,11 +84,11 @@ export const ThemeToggle = ({ className }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="rounded-full ml-2 focus:outline-none focus-visible:ring-0 bg-transparent dark:bg-transparent border-none shadow-none" size="icon">
+        <Button variant="outline" className="rounded-full ml-2 focus:outline-none focus-visible:ring-0 bg-transparent dark:bg-transparent border-none shadow-none dark:hover:bg-neutral-700" size="icon">
           <ThemeIcon />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" hideWhenDetached="true">
         <DropdownMenuItem
           className={`${
             theme === "light"

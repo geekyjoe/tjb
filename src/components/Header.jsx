@@ -164,7 +164,7 @@ const Header = () => {
         <div className="flex items-center">
           <button
             onClick={toggleMobileMenu}
-            className="p-1 rounded-md focus:outline-none"
+            className="p-1.5 rounded-full focus:outline-none dark:hover:bg-neutral-700"
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
             <TbMenu
@@ -187,7 +187,7 @@ const Header = () => {
 
           <Link
             to="..\cart"
-            className="relative md:hidden hover:bg-cornsilk-hover p-2 rounded-full"
+            className="relative md:hidden hover:bg-cornsilk-hover dark:hover:bg-zinc-600 p-2 rounded-full"
           >
             <MdOutlineShoppingBag size={23} />
             {totalItems > 0 && (

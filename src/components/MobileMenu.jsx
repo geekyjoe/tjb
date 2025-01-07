@@ -50,7 +50,7 @@ const MobileMenu = ({ isOpen, onClose, isAdmin, logoutAdmin }) => {
       {/* Overlay */}
       {showOverlay && (
         <div
-          className={`fixed inset-0 bg-black/50 z-40 md:hidden transition-opacity duration-300 ease-in-out
+          className={`fixed inset-0 bg-black/25 z-40 md:hidden transition-opacity duration-300 ease-in-out
             ${overlayOpacity ? "opacity-100" : "opacity-0"}`}
           onClick={onClose}
         />

@@ -42,7 +42,7 @@ const HeaderProfile = () => {
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end">
+        <DropdownMenuContent className="w-56 ml-5 md:m-0" align="end" hideWhenDetached="true">
           <div className="flex items-center justify-start gap-2 p-2">
             <div className="flex flex-col space-y-1">
               <p className="text-sm font-medium">{user?.name}</p>
@@ -50,16 +50,16 @@ const HeaderProfile = () => {
             </div>
           </div>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => navigate('/profile')}>
+          <DropdownMenuItem className="duration-75" onClick={() => navigate('/profile')}>
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate('#')}>
+          <DropdownMenuItem className="duration-75" onClick={() => navigate('#')}>
             <Package className="mr-2 h-4 w-4" />
             <span>Orders</span>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout}>
+          <DropdownMenuItem className="duration-75" onClick={handleLogout}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
           </DropdownMenuItem>

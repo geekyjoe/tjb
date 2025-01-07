@@ -114,14 +114,14 @@ const CookieConsent = () => {
           <CardContent className="p-6">
             {!showDetails ? (
               <div className="space-y-4">
-                <div className="flex items-start gap-4 justify-between">
+                <div className="flex flex-col md:flex-row gap-4 justify-between">
                   <div className="space-y-2">
                     <h3 className="font-semibold text-lg">We value your privacy</h3>
                     <p className="text-sm text-muted-foreground">
                       We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex items-center justify-end gap-2">
                     <Button 
                       variant="ghost" 
                       onClick={() => setShowDetails(true)}
@@ -187,15 +187,15 @@ const CookieSettings = ({ preferences, setPreferences }) => {
     <div className="space-y-4">
       <div>
         <h3 className="font-semibold text-lg">Cookie Settings</h3>
-        <p className="text-sm text-muted-foreground">Manage your cookie preferences</p>
+        <p className="text-xs md:text-sm text-muted-foreground">Manage your cookie preferences</p>
       </div>
       
       <div className="space-y-4">
         {Object.entries(cookieTypes).map(([key, { title, description }]) => (
           <div key={key} className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <p className="font-medium">{title}</p>
-              <p className="flex items-center text-sm text-muted-foreground">{description} {key === 'essential' && <span className='flex items-center ml-2 text-yellow-500'>Cannot be disabled. <IoWarning className='ml-1 text-amber-500'/></span>}</p>
+              <p className="font-medium text-sm">{title}</p>
+              <p className="flex items-center text-xs md:text-sm text-muted-foreground">{description} {key === 'essential' && <span className='flex items-center ml-2 text-yellow-500'>Cannot be disabled. <IoWarning className='ml-1 text-amber-500'/></span>}</p>
             </div>
             <Switch
               checked={preferences[key]}

@@ -115,12 +115,6 @@ const Profile = () => {
     });
   };
 
-  const toggleTheme = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    showToast("Theme Updated", `Theme switched to ${newTheme} mode`, "success");
-  };
-
   const handleFieldEdit = (field, value) => {
     setTempProfile((prev) => ({ ...prev, [field]: value }));
   };
@@ -236,8 +230,8 @@ const Profile = () => {
   }
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
-      <div className="pb-5 flex items-center gap-2 space-x-2 border-b">
+    <div className="mx-auto space-y-8">
+      <div className="pb-5 p-6 flex items-center gap-2 space-x-2 border-b">
         <img
           src={user.picture}
           alt={user.name}
@@ -245,7 +239,7 @@ const Profile = () => {
         />
         <h2 className="text-xl font-bold mt-2">Hi!! {user.name}</h2>
       </div>
-      <Toaster />
+      <Toaster richColors/>
       <Card className="border-none dark:bg-transparent">
         <CardHeader>
           <CardTitle>Profile Settings</CardTitle>
