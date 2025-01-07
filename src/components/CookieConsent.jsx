@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Switch } from '../components/ui/switch';
+import { IoWarning } from 'react-icons/io5';
 
 const COOKIE_NAME = 'cookiePreferences';
 const COOKIE_EXPIRY_DAYS = 365;
@@ -109,7 +110,7 @@ const CookieConsent = () => {
   return (
     <div className="fixed inset-x-0 bottom-0 p-4 animate-in slide-in-from-bottom duration-300">
       <div className="max-w-2xl mx-auto">
-        <Card className="rounded-xl bg-white shadow-lg border">
+        <Card className="rounded-xl bg-zinc-100 dark:bg-zinc-800 shadow-lg border">
           <CardContent className="p-6">
             {!showDetails ? (
               <div className="space-y-4">
@@ -122,7 +123,7 @@ const CookieConsent = () => {
                   </div>
                   <div className="flex gap-2">
                     <Button 
-                      variant="outline" 
+                      variant="ghost" 
                       onClick={() => setShowDetails(true)}
                       className="whitespace-nowrap"
                     >
@@ -145,12 +146,11 @@ const CookieConsent = () => {
                 />
                 <div className="flex justify-end gap-2 mt-6">
                   <Button 
-                    variant="outline" 
                     onClick={() => setShowDetails(false)}
                   >
                     Back
                   </Button>
-                  <Button onClick={handleSavePreferences}>
+                  <Button variant="ghost" onClick={handleSavePreferences}>
                     Save Preferences
                   </Button>
                 </div>
@@ -167,7 +167,7 @@ const CookieSettings = ({ preferences, setPreferences }) => {
   const cookieTypes = {
     essential: {
       title: "Essential Cookies",
-      description: "Required for the website to function properly. Cannot be disabled."
+      description: "Required for the website to function properly."
     },
     performance: {
       title: "Performance Cookies",
@@ -195,7 +195,7 @@ const CookieSettings = ({ preferences, setPreferences }) => {
           <div key={key} className="flex items-start justify-between gap-4">
             <div className="space-y-1">
               <p className="font-medium">{title}</p>
-              <p className="text-sm text-muted-foreground">{description}</p>
+              <p className="flex items-center text-sm text-muted-foreground">{description} {key === 'essential' && <span className='flex items-center ml-2 text-yellow-500'>Cannot be disabled. <IoWarning className='ml-1 text-amber-500'/></span>}</p>
             </div>
             <Switch
               checked={preferences[key]}
@@ -203,7 +203,11 @@ const CookieSettings = ({ preferences, setPreferences }) => {
               onCheckedChange={(checked) => 
                 setPreferences(prev => ({ ...prev, [key]: checked }))
               }
-              className="mt-1"
+              className={`mt-1 ${
+                key === 'essential' 
+                  ? 'opacity-50 cursor-not-allowed data-[state=checked]:bg-black' 
+                  : 'data-[state=checked]:bg-yellow-300'
+              }`}
             />
           </div>
         ))}
