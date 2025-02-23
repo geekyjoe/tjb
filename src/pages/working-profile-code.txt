@@ -1,7 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
+import {
+  getAuth,
+  onAuthStateChanged,
+  updateEmail,
+  updatePassword,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+} from "firebase/auth";
+import { getDatabase, ref as dbRef, update, get } from "firebase/database";
+import {
+  getStorage,
+  ref as storageRef,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
 import {
   Bell,
   Moon,
@@ -45,18 +58,26 @@ import {
 } from "../components/ui/dropdown-menu";
 
 const Profile = () => {
-  const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [uploading, setUploading] = useState(false);
+  const [avatarFile, setAvatarFile] = useState(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const auth = getAuth();
 
   const [editingField, setEditingField] = useState(null);
   const [userProfile, setUserProfile] = useState({
     name: "",
     email: "",
     phone: "",
+    avatarUrl: "",
+    userId: "",
   });
   const [tempProfile, setTempProfile] = useState({ ...userProfile });
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  
   const [notifications, setNotifications] = useState({
     communication: true,
     marketing: false,
@@ -68,32 +89,6 @@ const Profile = () => {
     analytics: false,
     marketing: false,
   });
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        setUserProfile({
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
-          phone: currentUser.phoneNumber || "",
-        });
-        setTempProfile({
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
-          phone: currentUser.phoneNumber || "",
-        });
-        // Load cookie preferences
-        const savedPreferences = getCookie("cookiePreferences");
-        if (savedPreferences) {
-          setCookiePreferences(savedPreferences);
-        }
-      }
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const getCookie = (name) => {
     try {
@@ -126,16 +121,161 @@ const Profile = () => {
     setTempProfile((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleFieldSave = (field) => {
-    setUserProfile((prev) => ({ ...prev, [field]: tempProfile[field] }));
-    setEditingField(null);
-    showToast(
-      "Profile Updated",
-      `Your ${field} has been updated successfully`,
-      "success"
+  const uploadAvatar = async (userId) => {
+    if (!avatarFile) return null;
+
+    const storage = getStorage();
+    const avatarRef = storageRef(
+      storage,
+      `avatars/${userId}/${avatarFile.name}`
     );
+    await uploadBytes(avatarRef, avatarFile);
+    return getDownloadURL(avatarRef);
   };
 
+  const refreshUserData = async (userId) => {
+    try {
+      const database = getDatabase();
+      const userRef = dbRef(database, `users/${userId}`);
+      const snapshot = await get(userRef);
+      
+      if (snapshot.exists()) {
+        const userData = snapshot.val();
+        return userData;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      showToast(
+        "Error",
+        "Failed to fetch user data",
+        "error"
+      );
+      return null;
+    }
+  };
+
+  const initializeUserProfile = async (authUser) => {
+    if (!authUser) return;
+
+    try {
+      // Get additional user data from database
+      const userData = await refreshUserData(authUser.uid);
+      
+      // Combine auth user data with database data
+      const combinedProfile = {
+        userId: authUser.uid,
+        name: userData?.name || authUser.displayName || "",
+        email: authUser.email || "",
+        phone: userData?.phone || authUser.phoneNumber || "",
+        avatarUrl: userData?.avatarUrl || authUser.photoURL || "",
+        role: userData?.role || "user",
+      };
+
+      setUserProfile(combinedProfile);
+      setTempProfile(combinedProfile);
+      setCurrentUser(authUser);
+    } catch (error) {
+      console.error("Error initializing user profile:", error);
+      showToast(
+        "Error",
+        "Failed to initialize user profile",
+        "error"
+      );
+    }
+  };
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
+      if (authUser) {
+        await initializeUserProfile(authUser);
+      } else {
+        setCurrentUser(null);
+        setUserProfile({
+          name: "",
+          email: "",
+          phone: "",
+          avatarUrl: "",
+          userId: "",
+        });
+      }
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, [auth]);
+
+  const handleFieldSave = async (field) => {
+    try {
+      if (!currentUser) {
+        throw new Error("No authenticated user found");
+      }
+
+      const database = getDatabase();
+      let updates = {};
+
+      // Handle email update
+      if (field === "email" && tempProfile.email !== currentUser.email) {
+        if (!currentPassword) {
+          throw new Error("Current password required to update email");
+        }
+        const credential = EmailAuthProvider.credential(
+          currentUser.email,
+          currentPassword
+        );
+        await reauthenticateWithCredential(currentUser, credential);
+        await updateEmail(currentUser, tempProfile.email);
+      }
+
+      // Handle password update
+      if (field === "password" && newPassword) {
+        if (!currentPassword) {
+          throw new Error("Current password required to update password");
+        }
+        const credential = EmailAuthProvider.credential(
+          currentUser.email,
+          currentPassword
+        );
+        await reauthenticateWithCredential(currentUser, credential);
+        await updatePassword(currentUser, newPassword);
+      }
+
+      // Handle avatar update
+      if (field === "avatar" && avatarFile) {
+        const avatarUrl = await uploadAvatar(currentUser.uid);
+        if (avatarUrl) {
+          updates.avatarUrl = avatarUrl;
+        }
+      }
+
+      // Update the specific field
+      updates[field] = tempProfile[field];
+      updates.updatedAt = new Date().toISOString();
+
+      // Update database
+      await update(dbRef(database, `users/${currentUser.uid}`), updates);
+
+      // Refresh user data
+      const userData = await refreshUserData(currentUser.uid);
+      if (userData) {
+        await initializeUserProfile(currentUser);
+      }
+
+      setEditingField(null);
+      showToast(
+        "Profile Updated",
+        `Your ${field} has been updated successfully`,
+        "success"
+      );
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      showToast(
+        "Update Failed",
+        error.message,
+        "error"
+      );
+    }
+  };
   const handleCookieChange = (key, value) => {
     const newPreferences = { ...cookiePreferences, [key]: value };
     setCookiePreferences(newPreferences);
@@ -224,7 +364,7 @@ const Profile = () => {
     );
   }
 
-  if (!user) {
+  if (!currentUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
@@ -244,11 +384,11 @@ const Profile = () => {
     <div className="mx-auto space-y-8">
       <div className="pb-5 p-6 flex items-center gap-2 space-x-2 border-b">
         <img
-          src={user.photoURL || `https://ui-avatars.com/api/?name=${user.firstName || 'User'}`}
-          alt={user.firstName || 'User'}
+          src={userProfile.avatarUrl || `https://ui-avatars.com/api/?name=${userProfile.name || 'User'}`}
+          alt={userProfile.name || 'User'}
           className="rounded-full w-12 h-12"
         />
-        <h2 className="text-xl font-bold mt-2">Hi!! {user.displayName || 'User'}</h2>
+        <h2 className="text-xl font-bold mt-2">Hi, {userProfile.name || 'User'}!</h2>
       </div>
       <Toaster richColors/>
       <Card className="border-none dark:bg-transparent">
@@ -266,7 +406,7 @@ const Profile = () => {
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="cookies">Cookies</TabsTrigger>
             </TabsList>
-
+  
             <TabsContent value="profile" className="space-y-4">
               <div className="space-y-4">
                 {Object.entries({
@@ -326,11 +466,11 @@ const Profile = () => {
                 </div>
               </div>
             </TabsContent>
-
+  
             <TabsContent value="appearance">
               <ThemeSelector />
             </TabsContent>
-
+  
             <TabsContent value="notifications" className="space-y-4">
               {Object.entries({
                 communication: "Communication Emails",
@@ -358,7 +498,7 @@ const Profile = () => {
                 </div>
               ))}
             </TabsContent>
-
+  
             <TabsContent value="cookies" className="space-y-4">
               {Object.entries({
                 essential: "Essential Cookies",

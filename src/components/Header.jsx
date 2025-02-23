@@ -2,11 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { ProductOutlined, ShoppingCartOutlined } from "@ant-design/icons";
 import { ThemeToggle } from "../ThemeToggle";
-import ProfileDropdown from "./ProfileDropdown";
-import { useAdminAuth } from "../context/AdminAuthContext";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { useCart } from "./CartContext";
-import { Search, X } from "lucide-react";
+import { LogIn, Search, X } from "lucide-react";
 import SearchBar from "./SearchBar";
 import {
   Popover,
@@ -15,13 +13,13 @@ import {
 } from "../components/ui/popover";
 import { TbMenu } from "react-icons/tb";
 import MobileMenu from "./MobileMenu";
-import AuthButton from "../auth/LoginButton";
+import {UserAuthButton} from "../form/Login";
+import Tooltip from "./ui/Tooltip";
 
 const Header = () => {
   const { totalItems } = useCart();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const { isAdmin, logoutAdmin } = useAdminAuth();
   const mobileMenuRef = useRef(null);
 
   useEffect(() => {
@@ -101,30 +99,6 @@ const Header = () => {
         />
         Cart
       </NavLink>
-      {isAdmin && (
-        <div
-          className={`${
-            isMobile
-              ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700"
-              : "inline-flex space-x-2"
-          }`}
-        >
-          <ProfileDropdown />
-          <button
-            onClick={
-              isMobile
-                ? () => {
-                    logoutAdmin();
-                    toggleMobileMenu();
-                  }
-                : logoutAdmin
-            }
-            className="text-red-500"
-          >
-            Logout
-          </button>
-        </div>
-      )}
       {isMobile && (
         <div className="block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700">
           <DarkModeToggle />
@@ -148,14 +122,16 @@ const Header = () => {
         <SearchBar />
         <NavLinks />
       </div>
-      <nav className="hidden md:flex items-center">
-        <AuthButton />
-        {!isAdmin && (
-          <div className="inline-flex space-x-2 mr-2">
+      <div className="hidden md:flex items-center">
+        <div className="hover:bg-cornsilk-hover rounded-full">
+          <Tooltip content="Toggle Theme">
             <ThemeToggle />
-          </div>
-        )}
-      </nav>
+          </Tooltip>
+        </div>
+        <div className="inline-flex mr-2">
+        <UserAuthButton />
+        </div>
+      </div>
 
       <div
         className="md:hidden flex justify-between items-center relative"
@@ -200,8 +176,6 @@ const Header = () => {
         <MobileMenu
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
-          isAdmin={isAdmin}
-          logoutAdmin={logoutAdmin}
         />
       </div>
     </header>
