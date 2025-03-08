@@ -40,6 +40,8 @@ import {
   signInWithGoogle,
   signInWithGithub,
 } from "../services/auth-service";
+import { ThemeToggle } from "../ThemeToggle";
+import Footer from "../components/Footer";
 
 export const UserAuthButton = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -302,8 +304,8 @@ const UserLogin = () => {
   };
 
   return (
-    <div className="">
-      <header className="max-sm:sticky max-sm:top-0 max-sm:inset-x-0 z-10 md:flex md:justify-between md:items-center font-inter w-full bg-cornsilk dark:bg-zinc-800">
+    <div className="h-5/6 bg-cornsilk dark:bg-zinc-800">
+      <header className="z-10 flex justify-between items-center font-inter w-full bg-cornsilk dark:bg-zinc-800">
         <a
           href="/"
           className="py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
@@ -312,10 +314,11 @@ const UserLogin = () => {
             The Jeweller Bee Store
           </h2>
         </a>
+        <ThemeToggle />
       </header>
-      <div className="flex items-center justify-center min-h-100 bg-cornsilk dark:bg-gray-900">
+      <div className="flex items-center justify-center h-5/6 bg-cornsilk dark:bg-zinc-800">
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
-          <AlertDialogContent>
+          <AlertDialogContent className="sm:w-full w-fit max-w-lg dark:bg-neutral-800 rounded-lg">
             <AlertDialogHeader>
               <AlertDialogTitle
                 className={
@@ -336,7 +339,7 @@ const UserLogin = () => {
           </AlertDialogContent>
         </AlertDialog>
 
-        <Card className="w-full max-w-md bg-white shadow-md rounded-xl absolute top-10">
+        <Card className="w-full max-w-md bg-white dark:bg-zinc-900 shadow-md rounded-xl border dark:border-neutral-700 dark:hover:border-neutral-700">
           <CardHeader>
             <CardTitle>Welcome Back</CardTitle>
             <CardDescription>
@@ -348,7 +351,7 @@ const UserLogin = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full dark:bg-zinc-800"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
               >
@@ -358,7 +361,7 @@ const UserLogin = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full"
+                className="w-full dark:bg-zinc-800"
                 onClick={handleGithubLogin}
                 disabled={isLoading}
               >
@@ -372,7 +375,7 @@ const UserLogin = () => {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white px-2 text-muted-foreground">
+                <span className="bg-white dark:bg-zinc-900 px-2 text-muted-foreground">
                   Or continue with
                 </span>
               </div>
@@ -383,6 +386,7 @@ const UserLogin = () => {
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
+                    className="border dark:border-neutral-700"
                     id="email"
                     type="email"
                     placeholder="Enter your email"
@@ -395,6 +399,7 @@ const UserLogin = () => {
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Input
+                      className="border dark:border-neutral-700"
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
@@ -431,7 +436,7 @@ const UserLogin = () => {
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-2">
-            <p className="text-sm text-center text-gray-500">
+            <p className="text-sm text-center text-zinc-300">
               Don't have an account?{" "}
               <Button
                 variant="link"
@@ -444,6 +449,7 @@ const UserLogin = () => {
           </CardFooter>
         </Card>
       </div>
+      <Footer />
     </div>
   );
 };

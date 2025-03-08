@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { lazy, useState, useEffect, Suspense } from "react";
 import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth, database } from "../firebase";
@@ -47,6 +47,7 @@ import {
 } from "../components/ui/dropdown-menu";
 import { getUserRole, updateUserRole } from "../services/auth-service";
 
+const UserManagement = lazy(() => import("../services/UM"));
 const Profile = () => {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState("user");
@@ -74,6 +75,7 @@ const Profile = () => {
     analytics: false,
     marketing: false,
   });
+  const [showUserManagement, setShowUserManagement] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -523,11 +525,17 @@ const Profile = () => {
                 <div className="space-y-4 mt-4">
                   <Button
                     variant="outline"
-                    onClick={() => navigate("/adminpanel")}
+                    onClick={() => setShowUserManagement(!showUserManagement)}
                   >
-                    Manage Users
+                    <Shield className="w-4 h-4 mr-2" />
+                    {showUserManagement ? "Hide Users" : "Manage Users"}
                   </Button>
                 </div>
+                {showUserManagement && (
+                  <Suspense fallback={<p>Loading...</p>}>
+                    <UserManagement />
+                  </Suspense>
+                )}
               </TabsContent>
             )}
           </Tabs>
