@@ -1,6 +1,84 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-s: 320px;
+  --breakpoint-m: 375px;
+  --breakpoint-l: 425px;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1284px;
+
+  --animate-loader: animloader 1s linear infinite alternate;
+  --animate-scale-iT: sit 200ms cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+
+  --font-host: Host Grotesk, sans-serif;
+  --font-inter: Inter, sans-serif;
+  --font-jost: Jost, sans-serif;
+  --font-karla: Karla, sans-serif;
+  --font-libre-franklin: Libre Franklin, sans-serif;
+  --font-o-sans: Open Sans, sans-serif;
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  --color-cornsilk-hover: #fff6cc;
+  --color-cornsilk: #fefae0;
+  --color-cornsilk-dark: #bb4d00;
+  --color-cornsilk-dhover: #bb4d00;
+
+  @keyframes animloader {
+    0% {
+      border-color: #bda0de rgba(255, 255, 255, 0) rgba(255, 255, 255, 0)
+        rgba(255, 255, 255, 0);
+    }
+    33% {
+      border-color: #867fea #bda0de rgba(255, 255, 255, 0)
+        rgba(255, 255, 255, 0);
+    }
+    66% {
+      border-color: #867fea #bda0de #867fea rgba(255, 255, 255, 0);
+    }
+    100% {
+      border-color: #867fea #bda0de #867fea #bda0de;
+    }
+  }
+  @keyframes sit {
+    0% {
+      transform: scale(0);
+      transform-origin: 10% 10%;
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+      transform-origin: 10% 10%;
+      opacity: 1;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+}
+
 @layer base {
   :root {
     --radius: 0.5rem

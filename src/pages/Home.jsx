@@ -130,7 +130,7 @@ const Home = () => {
             ].map((feature, index) => (
               <div
                 key={index}
-                className="text-center p-6 bg-white dark:bg-neutral-700 rounded-xl shadow hover:shadow-md"
+                className="text-center p-6 bg-white dark:bg-neutral-700 rounded-xl shadow-sm hover:shadow-md"
               >
                 <div className="mb-4 flex justify-center">{feature.icon}</div>
                 <h3 className="text-xl font-semibold mb-3 dark:text-white">
@@ -155,7 +155,7 @@ const Home = () => {
           collections, exclusive offers, and special events.
         </p>
         <div className="max-w-md mx-auto">
-          <div className="flex rounded-full shadow">
+          <div className="flex rounded-full shadow-sm">
             <input
               id="emailInput"
               type="email"

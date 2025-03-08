@@ -21,7 +21,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => (
       alt={item.title}
       className="w-24 h-24 object-cover rounded-md"
     />
-    <div className="flex-grow">
+    <div className="grow">
       <h4 className="text-lg font-semibold">{item.title}</h4>
       <p className="text-gray-600 dark:text-gray-300">
         ${item.price.toFixed(2)} each

@@ -38,17 +38,17 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
   if (viewMode === "list") {
     return (
       <div 
-        className="flex gap-4 border dark:border-neutral-600 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 p-4 rounded-lg hover:shadow cursor-pointer"
+        className="flex gap-4 border dark:border-neutral-600 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 p-4 rounded-lg hover:shadow-sm cursor-pointer"
         onClick={handleProductClick}
       >
-        <div className="s:w-16 s:h-16 m:w-24 m:h-24 flex-shrink-0">
+        <div className="s:w-16 s:h-16 m:w-24 m:h-24 shrink-0">
           <img
             src={product.thumbnail}
             alt={product.title}
             className="w-full h-full object-cover rounded-md"
           />
         </div>
-        <div className="flex flex-col flex-grow">
+        <div className="flex flex-col grow">
           <div>
             <h3 className="min-xl:text-xl l:text-sm s:text-xs font-semibold text-gray-800 dark:text-gray-100">
               {product.title}
@@ -95,7 +95,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
       onClick={handleProductClick}
     >
       <CardHeader className="p-0 border rounded-t-md">
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <img
             src={product.thumbnail}
             alt={product.title}

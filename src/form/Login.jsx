@@ -304,8 +304,8 @@ const UserLogin = () => {
   };
 
   return (
-    <div className="h-5/6 bg-cornsilk dark:bg-zinc-800">
-      <header className="z-10 flex justify-between items-center font-inter w-full bg-cornsilk dark:bg-zinc-800">
+    <div className="md:min-h-dvh bg-cornsilk dark:bg-zinc-900">
+      <header className="z-10 flex justify-between items-center font-inter w-full p-2">
         <a
           href="/"
           className="py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
@@ -316,7 +316,7 @@ const UserLogin = () => {
         </a>
         <ThemeToggle />
       </header>
-      <div className="flex items-center justify-center h-5/6 bg-cornsilk dark:bg-zinc-800">
+      <div className="py-5 flex items-center justify-center">
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
           <AlertDialogContent className="sm:w-full w-fit max-w-lg dark:bg-neutral-800 rounded-lg">
             <AlertDialogHeader>
@@ -339,9 +339,9 @@ const UserLogin = () => {
           </AlertDialogContent>
         </AlertDialog>
 
-        <Card className="w-full max-w-md bg-white dark:bg-zinc-900 shadow-md rounded-xl border dark:border-neutral-700 dark:hover:border-neutral-700">
+        <Card className="w-full max-w-md bg-white dark:bg-zinc-800 shadow-md rounded-xl border dark:border-neutral-700 dark:hover:border-neutral-700">
           <CardHeader>
-            <CardTitle>Welcome Back</CardTitle>
+            <CardTitle className="leading-6">Welcome Back</CardTitle>
             <CardDescription>
               Enter your credentials to access your account
             </CardDescription>
@@ -351,7 +351,7 @@ const UserLogin = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full dark:bg-zinc-800"
+                className="w-full"
                 onClick={handleGoogleLogin}
                 disabled={isLoading}
               >
@@ -361,7 +361,7 @@ const UserLogin = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full dark:bg-zinc-800"
+                className="w-full"
                 onClick={handleGithubLogin}
                 disabled={isLoading}
               >
@@ -375,7 +375,7 @@ const UserLogin = () => {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-zinc-900 px-2 text-muted-foreground">
+                <span className="bg-white dark:bg-zinc-800 px-2 text-muted-foreground">
                   Or continue with
                 </span>
               </div>
@@ -383,10 +383,9 @@ const UserLogin = () => {
 
             <form onSubmit={handleEmailLogin}>
               <div className="space-y-4">
-                <div className="space-y-2">
+                <div className="flex flex-col space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
-                    className="border dark:border-neutral-700"
                     id="email"
                     type="email"
                     placeholder="Enter your email"
@@ -395,11 +394,10 @@ const UserLogin = () => {
                     required
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="flex flex-col space-y-2">
                   <Label htmlFor="password">Password</Label>
                   <div className="relative">
                     <Input
-                      className="border dark:border-neutral-700"
                       id="password"
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
@@ -436,7 +434,7 @@ const UserLogin = () => {
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-2">
-            <p className="text-sm text-center text-zinc-300">
+            <p className="text-sm text-center text-zinc-700 dark:text-zinc-300">
               Don't have an account?{" "}
               <Button
                 variant="link"

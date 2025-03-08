@@ -71,7 +71,7 @@ const Header = () => {
           `${linkBaseStyle} ${isActive ? activeLinkStyle : ""} ${
             isMobile
               ? "block px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
-              : "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-none focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
+              : "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-hidden focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
           }`
         }
         onClick={isMobile ? toggleMobileMenu : undefined}
@@ -88,7 +88,7 @@ const Header = () => {
           `${linkBaseStyle} ${isActive ? activeLinkStyle : ""} ${
             isMobile
               ? "hidden px-4 py-2 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center justify-between"
-              : "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-none focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
+              : "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-hidden focus:underline focus:decoration-solid focus:underline-offset-4 text-neutral-600 dark:text-neutral-300 dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
           }`
         }
         onClick={isMobile ? toggleMobileMenu : undefined}
@@ -111,7 +111,7 @@ const Header = () => {
     <header className="max-sm:sticky max-sm:top-0 max-sm:inset-x-0 z-10 border-b-2 dark:border-stone-500 max-md:py-1 max-md:px-2 max-md:pr-3 md:flex md:justify-between md:items-center font-inter w-full bg-cornsilk dark:bg-zinc-800 relative">
       <a
         href="/"
-        className="hidden md:block py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
+        className="hidden md:block py-1 focus:outline-hidden font-karla font-bold dark:text-neutral-100"
       >
         <h2 className="max-xl:text-xl max-md:text-sm p-2 pl-4">
           The Jeweller Bee Store
@@ -140,7 +140,7 @@ const Header = () => {
         <div className="flex items-center">
           <button
             onClick={toggleMobileMenu}
-            className="p-1.5 rounded-full focus:outline-none dark:hover:bg-neutral-700"
+            className="p-1.5 rounded-full focus:outline-hidden dark:hover:bg-neutral-700"
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
             <TbMenu
@@ -150,7 +150,7 @@ const Header = () => {
           </button>
           <a
             href="/"
-            className="py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
+            className="py-1 focus:outline-hidden font-karla font-bold dark:text-neutral-100"
           >
             <h2 className="max-xl:text-xl max-md:text-sm p-2">
               The Jeweller Bee Store

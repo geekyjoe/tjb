@@ -193,7 +193,7 @@ const ProductDetailPage = () => {
                 src={product.images[selectedImage]}
                 alt={product.title}
                 className={`w-full h-full object-contain transition-transform duration-200 ${
-                  isZoomed ? "scale-[2]" : "scale-100"
+                  isZoomed ? "scale-2" : "scale-100"
                 }`}
                 style={
                   isZoomed

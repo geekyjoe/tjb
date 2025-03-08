@@ -71,7 +71,7 @@ const SearchBar = () => {
           onChange={handleInputChange}
           onFocus={() => setShowResults(true)}
           placeholder="Search..."
-          className="w-32 md:w-44 px-3 py-1.5 pl-8 text-sm rounded-md md:border border-neutral-300 dark:border-neutral-600 bg-cornsilk dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-none focus:ring-1 focus:ring-neutral-500"
+          className="w-32 md:w-44 px-3 py-1.5 pl-8 text-sm rounded-md md:border border-neutral-300 dark:border-neutral-600 bg-cornsilk dark:bg-neutral-800 text-neutral-900 dark:text-neutral-100 focus:outline-hidden focus:ring-1 focus:ring-neutral-500"
         />
         <Search className="absolute left-2 top-2 h-4 w-4 text-neutral-400" />
       </div>

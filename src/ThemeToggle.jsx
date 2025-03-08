@@ -84,7 +84,7 @@ export const ThemeToggle = ({ className }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="rounded-full focus:outline-none focus-visible:ring-0 bg-transparent dark:bg-transparent border-none shadow-none hover:bg-transparent dark:hover:bg-neutral-700" size="icon">
+        <Button variant="outline" className="rounded-full focus:outline-hidden focus-visible:ring-0 bg-transparent dark:bg-transparent border-none shadow-none hover:bg-transparent dark:hover:bg-neutral-700" size="icon">
           <ThemeIcon />
         </Button>
       </DropdownMenuTrigger>

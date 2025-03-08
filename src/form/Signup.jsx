@@ -165,7 +165,7 @@ const UserSignup = () => {
       <header className="z-10 flex justify-between items-center font-inter w-full p-2">
         <a
           href="/"
-          className="py-1 focus:outline-none font-karla font-bold dark:text-neutral-100"
+          className="py-1 focus:outline-hidden font-karla font-bold dark:text-neutral-100"
         >
           <h2 className="max-xl:text-xl max-md:text-sm p-2 pl-4">
             The Jeweller Bee Store
@@ -176,7 +176,7 @@ const UserSignup = () => {
         </div>
       </header>
       <div className="flex items-center justify-center min-h-100vh p-4">
-        <Card className="w-full max-w-md bg-white shadow-md rounded-xl dark:hover:border-neutral-600">
+        <Card className="w-full max-w-md bg-white dark:bg-zinc-800 shadow-md rounded-xl dark:hover:border-neutral-600">
           <CardHeader>
             <CardTitle>Create Account</CardTitle>
             <CardDescription>Sign up to start shopping</CardDescription>
@@ -222,7 +222,7 @@ const UserSignup = () => {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-zinc-700 px-2 text-muted-foreground">
+                <span className="bg-white dark:bg-zinc-800 px-2 text-muted-foreground">
                   Or continue with email
                 </span>
               </div>
@@ -231,7 +231,7 @@ const UserSignup = () => {
             <form onSubmit={handleEmailSignup} noValidate>
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                  <div className="flex flex-col space-y-2">
                     <Label
                       htmlFor="firstName"
                       className={errors.firstName ? "text-red-500" : ""}
@@ -254,7 +254,7 @@ const UserSignup = () => {
                       </p>
                     )}
                   </div>
-                  <div className="space-y-2">
+                  <div className="flex flex-col space-y-2">
                     <Label
                       htmlFor="lastName"
                       className={errors.lastName ? "text-red-500" : ""}
@@ -279,7 +279,7 @@ const UserSignup = () => {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-col space-y-2">
                   <Label
                     htmlFor="username"
                     className={errors.username ? "text-red-500" : ""}
@@ -303,7 +303,7 @@ const UserSignup = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-col space-y-2">
                   <Label
                     htmlFor="email"
                     className={errors.email ? "text-red-500" : ""}
@@ -327,7 +327,7 @@ const UserSignup = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-col space-y-2">
                   <Label
                     htmlFor="phoneNumber"
                     className={errors.phoneNumber ? "text-red-500" : ""}
@@ -351,7 +351,7 @@ const UserSignup = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-col space-y-2">
                   <Label
                     htmlFor="password"
                     className={errors.password ? "text-red-500" : ""}
@@ -400,7 +400,7 @@ const UserSignup = () => {
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="flex flex-col space-y-2">
                   <Label
                     htmlFor="confirmPassword"
                     className={errors.confirmPassword ? "text-red-500" : ""}
@@ -473,7 +473,7 @@ const UserSignup = () => {
             </form>
           </CardContent>
           <CardFooter className="flex flex-col space-y-2">
-            <p className="text-sm text-center text-gray-500">
+            <p className="text-sm text-center text-zinc-700 dark:text-zinc-300">
               Already have an account?{" "}
               <Button
                 variant="link"

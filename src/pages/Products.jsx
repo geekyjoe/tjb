@@ -244,7 +244,7 @@ const Products = () => {
       <div className="px-1 lg:px-2">
         <div className="flex gap-2">
           {/* Desktop Sidebar */}
-          <aside className="max-lg:hidden w-64 flex-shrink-0">
+          <aside className="max-lg:hidden w-64 shrink-0">
             <div className="bg-white dark:bg-neutral-700 p-4 rounded-lg border dark:border-neutral-600">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="font-semibold text-lg">Categories</h3>
@@ -264,7 +264,7 @@ const Products = () => {
                   {categories.map((category) => (
                     <div key={category} className="flex items-center space-x-2">
                       <Checkbox
-                        className="border-none ring ring-1 ring-zinc-300"
+                        className="border-none ring-3 ring-1 ring-zinc-300"
                         id={category}
                         checked={selectedCategories.has(category)}
                         onCheckedChange={() => handleCategoryChange(category)}
