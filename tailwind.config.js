@@ -77,5 +77,5 @@ export default {
       },
     },
   },
-  plugins: ["tailwind-scrollbar", "tailwindcss-animate"],
+  plugins: ["tailwindcss-animate"],
 };
