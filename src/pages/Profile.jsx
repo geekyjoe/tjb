@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../firebase';
+import { onAuthStateChanged } from "firebase/auth";
+import { auth, database } from "../firebase";
+import { ref, get, update } from "firebase/database";
 import {
   Bell,
   Moon,
@@ -16,6 +17,7 @@ import {
   Cookie,
   Check,
   Laptop,
+  Shield,
 } from "lucide-react";
 import {
   Card,
@@ -43,18 +45,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
+import { getUserRole, updateUserRole } from "../services/auth-service";
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState("user");
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
   const [editingField, setEditingField] = useState(null);
   const [userProfile, setUserProfile] = useState({
-    name: "",
+    firstName: "",
+    lastName: "",
     email: "",
-    phone: "",
+    phoneNumber: "",
+    username: "",
   });
   const [tempProfile, setTempProfile] = useState({ ...userProfile });
   const [notifications, setNotifications] = useState({
@@ -70,30 +76,91 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUserProfile({
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
-          phone: currentUser.phoneNumber || "",
-        });
-        setTempProfile({
-          name: currentUser.displayName || "",
-          email: currentUser.email || "",
-          phone: currentUser.phoneNumber || "",
-        });
-        // Load cookie preferences
-        const savedPreferences = getCookie("cookiePreferences");
-        if (savedPreferences) {
-          setCookiePreferences(savedPreferences);
+        setUser(currentUser);
+
+        try {
+          // Fetch the user data from the database directly
+          const userRef = ref(database, `users/${currentUser.uid}`);
+          const userSnapshot = await get(userRef);
+
+          if (userSnapshot.exists()) {
+            // Get the user data from the database
+            const userData = userSnapshot.val();
+
+            // Get user role
+            setUserRole(userData.role || "user");
+
+            // Set user profile data from database
+            setUserProfile({
+              firstName: userData.firstName || "",
+              lastName: userData.lastName || "",
+              email: userData.email || currentUser.email || "",
+              phoneNumber:
+                userData.phoneNumber || currentUser.phoneNumber || "",
+              username:
+                userData.username || currentUser.email?.split("@")[0] || "",
+            });
+
+            setTempProfile({
+              firstName: userData.firstName || "",
+              lastName: userData.lastName || "",
+              email: userData.email || currentUser.email || "",
+              phoneNumber:
+                userData.phoneNumber || currentUser.phoneNumber || "",
+              username:
+                userData.username || currentUser.email?.split("@")[0] || "",
+            });
+          } else {
+            // Fallback to auth user data if database record doesn't exist
+            const names = currentUser.displayName
+              ? currentUser.displayName.split(" ")
+              : ["", ""];
+            const firstName = names[0] || "";
+            const lastName = names.slice(1).join(" ") || "";
+
+            setUserProfile({
+              firstName,
+              lastName,
+              email: currentUser.email || "",
+              phoneNumber: currentUser.phoneNumber || "",
+              username: currentUser.email?.split("@")[0] || "",
+            });
+
+            setTempProfile({
+              firstName,
+              lastName,
+              email: currentUser.email || "",
+              phoneNumber: currentUser.phoneNumber || "",
+              username: currentUser.email?.split("@")[0] || "",
+            });
+
+            // Fetch role separately
+            const role = await getUserRole(currentUser.uid);
+            setUserRole(role || "user");
+          }
+
+          // Load cookie preferences
+          const savedPreferences = getCookie("cookiePreferences");
+          if (savedPreferences) {
+            setCookiePreferences(savedPreferences);
+          }
+        } catch (error) {
+          showToast(
+            "Error Loading Profile",
+            error.message || "Failed to load user profile data",
+            "destructive"
+          );
         }
+      } else {
+        navigate("/login");
       }
       setLoading(false);
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [navigate]);
 
   const getCookie = (name) => {
     try {
@@ -111,7 +178,9 @@ const Profile = () => {
   const setCookie = (name, value, days = 365) => {
     const date = new Date();
     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-    document.cookie = `${name}=${JSON.stringify(value)};expires=${date.toUTCString()};path=/;SameSite=Strict`;
+    document.cookie = `${name}=${JSON.stringify(
+      value
+    )};expires=${date.toUTCString()};path=/;SameSite=Strict`;
   };
 
   const showToast = (title, description, variant = "default") => {
@@ -126,14 +195,36 @@ const Profile = () => {
     setTempProfile((prev) => ({ ...prev, [field]: value }));
   };
 
-  const handleFieldSave = (field) => {
-    setUserProfile((prev) => ({ ...prev, [field]: tempProfile[field] }));
-    setEditingField(null);
-    showToast(
-      "Profile Updated",
-      `Your ${field} has been updated successfully`,
-      "success"
-    );
+  const handleFieldSave = async (field) => {
+    try {
+      // Update the user profile in Firebase
+      if (!user || !user.uid) {
+        throw new Error("User not authenticated");
+      }
+
+      const userRef = ref(database, `users/${user.uid}`);
+      const updateData = { [field]: tempProfile[field] };
+
+      // Update the field in Firebase Realtime Database
+      await update(userRef, updateData);
+
+      // Update the local state after successful database update
+      setUserProfile((prev) => ({ ...prev, [field]: tempProfile[field] }));
+      setEditingField(null);
+
+      showToast(
+        "Profile Updated",
+        `Your ${field} has been updated successfully`,
+        "success"
+      );
+    } catch (error) {
+      console.error("Error updating field:", error);
+      showToast(
+        "Update Failed",
+        error.message || `Failed to update ${field}`,
+        "destructive"
+      );
+    }
   };
 
   const handleCookieChange = (key, value) => {
@@ -142,7 +233,9 @@ const Profile = () => {
     setCookie("cookiePreferences", newPreferences);
     showToast(
       "Cookie Preferences Updated",
-      `${key.charAt(0).toUpperCase() + key.slice(1)} cookies ${value ? "enabled" : "disabled"}`,
+      `${key.charAt(0).toUpperCase() + key.slice(1)} cookies ${
+        value ? "enabled" : "disabled"
+      }`,
       value ? "success" : "default"
     );
   };
@@ -151,7 +244,9 @@ const Profile = () => {
     setNotifications((prev) => ({ ...prev, [key]: value }));
     showToast(
       "Notification Settings Updated",
-      `${key.charAt(0).toUpperCase() + key.slice(1)} notifications ${value ? "enabled" : "disabled"}`,
+      `${key.charAt(0).toUpperCase() + key.slice(1)} notifications ${
+        value ? "enabled" : "disabled"
+      }`,
       value ? "success" : "default"
     );
   };
@@ -193,7 +288,11 @@ const Profile = () => {
             {theme === "light" && <Check className="ml-auto h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem
-            className={`${theme === "dark" ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20" : ""}`}
+            className={`${
+              theme === "dark"
+                ? "text-blue-600 bg-blue-50 dark:bg-blue-900/20"
+                : ""
+            }`}
             onClick={() => handleThemeChange("dark")}
           >
             <Moon className="mr-2 h-4 w-4" />
@@ -201,7 +300,11 @@ const Profile = () => {
             {theme === "dark" && <Check className="ml-auto h-4 w-4" />}
           </DropdownMenuItem>
           <DropdownMenuItem
-            className={`${theme === "system" ? "text-green-600 bg-green-50 dark:bg-green-900/20" : ""}`}
+            className={`${
+              theme === "system"
+                ? "text-green-600 bg-green-50 dark:bg-green-900/20"
+                : ""
+            }`}
             onClick={() => handleThemeChange("system")}
           >
             <Laptop className="mr-2 h-4 w-4" />
@@ -229,10 +332,7 @@ const Profile = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <p>Please log in to view your profile settings.</p>
-          <Button
-            className="mt-4"
-            onClick={() => navigate("/login")}
-          >
+          <Button className="mt-4" onClick={() => navigate("/login")}>
             Go to Login
           </Button>
         </div>
@@ -240,17 +340,30 @@ const Profile = () => {
     );
   }
 
+  const fullName = `${userProfile.firstName} ${userProfile.lastName}`.trim();
+
   return (
     <div className="mx-auto space-y-8">
       <div className="pb-5 p-6 flex items-center gap-2 space-x-2 border-b">
         <img
-          src={user.photoURL || `https://ui-avatars.com/api/?name=${user.firstName || 'User'}`}
-          alt={user.firstName || 'User'}
+          src={
+            user.photoURL ||
+            `https://ui-avatars.com/api/?name=${
+              userProfile.firstName || "User"
+            }`
+          }
+          alt={userProfile.firstName || "User"}
           className="rounded-full w-12 h-12"
         />
-        <h2 className="text-xl font-bold mt-2">Hi!! {user.displayName || 'User'}</h2>
+        <div>
+          <h2 className="text-xl font-bold">Hi! {fullName || "User"}</h2>
+          <div className="flex items-center bg-gray-300 w-fit p-0.5 px-1 rounded-md text-sm text-muted-foreground">
+            <Shield className="h-3 w-3 mr-1" />
+            {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+          </div>
+        </div>
       </div>
-      <Toaster richColors/>
+      <Toaster richColors />
       <Card className="border-none dark:bg-transparent">
         <CardHeader>
           <CardTitle>Profile Settings</CardTitle>
@@ -265,13 +378,18 @@ const Profile = () => {
               <TabsTrigger value="appearance">Appearance</TabsTrigger>
               <TabsTrigger value="notifications">Notifications</TabsTrigger>
               <TabsTrigger value="cookies">Cookies</TabsTrigger>
+              {userRole === "admin" && (
+                <TabsTrigger value="admin">Admin</TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="profile" className="space-y-4">
               <div className="space-y-4">
                 {Object.entries({
-                  name: "Name",
-                  phone: "Phone Number",
+                  firstName: "First Name",
+                  lastName: "Last Name",
+                  phoneNumber: "Phone Number",
+                  username: "Username",
                 }).map(([field, label]) => (
                   <div key={field} className="space-y-2">
                     <Label htmlFor={field}>{label}</Label>
@@ -286,6 +404,7 @@ const Profile = () => {
                         onChange={(e) => handleFieldEdit(field, e.target.value)}
                         disabled={editingField !== field}
                         className="flex-1"
+                        placeholder={`Enter your ${label.toLowerCase()}`}
                       />
                       {editingField === field ? (
                         <div className="space-x-2">
@@ -345,8 +464,8 @@ const Profile = () => {
                       {key === "communication"
                         ? "your account activity"
                         : key === "marketing"
-                          ? "new products and features"
-                          : "your account security"}
+                        ? "new products and features"
+                        : "your account security"}
                     </div>
                   </div>
                   <Switch
@@ -373,10 +492,10 @@ const Profile = () => {
                       {key === "essential"
                         ? "Required for the website to function properly"
                         : key === "performance"
-                          ? "Help us improve site speed and user experience"
-                          : key === "analytics"
-                            ? "Help us understand how visitors interact with our website"
-                            : "Used to deliver relevant advertisements"}
+                        ? "Help us improve site speed and user experience"
+                        : key === "analytics"
+                        ? "Help us understand how visitors interact with our website"
+                        : "Used to deliver relevant advertisements"}
                     </div>
                   </div>
                   <Switch
@@ -389,6 +508,28 @@ const Profile = () => {
                 </div>
               ))}
             </TabsContent>
+
+            {userRole === "admin" && (
+              <TabsContent value="admin" className="space-y-4">
+                <div className="p-4 border rounded-md bg-yellow-50 dark:bg-yellow-900/20 space-y-2">
+                  <h3 className="font-medium text-yellow-800 dark:text-yellow-200">
+                    Admin Panel
+                  </h3>
+                  <p className="text-sm text-yellow-700 dark:text-yellow-300">
+                    You have administrative privileges. Use this section to
+                    manage user roles and system settings.
+                  </p>
+                </div>
+                <div className="space-y-4 mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => navigate("/adminpanel")}
+                  >
+                    Manage Users
+                  </Button>
+                </div>
+              </TabsContent>
+            )}
           </Tabs>
         </CardContent>
       </Card>

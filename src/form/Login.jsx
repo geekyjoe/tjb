@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../firebase";
 import { getDatabase, ref as dbRef, get } from "firebase/database";
@@ -69,14 +69,19 @@ export const UserAuthButton = () => {
       // Get additional user data from database
       const userData = await refreshUserData(authUser.uid);
 
-      // Combine auth user data with database data
+      if (!userData) return;
+
+      // Combine auth user data with database data - updated to match auth-service.js schema
       const combinedProfile = {
         userId: authUser.uid,
-        name: userData?.name || authUser.displayName || "",
-        email: authUser.email || "",
-        phone: userData?.phone || authUser.phoneNumber || "",
-        avatarUrl: userData?.avatarUrl || authUser.photoURL || "",
-        role: userData?.role || "user",
+        name:
+          `${userData.firstName || ""} ${userData.lastName || ""}`.trim() ||
+          authUser.displayName ||
+          "",
+        email: userData.email || authUser.email || "",
+        phone: userData.phoneNumber || authUser.phoneNumber || "",
+        avatarUrl: userData.avatarUrl || authUser.photoURL || "",
+        role: userData.role || "user",
       };
 
       setUserProfile(combinedProfile);
@@ -206,7 +211,6 @@ const UserLogin = () => {
   };
 
   const showLoginAlert = (success, message) => {
-    console.log(`Login ${success ? "successful" : "failed"}: ${message}`);
     setAlertContent({
       title: success ? "Login Successful" : "Login Failed",
       description: message,
@@ -221,7 +225,6 @@ const UserLogin = () => {
 
     try {
       const userData = await loginUser(formData.email, formData.password);
-      showLoginAlert(true, "You have successfully logged in with email.");
 
       toast({
         title: "Welcome back!",
@@ -231,10 +234,8 @@ const UserLogin = () => {
       setShowAlert(false);
       navigate("/");
     } catch (error) {
-      const errorMessage =
-        error.code === "auth/invalid-credential"
-          ? "Invalid email or password"
-          : error.message;
+      // Error handling updated to work with the new auth-service implementation
+      const errorMessage = error.message || "An unexpected error occurred";
 
       showLoginAlert(false, errorMessage);
 
@@ -249,22 +250,18 @@ const UserLogin = () => {
   };
 
   const handleGoogleLogin = async () => {
+    setIsLoading(true);
     try {
       await signInWithGoogle();
-      showLoginAlert(true, "You have successfully logged in with Google.");
 
       toast({
         title: "Success!",
         description: "Logged in with Google successfully.",
       });
 
-      setShowAlert(false);
       navigate("/");
     } catch (error) {
-      const errorMessage =
-        error.code === "auth/popup-closed-by-user"
-          ? "Login canceled"
-          : error.message;
+      const errorMessage = error.message || "Failed to login with Google";
 
       showLoginAlert(false, errorMessage);
 
@@ -273,26 +270,24 @@ const UserLogin = () => {
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleGithubLogin = async () => {
+    setIsLoading(true);
     try {
       await signInWithGithub();
-      showLoginAlert(true, "You have successfully logged in with Github.");
 
       toast({
         title: "Success!",
         description: "Logged in with Github successfully.",
       });
 
-      setShowAlert(false);
       navigate("/");
     } catch (error) {
-      const errorMessage =
-        error.code === "auth/popup-closed-by-user"
-          ? "Login canceled"
-          : error.message;
+      const errorMessage = error.message || "Failed to login with Github";
 
       showLoginAlert(false, errorMessage);
 
@@ -301,6 +296,8 @@ const UserLogin = () => {
         description: errorMessage,
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -353,6 +350,7 @@ const UserLogin = () => {
                 variant="outline"
                 className="w-full"
                 onClick={handleGoogleLogin}
+                disabled={isLoading}
               >
                 <img src="/google.svg" alt="Google" className="w-5 h-5 mr-2" />
                 Google
@@ -362,6 +360,7 @@ const UserLogin = () => {
                 variant="outline"
                 className="w-full"
                 onClick={handleGithubLogin}
+                disabled={isLoading}
               >
                 <Github className="w-5 h-5 mr-2" />
                 Github
