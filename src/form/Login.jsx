@@ -32,19 +32,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { Checkbox } from "../components/ui/checkbox";
 import { useToast } from "../hooks/use-toast";
-import { Eye, EyeOff, Github, LogIn, User } from "lucide-react";
+import { Eye, EyeOff, Github, LogIn, LucideLoader, User } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
 import {
   loginUser,
   signInWithGoogle,
   signInWithGithub,
+  getUserFromCookie,
+  signOutUser,
 } from "../services/auth-service";
 import { ThemeToggle } from "../ThemeToggle";
 import Footer from "../components/Footer";
 
 export const UserAuthButton = () => {
   const [userProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -65,13 +69,19 @@ export const UserAuthButton = () => {
   };
 
   const initializeUserProfile = async (authUser) => {
-    if (!authUser) return;
+    if (!authUser) {
+      setLoading(false);
+      return;
+    }
 
     try {
       // Get additional user data from database
       const userData = await refreshUserData(authUser.uid);
 
-      if (!userData) return;
+      if (!userData) {
+        setLoading(false);
+        return;
+      }
 
       // Combine auth user data with database data - updated to match auth-service.js schema
       const combinedProfile = {
@@ -89,15 +99,39 @@ export const UserAuthButton = () => {
       setUserProfile(combinedProfile);
     } catch (error) {
       console.error("Error initializing user profile:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
+    // First check if we have a cookie for quick loading
+    const cookieUser = getUserFromCookie();
+    if (cookieUser) {
+      // Pre-populate from cookie while we wait for Firebase
+      refreshUserData(cookieUser.uid).then((userData) => {
+        if (userData) {
+          setUserProfile({
+            userId: cookieUser.uid,
+            name: `${userData.firstName || ""} ${
+              userData.lastName || ""
+            }`.trim(),
+            email: userData.email || cookieUser.email || "",
+            phone: userData.phoneNumber || "",
+            avatarUrl: userData.avatarUrl || "",
+            role: userData.role || "user",
+          });
+        }
+      });
+    }
+
+    // Still listen to Firebase auth state for validation
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         await initializeUserProfile(authUser);
       } else {
         setUserProfile(null);
+        setLoading(false);
       }
     });
 
@@ -106,12 +140,12 @@ export const UserAuthButton = () => {
 
   const handleSignOut = async () => {
     try {
-      await auth.signOut();
+      await signOutUser();
       toast({
         title: "Success",
         description: "Signed out successfully",
       });
-      navigate("/login");
+      navigate("/");
     } catch (error) {
       toast({
         title: "Error",
@@ -121,15 +155,25 @@ export const UserAuthButton = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <Button variant="outline" className="flex items-center gap-2" disabled>
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+        Loading...
+      </Button>
+    );
+  }
+
   if (!userProfile) {
     return (
       <Button
-        variant="outline"
+        variant="ghost"
         className="flex items-center gap-2"
         onClick={() => navigate("/login")}
+        size="icon"
       >
         <LogIn className="h-4 w-4" />
-        Login
+        {/* Login */}
       </Button>
     );
   }
@@ -167,9 +211,6 @@ export const UserAuthButton = () => {
         <DropdownMenuItem onClick={() => navigate("/profile")}>
           Profile
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => navigate("/adminpanel")}>
-          Settings
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
           Sign out
@@ -183,6 +224,7 @@ const UserLogin = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    rememberMe: false,
   });
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -196,6 +238,15 @@ const UserLogin = () => {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check if already logged in via cookie first for quick loading
+    const cookieUser = getUserFromCookie();
+    if (cookieUser) {
+      // Redirect to home if cookie exists
+      navigate("/");
+      return;
+    }
+
+    // Still check Firebase auth for verification
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         navigate("/");
@@ -206,9 +257,11 @@ const UserLogin = () => {
   }, [navigate]);
 
   const handleChange = (e) => {
+    const value =
+      e.target.type === "checkbox" ? e.target.checked : e.target.value;
     setFormData({
       ...formData,
-      [e.target.id]: e.target.value,
+      [e.target.id]: value,
     });
   };
 
@@ -226,7 +279,11 @@ const UserLogin = () => {
     setIsLoading(true);
 
     try {
-      const userData = await loginUser(formData.email, formData.password);
+      const userData = await loginUser(
+        formData.email,
+        formData.password,
+        formData.rememberMe
+      );
 
       toast({
         title: "Welcome back!",
@@ -254,7 +311,7 @@ const UserLogin = () => {
   const handleGoogleLogin = async () => {
     setIsLoading(true);
     try {
-      await signInWithGoogle();
+      await signInWithGoogle(formData.rememberMe);
 
       toast({
         title: "Success!",
@@ -280,7 +337,7 @@ const UserLogin = () => {
   const handleGithubLogin = async () => {
     setIsLoading(true);
     try {
-      await signInWithGithub();
+      await signInWithGithub(formData.rememberMe);
 
       toast({
         title: "Success!",
@@ -302,9 +359,9 @@ const UserLogin = () => {
       setIsLoading(false);
     }
   };
-
+  const bars = Array.from({ length: 12 }, (_, index) => index + 1);
   return (
-    <div className="md:min-h-dvh bg-cornsilk dark:bg-zinc-900">
+    <div className="md:min-h-dvh bg-cornsilk dark:bg-[#211915]">
       <header className="z-10 flex justify-between items-center font-inter w-full p-2">
         <a
           href="/"
@@ -427,8 +484,33 @@ const UserLogin = () => {
                     </Button>
                   </div>
                 </div>
+
+                {/* Remember Me Checkbox */}
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="rememberMe"
+                    checked={formData.rememberMe}
+                    onCheckedChange={(checked) =>
+                      setFormData({ ...formData, rememberMe: checked })
+                    }
+                  />
+                  <Label
+                    htmlFor="rememberMe"
+                    className="text-sm font-medium leading-none cursor-pointer"
+                  >
+                    Remember me
+                  </Label>
+                </div>
+
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login with Email"}
+                  {isLoading ? (
+                    <div className="flex items-center gap-2 ">
+                      <LucideLoader  className="animate-spin" />
+                      Logging in...
+                    </div>
+                  ) : (
+                    "Login with Email"
+                  )}
                 </Button>
               </div>
             </form>

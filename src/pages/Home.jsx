@@ -34,7 +34,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="min-h-screen font-host bg-cornsilk dark:bg-neutral-900 text-gray-900 dark:text-gray-100">
+    <div className="min-h-screen font-host bg-cornsilk dark:bg-cornsilk-dark text-gray-900 dark:text-gray-100">
       {/* Hero Section */}
       <section
         className="relative h-screen flex items-center justify-center text-center md:bg-cover bg-center bg-fixed h-screen"
@@ -97,7 +97,7 @@ const Home = () => {
       </section>
 
       {/* Why Choose Us */}
-      <section className="bg-gray-50 dark:bg-neutral-800 py-16">
+      <section className="bg-cornsilk dark:bg-cornsilk-d1 py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-4xl font-bold text-center mb-12 dark:text-white">
             Why Choose

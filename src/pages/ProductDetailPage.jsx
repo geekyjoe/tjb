@@ -154,7 +154,7 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 py-8">
+    <div className="mx-auto px-4 py-8 dark:text-cornsilk bg-cornsilk dark:bg-cornsilk-d1">
       <Toaster richColors />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Image Gallery with Left Thumbnails */}
@@ -192,7 +192,7 @@ const ProductDetailPage = () => {
               <img
                 src={product.images[selectedImage]}
                 alt={product.title}
-                className={`w-full h-full object-contain transition-transform duration-200 ${
+                className={`w-full h-full object-contain transition-transform duration-200 drop-shadow-[0_6px_6px_rgba(0,0,0,5.5)] ${
                   isZoomed ? "scale-2" : "scale-100"
                 }`}
                 style={

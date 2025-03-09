@@ -26,9 +26,10 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
 
-  --color-cornsilk-hover: #fff6cc;
-  --color-cornsilk: #fefae0;
-  --color-cornsilk-dark: #bb4d00;
+  --color-cornsilk-hover: #fefae0;
+  --color-cornsilk: #fffdf5;
+  --color-cornsilk-dark: #1c1b1b;
+  --color-cornsilk-d1: #211915;
   --color-cornsilk-dhover: #bb4d00;
 
   @keyframes animloader {

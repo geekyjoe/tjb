@@ -18,6 +18,7 @@ import CookieConsent from "./components/CookieConsent";
 import UserSignup from "./form/Signup";
 import UserLogin from "./form/Login";
 import UserManagement from "./services/UM";
+import MobileMenu from "./components/MobileMenu";
 
 4856;
 const AppContent = () => {
@@ -39,6 +40,7 @@ const AppContent = () => {
         <Route path="/signup" element={<UserSignup />} />
         <Route path="/login" element={<UserLogin />} />
       </Routes>
+      <MobileMenu />
     </>
   );
 };

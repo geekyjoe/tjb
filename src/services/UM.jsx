@@ -249,7 +249,7 @@ const UserManagement = () => {
   }
 
   return (
-    <div className="container mx-auto py-6">
+    <div className="mx-auto">
       <Card>
         <CardHeader>
           <CardTitle>User Management</CardTitle>
@@ -268,9 +268,9 @@ const UserManagement = () => {
                 {users.map((user) => (
                   <div
                     key={user.id}
-                    className="grid grid-cols-4 items-center p-4 gap-4"
+                    className="grid grid-cols-4 items-center p-4 gap-0"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 truncate">
                       <Avatar>
                         <AvatarImage src={user.avatarUrl} />
                         <AvatarFallback>
@@ -282,7 +282,7 @@ const UserManagement = () => {
                         <p className="text-sm text-gray-500">{user.email}</p>
                       </div>
                     </div>
-                    <div className="text-sm">
+                    <div className="text-sm text-center">
                       <span
                         className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-medium
                         ${
@@ -377,7 +377,7 @@ const UserManagement = () => {
           <DialogHeader>
             <DialogTitle>Delete User</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete {deleteUser?.name}? This action
+              Are you sure you want to delete <span className="font-bold">{deleteUser?.name}</span>? This action
               cannot be undone.
             </DialogDescription>
           </DialogHeader>

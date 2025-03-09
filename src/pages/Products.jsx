@@ -239,7 +239,7 @@ const Products = () => {
   }
 
   return (
-    <div className="pt-3 w-full min-h-screen text-gray-700 dark:text-gray-200">
+    <div className="pt-3 w-full min-h-screen text-gray-700 dark:text-cornsilk bg-cornsilk dark:bg-cornsilk-d1">
       <Toaster richColors />
       <div className="px-1 lg:px-2">
         <div className="flex gap-2">
@@ -374,8 +374,8 @@ const Products = () => {
                 <div
                   className={
                     viewMode === "grid"
-                      ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 lg:gap-1"
-                      : "space-y-2"
+                      ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 lg:gap-1"
+                      : "flex space-y-2"
                   }
                 >
                   {products.map((product) => (

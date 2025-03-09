@@ -345,7 +345,7 @@ const Profile = () => {
   const fullName = `${userProfile.firstName} ${userProfile.lastName}`.trim();
 
   return (
-    <div className="mx-auto space-y-8">
+    <div className="mx-auto min-h-90 bg-cornsilk dark:bg-cornsilk-dark">
       <div className="pb-5 p-6 flex items-center gap-2 space-x-2 border-b">
         <img
           src={
@@ -359,7 +359,7 @@ const Profile = () => {
         />
         <div>
           <h2 className="text-xl font-bold">Hi! {fullName || "User"}</h2>
-          <div className="flex items-center bg-gray-300 w-fit p-0.5 px-1 rounded-md text-sm text-muted-foreground">
+          <div className="flex items-center bg-stone-200 dark:bg-cornsilk-d1 dark:text-cornsilk w-fit p-0.5 px-1 rounded-md text-sm text-muted-foreground">
             <Shield className="h-3 w-3 mr-1" />
             {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
           </div>

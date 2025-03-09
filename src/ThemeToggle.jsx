@@ -84,7 +84,7 @@ export const ThemeToggle = ({ className }) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="rounded-full focus:outline-hidden focus-visible:ring-0 bg-transparent dark:bg-transparent border-none shadow-none hover:bg-transparent dark:hover:bg-neutral-700" size="icon">
+        <Button variant="outline" className="rounded-full focus:outline-none focus-visible:ring-0 border-none shadow-none max-md:bg-cornsilk max-md:dark:bg-cornsilk-d1" size="icon">
           <ThemeIcon />
         </Button>
       </DropdownMenuTrigger>
@@ -125,7 +125,7 @@ export const ThemeToggle = ({ className }) => {
 export const ThemeIcon = () => {
   const { theme } = useTheme();
 
-  if (theme === "dark") return <Moon className="h-5 w-5 max-md:text-teal-600" />;
+  if (theme === "dark") return <Moon className="h-5 w-5 max-md:text-cornsilk" />;
   if (theme === "light") return <Sun className="h-5 w-5 max-md:text-yellow-600" />;
   return <MonitorSmartphone className="h-5 w-5 max-md:text-emerald-600" />;
 };
