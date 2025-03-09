@@ -70,7 +70,7 @@ const Header = () => {
         </NavLink>
         <Link
           to="..\cart"
-          className="relative md:hidden  text-cornsilk-dark hover:bg-cornsilk-hover dark:hover:bg-zinc-600 p-2 rounded-full"
+          className="relative text-cornsilk-dark hover:bg-cornsilk-hover dark:hover:bg-zinc-600 p-2 rounded-full"
         >
           <MdOutlineShoppingBag size={23} />
           {totalItems > 0 && (

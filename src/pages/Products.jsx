@@ -375,7 +375,7 @@ const Products = () => {
                   className={
                     viewMode === "grid"
                       ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 lg:gap-1"
-                      : "flex space-y-2"
+                      : "space-y-2"
                   }
                 >
                   {products.map((product) => (

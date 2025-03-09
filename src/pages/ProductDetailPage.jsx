@@ -17,6 +17,11 @@ import {
   Calendar,
   ArrowRight,
   Loader2,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { Toaster, toast } from "sonner";
 import { calculateDeliveryDate } from "../components/ddc";
@@ -34,6 +39,14 @@ const ProductDetailPage = () => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const imageContainerRef = useRef(null);
+  
+  // Added state for gallery modal
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const [zoomLevel, setZoomLevel] = useState(1);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const galleryImageRef = useRef(null);
 
   const handleMouseMove = (e) => {
     if (!imageContainerRef.current) return;
@@ -63,6 +76,118 @@ const ProductDetailPage = () => {
 
     setMousePosition({ x: zoomX, y: zoomY });
   };
+
+  // Gallery image navigation handlers
+  const goToPreviousImage = () => {
+    if (!product) return;
+    setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+    resetZoom();
+  };
+
+  const goToNextImage = () => {
+    if (!product) return;
+    setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+    resetZoom();
+  };
+
+  // Zoom handlers for gallery modal
+  const zoomIn = () => {
+    if (zoomLevel < 4) {
+      setZoomLevel((prev) => prev + 0.5);
+    }
+  };
+
+  const zoomOut = () => {
+    if (zoomLevel > 1) {
+      setZoomLevel((prev) => prev - 0.5);
+      // Reset drag offset if we're back to zoom level 1
+      if (zoomLevel <= 1.5) {
+        setDragOffset({ x: 0, y: 0 });
+      }
+    }
+  };
+
+  const resetZoom = () => {
+    setZoomLevel(1);
+    setDragOffset({ x: 0, y: 0 });
+  };
+
+  // Dragging handlers for gallery
+  const handleDragStart = (e) => {
+    if (zoomLevel > 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.clientX,
+        y: e.clientY
+      });
+    }
+  };
+
+  const handleDragMove = (e) => {
+    if (isDragging && zoomLevel > 1) {
+      const deltaX = e.clientX - dragStart.x;
+      const deltaY = e.clientY - dragStart.y;
+
+      // Calculate boundaries based on zoom level
+      const maxOffset = (zoomLevel - 1) * 200; // Adjust this value based on your image size
+
+      // Calculate new offsets with boundaries
+      const newOffsetX = Math.min(maxOffset, Math.max(-maxOffset, dragOffset.x + deltaX));
+      const newOffsetY = Math.min(maxOffset, Math.max(-maxOffset, dragOffset.y + deltaY));
+
+      setDragOffset({
+        x: newOffsetX,
+        y: newOffsetY
+      });
+
+      setDragStart({
+        x: e.clientX,
+        y: e.clientY
+      });
+    }
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Handle keyboard navigation for gallery
+  const handleKeyDown = (e) => {
+    if (galleryOpen) {
+      switch (e.key) {
+        case 'ArrowLeft':
+          goToPreviousImage();
+          break;
+        case 'ArrowRight':
+          goToNextImage();
+          break;
+        case 'Escape':
+          setGalleryOpen(false);
+          resetZoom();
+          break;
+        case '+':
+          zoomIn();
+          break;
+        case '-':
+          zoomOut();
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [galleryOpen, product]);
+
+  // Reset zoom and drag when changing images
+  useEffect(() => {
+    resetZoom();
+  }, [selectedImage]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -154,7 +279,7 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 py-8 dark:text-cornsilk bg-cornsilk dark:bg-cornsilk-d1">
+    <div className="mx-auto px-4 py-8">
       <Toaster richColors />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Image Gallery with Left Thumbnails */}
@@ -188,12 +313,13 @@ const ProductDetailPage = () => {
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
               onMouseMove={handleMouseMove}
+              onClick={() => setGalleryOpen(true)}
             >
               <img
                 src={product.images[selectedImage]}
                 alt={product.title}
-                className={`w-full h-full object-contain transition-transform duration-200 drop-shadow-[0_6px_6px_rgba(0,0,0,5.5)] ${
-                  isZoomed ? "scale-2" : "scale-100"
+                className={`w-full h-full object-contain transition-transform duration-200 ${
+                  isZoomed ? "scale-200" : "scale-100"
                 }`}
                 style={
                   isZoomed
@@ -203,6 +329,9 @@ const ProductDetailPage = () => {
                     : undefined
                 }
               />
+              <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded text-xs">
+                Click to expand
+              </div>
             </div>
           </div>
         </div>
@@ -347,6 +476,113 @@ const ProductDetailPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Full-screen Image Gallery Modal */}
+      {galleryOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
+          <div className="relative w-full h-full flex flex-col">
+            {/* Gallery Toolbar */}
+            <div className="flex justify-between items-center p-4 text-white">
+              <div className="flex items-center space-x-2">
+                <button 
+                  onClick={zoomIn} 
+                  className="p-2 rounded-full hover:bg-gray-800 transition"
+                  aria-label="Zoom in"
+                >
+                  <ZoomIn className="w-6 h-6" />
+                </button>
+                <button 
+                  onClick={zoomOut} 
+                  className="p-2 rounded-full hover:bg-gray-800 transition"
+                  aria-label="Zoom out"
+                >
+                  <ZoomOut className="w-6 h-6" />
+                </button>
+                <span className="text-sm ml-2">{Math.round(zoomLevel * 100)}%</span>
+              </div>
+              <button 
+                onClick={() => {
+                  setGalleryOpen(false);
+                  resetZoom();
+                }} 
+                className="p-2 rounded-full hover:bg-gray-800 transition"
+                aria-label="Close gallery"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Gallery Main Area */}
+            <div 
+              className="flex-1 flex items-center justify-center overflow-hidden"
+              onMouseDown={handleDragStart}
+              onMouseMove={handleDragMove}
+              onMouseUp={handleDragEnd}
+              onMouseLeave={handleDragEnd}
+              style={{ cursor: zoomLevel > 1 ? isDragging ? 'grabbing' : 'grab' : 'default' }}
+            >
+              <div 
+                ref={galleryImageRef}
+                className="relative"
+                style={{
+                  transform: `scale(${zoomLevel}) translate(${dragOffset.x}px, ${dragOffset.y}px)`,
+                  transition: isDragging ? 'none' : 'transform 0.2s ease'
+                }}
+              >
+                <img
+                  src={product.images[selectedImage]}
+                  alt={product.title}
+                  className="max-h-screen max-w-screen object-contain"
+                />
+              </div>
+            </div>
+
+            {/* Image Navigation */}
+            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 p-4">
+              <button 
+                onClick={goToPreviousImage} 
+                className="p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 text-white transition"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 p-4">
+              <button 
+                onClick={goToNextImage} 
+                className="p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 text-white transition"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+
+            {/* Thumbnail Navigation */}
+            <div className="p-4 flex justify-center">
+              <div className="flex space-x-2 overflow-x-auto pb-2 max-w-full">
+                {product.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className={`w-16 h-16 rounded-md overflow-hidden cursor-pointer border-2 ${
+                      selectedImage === index ? "border-white" : "border-transparent"
+                    } hover:border-gray-400 transition-colors`}
+                    onClick={() => {
+                      setSelectedImage(index);
+                      resetZoom();
+                    }}
+                  >
+                    <img
+                      src={image}
+                      alt={`${product.title} thumbnail ${index + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
