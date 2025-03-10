@@ -45,7 +45,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { getUserRole, updateUserRole } from "../services/auth-service";
+import { getUserRole } from "../services/auth-service";
 
 const UserManagement = lazy(() => import("../services/UM"));
 const Profile = () => {
