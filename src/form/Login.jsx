@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../firebase";
-import { getDatabase, ref as dbRef, get } from "firebase/database";
+import { AuthService } from "../api/auth";
 import {
   AlertDialog,
   AlertDialogContent,
@@ -36,13 +34,6 @@ import { Checkbox } from "../components/ui/checkbox";
 import { useToast } from "../hooks/use-toast";
 import { Eye, EyeOff, Github, LogIn, LucideLoader, User } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
-import {
-  loginUser,
-  signInWithGoogle,
-  signInWithGithub,
-  getUserFromCookie,
-  signOutUser,
-} from "../services/auth-service";
 import { ThemeToggle } from "../ThemeToggle";
 import Footer from "../components/Footer";
 
@@ -52,95 +43,36 @@ export const UserAuthButton = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const refreshUserData = async (userId) => {
-    try {
-      const database = getDatabase();
-      const userRef = dbRef(database, `users/${userId}`);
-      const snapshot = await get(userRef);
-
-      if (snapshot.exists()) {
-        return snapshot.val();
-      }
-      return null;
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      return null;
-    }
-  };
-
-  const initializeUserProfile = async (authUser) => {
-    if (!authUser) {
-      setLoading(false);
-      return;
-    }
-
-    try {
-      // Get additional user data from database
-      const userData = await refreshUserData(authUser.uid);
-
-      if (!userData) {
-        setLoading(false);
-        return;
-      }
-
-      // Combine auth user data with database data - updated to match auth-service.js schema
-      const combinedProfile = {
-        userId: authUser.uid,
-        name:
-          `${userData.firstName || ""} ${userData.lastName || ""}`.trim() ||
-          authUser.displayName ||
-          "",
-        email: userData.email || authUser.email || "",
-        phone: userData.phoneNumber || authUser.phoneNumber || "",
-        avatarUrl: userData.avatarUrl || authUser.photoURL || "",
-        role: userData.role || "user",
-      };
-
-      setUserProfile(combinedProfile);
-    } catch (error) {
-      console.error("Error initializing user profile:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    // First check if we have a cookie for quick loading
-    const cookieUser = getUserFromCookie();
-    if (cookieUser) {
-      // Pre-populate from cookie while we wait for Firebase
-      refreshUserData(cookieUser.uid).then((userData) => {
-        if (userData) {
-          setUserProfile({
-            userId: cookieUser.uid,
-            name: `${userData.firstName || ""} ${
-              userData.lastName || ""
-            }`.trim(),
-            email: userData.email || cookieUser.email || "",
-            phone: userData.phoneNumber || "",
-            avatarUrl: userData.avatarUrl || "",
-            role: userData.role || "user",
-          });
+    // Check if user is authenticated
+    const checkAuth = async () => {
+      try {
+        if (AuthService.isAuthenticated()) {
+          const currentUser = AuthService.getCurrentUser();
+          if (currentUser) {
+            setUserProfile({
+              userId: currentUser.id,
+              firstName: currentUser.firstName || '',
+              email: currentUser.email || '',
+              avatarUrl: currentUser.avatarUrl || '',
+              role: currentUser.role || 'user',
+            });
+          }
         }
-      });
-    }
-
-    // Still listen to Firebase auth state for validation
-    const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
-      if (authUser) {
-        await initializeUserProfile(authUser);
-      } else {
-        setUserProfile(null);
+      } catch (error) {
+        console.error("Error checking authentication:", error);
+      } finally {
         setLoading(false);
       }
-    });
+    };
 
-    return () => unsubscribe();
+    checkAuth();
   }, []);
 
   const handleSignOut = async () => {
     try {
-      await signOutUser();
+      AuthService.logout();
+      setUserProfile(null);
       toast({
         title: "Success",
         description: "Signed out successfully",
@@ -173,7 +105,6 @@ export const UserAuthButton = () => {
         size="icon"
       >
         <LogIn className="h-4 w-4" />
-        {/* Login */}
       </Button>
     );
   }
@@ -186,12 +117,12 @@ export const UserAuthButton = () => {
             <AvatarImage
               src={
                 userProfile.avatarUrl ||
-                `https://ui-avatars.com/api/?name=${userProfile.name || "User"}`
+                `https://ui-avatars.com/api/?name=${userProfile.firstName || "User"}`
               }
-              alt={userProfile.name}
+              alt={userProfile.firstName}
             />
             <AvatarFallback>
-              {userProfile.name?.charAt(0) || <User className="h-4 w-4" />}
+              {userProfile.firstName?.charAt(0) || <User className="h-4 w-4" />}
             </AvatarFallback>
           </Avatar>
         </Button>
@@ -200,7 +131,7 @@ export const UserAuthButton = () => {
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">
-              {userProfile.name || "User"}
+              {userProfile.firstName || "User"}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
               {userProfile.email}
@@ -238,22 +169,10 @@ const UserLogin = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check if already logged in via cookie first for quick loading
-    const cookieUser = getUserFromCookie();
-    if (cookieUser) {
-      // Redirect to home if cookie exists
+    // Check if already logged in
+    if (AuthService.isAuthenticated()) {
       navigate("/");
-      return;
     }
-
-    // Still check Firebase auth for verification
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        navigate("/");
-      }
-    });
-
-    return () => unsubscribe();
   }, [navigate]);
 
   const handleChange = (e) => {
@@ -279,21 +198,35 @@ const UserLogin = () => {
     setIsLoading(true);
 
     try {
-      const userData = await loginUser(
-        formData.email,
-        formData.password,
-        formData.rememberMe
-      );
+      const response = await AuthService.login(formData.email, formData.password);
+      
+      if (response.success) {
+        const userData = response.data.user;
+        
+        if (!formData.rememberMe) {
+          // If remember me is not checked, set token to expire in session
+          // This would require backend support or a custom implementation
+          // For now, we'll just log the preference
+          console.log("Session-only login requested");
+        }
 
-      toast({
-        title: "Welcome back!",
-        description: `Logged in as ${userData.email}`,
-      });
+        toast({
+          title: "Welcome back!",
+          description: `Logged in as ${userData.email}`,
+        });
 
-      setShowAlert(false);
-      navigate("/");
+        setShowAlert(false);
+        navigate("/");
+      } else {
+        showLoginAlert(false, response.message || "Login failed");
+        
+        toast({
+          title: "Error",
+          description: response.message || "Login failed",
+          variant: "destructive",
+        });
+      }
     } catch (error) {
-      // Error handling updated to work with the new auth-service implementation
       const errorMessage = error.message || "An unexpected error occurred";
 
       showLoginAlert(false, errorMessage);
@@ -308,58 +241,27 @@ const UserLogin = () => {
     }
   };
 
+  // Note: For social login, we would need to adapt to whatever authentication flow the API supports
+  // The current implementation assumes there would be OAuth endpoints for these providers
+  
   const handleGoogleLogin = async () => {
-    setIsLoading(true);
-    try {
-      await signInWithGoogle(formData.rememberMe);
-
-      toast({
-        title: "Success!",
-        description: "Logged in with Google successfully.",
-      });
-
-      navigate("/");
-    } catch (error) {
-      const errorMessage = error.message || "Failed to login with Google";
-
-      showLoginAlert(false, errorMessage);
-
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // This would need to be implemented based on how the backend handles OAuth
+    toast({
+      title: "Not Implemented",
+      description: "Google login is not yet implemented with the new API",
+      variant: "destructive",
+    });
   };
 
   const handleGithubLogin = async () => {
-    setIsLoading(true);
-    try {
-      await signInWithGithub(formData.rememberMe);
-
-      toast({
-        title: "Success!",
-        description: "Logged in with Github successfully.",
-      });
-
-      navigate("/");
-    } catch (error) {
-      const errorMessage = error.message || "Failed to login with Github";
-
-      showLoginAlert(false, errorMessage);
-
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    // This would need to be implemented based on how the backend handles OAuth
+    toast({
+      title: "Not Implemented",
+      description: "Github login is not yet implemented with the new API",
+      variant: "destructive",
+    });
   };
-  const bars = Array.from({ length: 12 }, (_, index) => index + 1);
+
   return (
     <div className="md:min-h-dvh bg-cornsilk dark:bg-[#211915]">
       <header className="z-10 flex justify-between items-center font-inter w-full p-2">
@@ -373,7 +275,7 @@ const UserLogin = () => {
         </a>
         <ThemeToggle />
       </header>
-      <div className="py-5 flex items-center justify-center">
+      <div className="py-10 flex items-center justify-center">
         <AlertDialog open={showAlert} onOpenChange={setShowAlert}>
           <AlertDialogContent className="sm:w-full w-fit max-w-lg dark:bg-neutral-800 rounded-lg">
             <AlertDialogHeader>
@@ -396,7 +298,7 @@ const UserLogin = () => {
           </AlertDialogContent>
         </AlertDialog>
 
-        <Card className="w-full max-w-md bg-white dark:bg-zinc-800 shadow-md rounded-xl border dark:border-neutral-700 dark:hover:border-neutral-700">
+        <Card className="w-9/10 md:w-full max-w-md bg-white dark:bg-zinc-800 shadow-md rounded-xl border dark:border-neutral-700 dark:hover:border-neutral-700">
           <CardHeader>
             <CardTitle className="leading-6">Welcome Back</CardTitle>
             <CardDescription>
@@ -505,7 +407,7 @@ const UserLogin = () => {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? (
                     <div className="flex items-center gap-2 ">
-                      <LucideLoader  className="animate-spin" />
+                      <LucideLoader className="animate-spin" />
                       Logging in...
                     </div>
                   ) : (

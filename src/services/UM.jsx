@@ -23,13 +23,11 @@ import {
 } from "../components/ui/select";
 import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
+import { Input } from "../components/ui/input";
 import { useToast } from "../hooks/use-toast";
-import { User, Pencil, Trash2, Loader2 } from "lucide-react";
-import { getDatabase, ref, get, remove, onValue } from "firebase/database";
-import { database } from "../firebase";
-import { updateUserRole } from "../services/auth-service";
-import { auth } from "../firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { User, Pencil, Trash2, Loader2, UploadCloud, History, X } from "lucide-react";
+import { AuthService, UserService, AdminService } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
 const UserManagement = () => {
@@ -39,100 +37,74 @@ const UserManagement = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
+  const [userLoginHistory, setUserLoginHistory] = useState([]);
+  const [isHistoryDialogOpen, setIsHistoryDialogOpen] = useState(false);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  // Check authentication and get user role
+  // Check authentication
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        setCurrentUser(user);
+    // Check if user is authenticated
+    if (!AuthService.isAuthenticated()) {
+      navigate("/login");
+      return;
+    }
 
-        try {
-          // Fetch the user data from the database directly
-          const userRef = ref(database, `users/${user.uid}`);
-          const userSnapshot = await get(userRef);
+    // Get current user from localStorage
+    const user = AuthService.getCurrentUser();
+    if (!user) {
+      navigate("/login");
+      return;
+    }
 
-          if (userSnapshot.exists()) {
-            // Get the user data from the database
-            const userData = userSnapshot.val();
+    setCurrentUser(user);
 
-            // Get user role
-            setUserRole(userData.role || "user");
-          } else {
-            // If no database record exists, default to regular user
-            setUserRole("user");
-          }
-        } catch (error) {
-          console.error("Error loading user data:", error);
-          toast({
-            title: "Error",
-            description: "Failed to load user profile data",
-            variant: "destructive",
-          });
-          setUserRole("user"); // Default to regular user on error
-        }
-      } else {
-        // Not authenticated, redirect to login
-        navigate("/login");
-      }
-    });
-
-    return () => unsubscribe();
+    // Check if user is admin - if not, redirect
+    if (user.role !== "admin") {
+      toast({
+        title: "Access Denied",
+        description: "You need administrator privileges to access this page.",
+        variant: "destructive",
+      });
+      // navigate("/dashboard");
+    }
   }, [navigate, toast]);
 
-  // Fetch all users from the database once we know the user is an admin
+  // Fetch all users
   useEffect(() => {
     // Only fetch users if user is authenticated and has admin role
-    if (!currentUser || userRole !== "admin") return;
+    if (!currentUser || currentUser.role !== "admin") return;
 
-    const fetchUsers = () => {
-      const usersRef = ref(database, "users");
-
-      // Use onValue to listen for changes in real-time
-      const unsubscribe = onValue(
-        usersRef,
-        (snapshot) => {
-          setIsLoading(true);
-          if (snapshot.exists()) {
-            const usersData = [];
-            snapshot.forEach((childSnapshot) => {
-              const userData = childSnapshot.val();
-              usersData.push({
-                id: userData.id,
-                name: `${userData.firstName || ""} ${
-                  userData.lastName || ""
-                }`.trim(),
-                email: userData.email,
-                role: userData.role || "user",
-                avatarUrl: userData.avatarUrl || "",
-                lastLogin: userData.lastLogin || "Never",
-              });
-            });
-            setUsers(usersData);
-          } else {
-            setUsers([]);
-          }
-          setIsLoading(false);
-        },
-        (error) => {
-          console.error("Error fetching users:", error);
+    const fetchUsers = async () => {
+      setIsLoading(true);
+      try {
+        const response = await AdminService.getAllUsers();
+        if (response.success) {
+          setUsers(response.data);
+          console.log("Users fetched successfully!");
+        } else {
           toast({
             title: "Error",
-            description: "Failed to fetch users",
+            description: response.message || "Failed to fetch users",
             variant: "destructive",
           });
-          setIsLoading(false);
         }
-      );
-
-      // Cleanup subscription on unmount
-      return () => unsubscribe();
+      } catch (error) {
+        console.error("Error fetching users:", error);
+        toast({
+          title: "Error",
+          description: error.message || "Failed to fetch users",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchUsers();
-  }, [currentUser, userRole, toast]);
+  }, [currentUser, toast]);
 
   // Format the last login timestamp to a relative time string
   const formatLastActive = (timestamp) => {
@@ -163,22 +135,25 @@ const UserManagement = () => {
 
     setIsUpdating(true);
     try {
-      // Call the auth service function to update the role
-      await updateUserRole(userId, newRole, currentUser.uid);
+      const response = await AdminService.updateUserRole(userId, newRole);
+      
+      if (response.success) {
+        // Update local state
+        setUsers(
+          users.map((user) =>
+            user.id === userId ? { ...user, role: newRole } : user
+          )
+        );
 
-      // Update is handled by the onValue listener, but we'll update locally too for immediate UI feedback
-      setUsers(
-        users.map((user) =>
-          user.id === userId ? { ...user, role: newRole } : user
-        )
-      );
+        toast({
+          title: "Success",
+          description: "User role updated successfully",
+        });
 
-      toast({
-        title: "Success",
-        description: "User role updated successfully",
-      });
-
-      setSelectedUser(null);
+        setSelectedUser(null);
+      } else {
+        throw new Error(response.message || "Failed to update user role");
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -194,16 +169,21 @@ const UserManagement = () => {
   const handleDeleteUser = async (userId) => {
     setIsUpdating(true);
     try {
-      // Delete user from the database
-      const userRef = ref(database, `users/${userId}`);
-      await remove(userRef);
+      const response = await UserService.deleteUserAccount(userId);
+      
+      if (response.success) {
+        // Remove user from local state
+        setUsers(users.filter(user => user.id !== userId));
+        
+        toast({
+          title: "Success",
+          description: "User deleted successfully",
+        });
 
-      toast({
-        title: "Success",
-        description: "User deleted successfully",
-      });
-
-      setDeleteUser(null);
+        setDeleteUser(null);
+      } else {
+        throw new Error(response.message || "Failed to delete user");
+      }
     } catch (error) {
       toast({
         title: "Error",
@@ -215,8 +195,164 @@ const UserManagement = () => {
     }
   };
 
+  // View user login history
+  const handleViewLoginHistory = async (userId) => {
+    try {
+      setIsLoading(true);
+      const response = await UserService.getUserProfile(userId);
+      
+      if (response.success) {
+        setUserLoginHistory(response.data.loginHistory || []);
+        setSelectedUser(users.find(user => user.id === userId));
+        setIsHistoryDialogOpen(true);
+      } else {
+        throw new Error(response.message || "Failed to fetch user login history");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to fetch user login history",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Delete login history entries
+  const handleDeleteLoginHistoryEntries = async (userId, entryIndexes) => {
+    setIsUpdating(true);
+    try {
+      const response = await AdminService.deleteLoginHistoryEntries(userId, entryIndexes);
+      
+      if (response.success) {
+        // Update local state
+        setUserLoginHistory(userLoginHistory.filter((_, index) => !entryIndexes.includes(index)));
+        
+        toast({
+          title: "Success",
+          description: "Login history entries deleted successfully",
+        });
+      } else {
+        throw new Error(response.message || "Failed to delete login history entries");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete login history entries",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Clear all login history
+  const handleClearLoginHistory = async (userId) => {
+    setIsUpdating(true);
+    try {
+      const response = await AdminService.clearLoginHistory(userId);
+      
+      if (response.success) {
+        // Update local state
+        setUserLoginHistory([]);
+        
+        toast({
+          title: "Success",
+          description: "Login history cleared successfully",
+        });
+      } else {
+        throw new Error(response.message || "Failed to clear login history");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to clear login history",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  // Handle avatar upload
+  const handleAvatarChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setAvatarFile(e.target.files[0]);
+    }
+  };
+
+  const handleAvatarUpload = async (userId) => {
+    if (!avatarFile) return;
+
+    setIsUploadingAvatar(true);
+    try {
+      const response = await UserService.uploadAvatar(userId, avatarFile);
+      
+      if (response.success) {
+        // Update user's avatar URL in the users array
+        setUsers(
+          users.map((user) =>
+            user.id === userId 
+              ? { ...user, avatarUrl: response.data.avatarUrl } 
+              : user
+          )
+        );
+        
+        toast({
+          title: "Success",
+          description: "Avatar uploaded successfully",
+        });
+
+        setAvatarFile(null);
+      } else {
+        throw new Error(response.message || "Failed to upload avatar");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to upload avatar",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  // Delete avatar
+  const handleDeleteAvatar = async (userId) => {
+    setIsUpdating(true);
+    try {
+      const response = await UserService.deleteAvatar(userId);
+      
+      if (response.success) {
+        // Update user's avatar URL in the users array
+        setUsers(
+          users.map((user) =>
+            user.id === userId ? { ...user, avatarUrl: null } : user
+          )
+        );
+        
+        toast({
+          title: "Success",
+          description: "Avatar deleted successfully",
+        });
+      } else {
+        throw new Error(response.message || "Failed to delete avatar");
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete avatar",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   // Loading state while checking authentication and role
-  if (isLoading && !userRole) {
+  if (isLoading && !currentUser) {
     return (
       <Card>
         <CardHeader>
@@ -235,7 +371,7 @@ const UserManagement = () => {
   }
 
   // Access denied if not admin
-  if (userRole !== "admin") {
+  if (currentUser && currentUser.role !== "admin") {
     return (
       <Card>
         <CardHeader>
@@ -253,7 +389,7 @@ const UserManagement = () => {
       <Card>
         <CardHeader>
           <CardTitle>User Management</CardTitle>
-          <CardDescription>Manage user roles and permissions</CardDescription>
+          <CardDescription>Manage users, roles and permissions</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -268,7 +404,7 @@ const UserManagement = () => {
                 {users.map((user) => (
                   <div
                     key={user.id}
-                    className="grid grid-cols-4 items-center p-4 gap-0"
+                    className="grid grid-cols-5 items-center p-4 gap-0"
                   >
                     <div className="flex items-center gap-3 truncate">
                       <Avatar>
@@ -299,20 +435,44 @@ const UserManagement = () => {
                     <div className="text-sm text-gray-500">
                       Last active: {formatLastActive(user.lastLogin)}
                     </div>
+                    <div className="text-sm text-gray-500">
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        onClick={() => handleViewLoginHistory(user.id)}
+                        className="flex items-center text-xs"
+                      >
+                        <History className="h-3 w-3 mr-1" />
+                        Login History
+                      </Button>
+                    </div>
                     <div className="flex justify-end gap-2">
                       <Button
                         variant="outline"
                         size="icon"
                         onClick={() => setSelectedUser(user)}
+                        title="Edit User Role"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
-                      {user.id !== currentUser?.uid && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => {
+                          setSelectedUser(user);
+                          document.getElementById('avatar-upload').click();
+                        }}
+                        title="Upload Avatar"
+                      >
+                        <UploadCloud className="h-4 w-4" />
+                      </Button>
+                      {user.id !== currentUser?.id && (
                         <Button
                           variant="outline"
                           size="icon"
                           className="text-red-500 hover:text-red-600"
                           onClick={() => setDeleteUser(user)}
+                          title="Delete User"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -323,12 +483,20 @@ const UserManagement = () => {
               </div>
             </div>
           )}
+          {/* Hidden file input for avatar upload */}
+          <input
+            id="avatar-upload"
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleAvatarChange}
+          />
         </CardContent>
       </Card>
 
       {/* Edit Role Dialog */}
       <Dialog
-        open={!!selectedUser}
+        open={!!selectedUser && !isHistoryDialogOpen && !avatarFile}
         onOpenChange={(open) => !open && setSelectedUser(null)}
       >
         <DialogContent>
@@ -363,6 +531,141 @@ const UserManagement = () => {
               disabled={isUpdating}
             >
               Cancel
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Avatar Upload Dialog */}
+      <Dialog
+        open={!!avatarFile}
+        onOpenChange={(open) => !open && setAvatarFile(null)}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Avatar</DialogTitle>
+            <DialogDescription>
+              Upload a new avatar for {selectedUser?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6 flex flex-col gap-4">
+            <div className="flex justify-center">
+              <img
+                src={avatarFile ? URL.createObjectURL(avatarFile) : ""}
+                alt="Avatar Preview"
+                className="w-32 h-32 rounded-full object-cover border"
+              />
+            </div>
+            <div className="flex justify-between">
+              <Button
+                variant="outline"
+                onClick={() => setAvatarFile(null)}
+                disabled={isUploadingAvatar}
+              >
+                Cancel
+              </Button>
+              <div className="flex gap-2">
+                {selectedUser?.avatarUrl && (
+                  <Button
+                    variant="destructive"
+                    onClick={() => {
+                      handleDeleteAvatar(selectedUser.id);
+                      setAvatarFile(null);
+                    }}
+                    disabled={isUploadingAvatar}
+                  >
+                    Delete Current Avatar
+                  </Button>
+                )}
+                <Button
+                  onClick={() => handleAvatarUpload(selectedUser?.id)}
+                  disabled={isUploadingAvatar}
+                >
+                  {isUploadingAvatar ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    "Upload Avatar"
+                  )}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Login History Dialog */}
+      <Dialog
+        open={isHistoryDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            setIsHistoryDialogOpen(false);
+            setUserLoginHistory([]);
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Login History</DialogTitle>
+            <DialogDescription>
+              View login history for {selectedUser?.name}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 max-h-96 overflow-y-auto">
+            {userLoginHistory.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">No login history available</div>
+            ) : (
+              <div className="space-y-4">
+                {userLoginHistory.map((entry, index) => (
+                  <div key={index} className="flex justify-between items-center p-2 border rounded-md">
+                    <div>
+                      <p className="text-sm font-medium">
+                        {new Date(entry.timestamp).toLocaleString()}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        IP: {entry.ip} | Device: {entry.device}
+                      </p>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-gray-500 hover:text-red-500"
+                      onClick={() => handleDeleteLoginHistoryEntries(selectedUser?.id, [index])}
+                      disabled={isUpdating}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <DialogFooter className="flex justify-between items-center">
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => handleClearLoginHistory(selectedUser?.id)}
+              disabled={isUpdating || userLoginHistory.length === 0}
+            >
+              {isUpdating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Clearing...
+                </>
+              ) : (
+                "Clear All History"
+              )}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setIsHistoryDialogOpen(false);
+                setUserLoginHistory([]);
+              }}
+            >
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -21,7 +21,6 @@ import {
   Eye,
   EyeOff,
   Trash2,
-  AlertTriangleIcon,
 } from "lucide-react";
 import { Switch } from "../components/ui/switch";
 import { Label } from "../components/ui/label";
@@ -478,8 +477,8 @@ const Profile = () => {
   const ThemeSelector = () => (
     <div className="flex items-center justify-between">
       <div className="space-y-0.5">
-        <Label className="sm:text-base">Theme</Label>
-        <div className="sm:text-sm text-xs text-muted-foreground">
+        <Label className="text-base">Theme</Label>
+        <div className="text-sm text-muted-foreground">
           Choose your preferred theme
         </div>
       </div>
@@ -598,7 +597,7 @@ const Profile = () => {
   }
 
   return (
-    <section className="justify-center bg-cornsilk dark:bg-cornsilk-dark">
+    <section className="min-h-screen bg-cornsilk dark:bg-cornsilk-dark">
       <Toaster />
 
       {/* Header section */}
@@ -614,7 +613,7 @@ const Profile = () => {
           className="rounded-full w-12 h-12"
         />
         <div>
-          <h2 className="sm:text-xl font-bold">Hi! {fullName || "User"}</h2>
+          <h2 className="text-xl font-bold">Hi! {fullName || "User"}</h2>
           <div className="flex items-center bg-stone-200 dark:bg-cornsilk-d1 dark:text-cornsilk w-fit p-0.5 px-1 rounded-md text-sm text-muted-foreground">
             <Shield className="h-3 w-3 mr-1" />
             {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
@@ -625,14 +624,14 @@ const Profile = () => {
       {/* Main content with sidebar and content area */}
       <div className="flex flex-row">
         {/* Left sidebar with tabs */}
-        <div className="md:w-64 sm:w-45 w-fit border-r border-black/10 dark:border-cornsilk-dark p-4 bg-white dark:bg-cornsilk-d2">
-          <h3 className="font-medium sm:text-lg mb-4">Profile Settings</h3>
-          <nav className="space-y-2 min-h-svh">
+        <div className="w-64 border-r border-black/10 dark:border-cornsilk-dark p-4 bg-white dark:bg-cornsilk-d2">
+          <h3 className="font-medium text-lg mb-4">Profile Settings</h3>
+          <nav className="space-y-1">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center px-3 py-2 sm:text-sm text-xs rounded-md transition-colors
+                className={`w-full flex items-center px-3 py-2 text-sm rounded-md transition-colors
                   ${
                     activeTab === tab.id
                       ? "bg-stone-100 dark:bg-cornsilk-d1 font-medium"
@@ -652,7 +651,7 @@ const Profile = () => {
           {activeTab === "profile" && (
             <div className="space-y-6">
               <div>
-                <h3 className="sm:text-lg font-medium mb-4">
+                <h3 className="text-lg font-medium mb-4">
                   Personal Information
                 </h3>
                 <div className="space-y-4 max-w-2xl">
@@ -725,7 +724,7 @@ const Profile = () => {
           {activeTab === "appearance" && (
             <div className="space-y-6">
               <div>
-                <h3 className="sm:text-lg font-medium mb-4">
+                <h3 className="text-lg font-medium mb-4">
                   Appearance Settings
                 </h3>
                 <div className="max-w-2xl">
@@ -739,7 +738,7 @@ const Profile = () => {
           {activeTab === "notifications" && (
             <div className="space-y-6">
               <div>
-                <h3 className="sm:text-lg font-medium mb-4">
+                <h3 className="text-lg font-medium mb-4">
                   Notification Preferences
                 </h3>
                 <div className="space-y-6 max-w-2xl">
@@ -753,8 +752,8 @@ const Profile = () => {
                       className="flex items-center justify-between"
                     >
                       <div className="space-y-0.5">
-                        <Label className="sm:text-base">{title}</Label>
-                        <div className="sm:text-sm text-xs text-muted-foreground">
+                        <Label className="text-base">{title}</Label>
+                        <div className="text-sm text-muted-foreground">
                           Receive emails about{" "}
                           {key === "communication"
                             ? "your account activity"
@@ -780,7 +779,7 @@ const Profile = () => {
           {activeTab === "cookies" && (
             <div className="space-y-6">
               <div>
-                <h3 className="sm:text-lg font-medium mb-4">Cookie Settings</h3>
+                <h3 className="text-lg font-medium mb-4">Cookie Settings</h3>
                 <div className="space-y-6 max-w-2xl">
                   {Object.entries({
                     essential: "Essential Cookies",
@@ -793,8 +792,8 @@ const Profile = () => {
                       className="flex items-center justify-between"
                     >
                       <div className="space-y-0.5">
-                        <Label className="sm:text-base">{title}</Label>
-                        <div className="sm:text-sm text-xs text-muted-foreground">
+                        <Label className="text-base">{title}</Label>
+                        <div className="text-sm text-muted-foreground">
                           {key === "essential"
                             ? "Required for the website to function properly"
                             : key === "performance"
@@ -823,7 +822,7 @@ const Profile = () => {
             <div className="space-y-6">
               <div>
                 <h3 className="text-lg font-medium mb-4">Account Settings</h3>
-                <div className="flex flex-wrap gap-4 md:flex md:flex-wrap grid max-w-2xl">
+                <div className="flex flex-wrap gap-4 max-w-2xl">
                   {/* Password Change Dialog */}
                   <Dialog>
                     <DialogTrigger asChild>
@@ -832,10 +831,10 @@ const Profile = () => {
                         Change Password
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-sm sm:max-w-md rounded-md">
-                      <DialogHeader className="space-y-2">
-                        <DialogTitle className="text-base sm:text-lg">Change Password</DialogTitle>
-                        <DialogDescription className="text-sm space-y-2 text-stone-500">
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Change Password</DialogTitle>
+                        <DialogDescription>
                           Update your account password
                         </DialogDescription>
                       </DialogHeader>
@@ -924,9 +923,9 @@ const Profile = () => {
                           </div>
                         )}
                       </div>
-                      <DialogFooter className="sm:flex grid grid-cols-2 justify-items-center sm:justify-between">
+                      <DialogFooter>
                         <DialogClose asChild>
-                          <Button variant="outline" className="w-fit text-xs sm:text-sm">Cancel</Button>
+                          <Button variant="outline">Cancel</Button>
                         </DialogClose>
                         <DialogClose asChild>
                           <Button
@@ -937,7 +936,6 @@ const Profile = () => {
                               );
                               submitPasswordChange(() => closeBtn?.click());
                             }}
-                            className="w-fit text-xs sm:text-sm"
                           >
                             Update Password
                           </Button>
@@ -954,15 +952,15 @@ const Profile = () => {
                         Manage Avatar
                       </Button>
                     </DialogTrigger>
-                    <DialogContent className="max-w-sm sm:max-w-md rounded-md">
-                      <DialogHeader className="space-y-2">
-                        <DialogTitle className="text-base sm:text-lg">Profile Avatar</DialogTitle>
-                        <DialogDescription className="text-xs sm:text-sm space-y-2 text-stone-500">
+                    <DialogContent className="sm:max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Profile Avatar</DialogTitle>
+                        <DialogDescription>
                           Upload or update your profile picture
                         </DialogDescription>
                       </DialogHeader>
                       <div className="flex flex-col items-center justify-center py-4 space-y-4">
-                        <div className="relative sm:w-32 sm:h-32 w-25 h-25 rounded-full overflow-hidden border-2 border-gray-200">
+                        <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-gray-200">
                           <img
                             src={
                               avatarPreview ||
@@ -997,7 +995,7 @@ const Profile = () => {
                           </div>
                         )}
                       </div>
-                      <DialogFooter className="sm:flex grid grid-cols-2 justify-items-start  sm:justify-between">
+                      <DialogFooter className="flex justify-between sm:justify-between">
                         <Button
                           variant="destructive"
                           onClick={(e) => {
@@ -1008,14 +1006,13 @@ const Profile = () => {
                             handleAvatarDelete(() => closeBtn?.click());
                           }}
                           disabled={!user.avatarUrl && !avatarPreview}
-                          className="w-fit text-xs sm:text-sm"
                         >
                           <Trash2 className="h-4 w-4 mr-2" />
                           Remove Avatar
                         </Button>
-                        <div className="space-x-2 grid grid-cols-2 gap-2 justify-items-center">
+                        <div className="space-x-2">
                           <DialogClose asChild>
-                            <Button variant="outline" className="w-fit text-xs sm:text-sm">Cancel</Button>
+                            <Button variant="outline">Cancel</Button>
                           </DialogClose>
                           <DialogClose asChild>
                             <Button
@@ -1029,7 +1026,6 @@ const Profile = () => {
                                 }
                               }}
                               disabled={!selectedAvatarFile}
-                              className="w-fit text-xs sm:text-sm"
                             >
                               Save Avatar
                             </Button>
@@ -1049,63 +1045,24 @@ const Profile = () => {
                         Delete Account
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className="max-w-xs sm:max-w-md rounded-md">
+                    <AlertDialogContent className="sm:max-w-md">
                       <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Account Deletion Request
-                        </AlertDialogTitle>
-                        <AlertDialogDescription className="text-xs sm:text-sm space-y-2 text-stone-500 mt-2">
-                          <div className="flex items-start">
-                            <AlertTriangleIcon className="h-6 w-6 text-red-500 mr-2 flex-shrink-0 mt-0.5" />
-                            <span>
-                              To delete your account, please contact your system
-                              administrator. For security and data management
-                              purposes, account deletion requires administrative
-                              approval.
-                            </span>
-                          </div>
-                          <div className="pl-8 sm:text-sm text-xs">
-                            <p className="font-medium mb-1">
-                              Contact Information:
-                            </p>
-                            <p>
-                              Email:{" "}
-                              <span className="text-blue-600">
-                                admin@yourcompany.com
-                              </span>
-                            </p>
-                            <p>
-                              Support Ticket:{" "}
-                              <span className="text-blue-600">
-                                helpdesk.yourcompany.com
-                              </span>
-                            </p>
-                          </div>
-                          <div className="pl-8 sm:text-sm text-xs">
-                            <p className="italic">
-                              Please note that account deletion is permanent and
-                              will remove all associated data from our systems.
-                            </p>
-                          </div>
+                        <AlertDialogTitle>Delete Account</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete your account? This
+                          action cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
-                      <AlertDialogFooter className="mt-3 flex-col gap-2 sm:flex-row">
-                        <AlertDialogCancel asChild className="mt-0">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            className="w-full text-xs sm:text-sm"
-                          >
-                            Cancel
-                          </Button>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel asChild>
+                          <Button variant="outline">Cancel</Button>
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() => {
                             // handleLogout();
                           }}
-                          className="w-full text-xs sm:text-sm"
                         >
-                          Understood
+                          Delete Account
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>
@@ -1114,13 +1071,13 @@ const Profile = () => {
               </div>
             </div>
           )}
-          {activeTab === "admin" && (
+          {userRole === "admin" && (
             <div value="admin" className="space-y-4">
               <div className="p-4 border rounded-md bg-yellow-50 dark:bg-yellow-900/20 space-y-2">
-                <h3 className="font-medium sm:text-base text-sm text-yellow-800 dark:text-yellow-200">
+                <h3 className="font-medium text-yellow-800 dark:text-yellow-200">
                   Admin Panel
                 </h3>
-                <p className="sm:text-sm text-xs text-yellow-700 dark:text-yellow-300">
+                <p className="text-sm text-yellow-700 dark:text-yellow-300">
                   You have administrative privileges. Use this section to manage
                   user roles and system settings.
                 </p>

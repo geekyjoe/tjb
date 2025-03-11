@@ -14,11 +14,7 @@ import { Label } from "../components/ui/label";
 import { useToast } from "../hooks/use-toast";
 import { AlertCircle, Eye, EyeOff, Github } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
-import {
-  registerUser,
-  signInWithGoogle,
-  signInWithGithub,
-} from "../services/auth-service";
+import { AuthService } from "../api/auth"; // Updated import
 import { ThemeToggle } from "../ThemeToggle";
 import Footer from "../components/Footer";
 
@@ -105,12 +101,27 @@ const UserSignup = () => {
     setIsLoading(true);
 
     try {
-      await registerUser(formData);
-      toast({
-        title: "Success!",
-        description: "Account created successfully.",
-      });
-      navigate("/dashboard");
+      // Use the AuthService.register method from the API
+      const userData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        username: formData.username,
+        email: formData.email,
+        phoneNumber: formData.phoneNumber || null,
+        password: formData.password
+      };
+      
+      const response = await AuthService.register(userData);
+      
+      if (response.success) {
+        toast({
+          title: "Success!",
+          description: "Account created successfully.",
+        });
+        navigate("/");
+      } else {
+        throw new Error(response.message || "Failed to create account");
+      }
     } catch (error) {
       console.error("Registration error:", error);
       toast({
@@ -124,21 +135,30 @@ const UserSignup = () => {
     }
   };
 
+  // Implementation of social signup would need to be updated
+  // based on how your API handles OAuth flows
   const handleSocialSignup = async (provider) => {
     setSocialLoading(provider);
 
     try {
-      if (provider === "google") {
-        await signInWithGoogle();
-      } else if (provider === "github") {
-        await signInWithGithub();
-      }
-
+      // For social sign-in, you might need to implement OAuth flows
+      // This would depend on your backend implementation
+      // For now, we'll just show a notification that this feature is not implemented
       toast({
-        title: "Success!",
-        description: `Signed up with ${provider} successfully.`,
+        title: "Feature Not Implemented",
+        description: `Sign up with ${provider} is not implemented yet.`,
+        variant: "default",
       });
-      navigate("/dashboard");
+      
+      /* When implemented, it would look something like this:
+      if (provider === "google") {
+        // Redirect to Google OAuth or handle it via a popup
+        // When the user returns, process the token from the OAuth provider
+        // Then send it to your backend
+      } else if (provider === "github") {
+        // Similar flow for GitHub
+      }
+      */
     } catch (error) {
       console.error(`${provider} signup error:`, error);
       toast({
