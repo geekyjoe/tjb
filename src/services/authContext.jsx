@@ -1,214 +1,216 @@
-// AuthContext.js
-import React, { createContext, useState, useEffect, useContext, useCallback, useRef } from 'react';
-import { getCurrentUser } from './auth-service';
-import Cookies from 'js-cookie';
-import { auth } from '../firebase';
+import { useState, useEffect, createContext, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthService } from "../api/auth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
+import { Button } from "../components/ui/button";
+import { useToast } from "../hooks/use-toast";
+import { LogIn, User } from "lucide-react";
 
-const AuthContext = createContext();
+// Create Auth Context
+export const AuthContext = createContext({
+  isAuthenticated: false,
+  userProfile: null,
+  login: () => {},
+  logout: () => {},
+  updateUser: () => {},
+});
 
-// Constants
-const USER_COOKIE_NAME = 'user_session';
-const USER_COOKIE_VERSION = 'v1';
-const COOKIE_EXPIRY = 7; // Days
-const REFRESH_INTERVAL = 15 * 60 * 1000; // 15 minutes
-
-const encryptUserData = (data) => {
-  if (!data) return null;
-  const dataStr = JSON.stringify(data);
-  return btoa(dataStr);
-};
-
-const decryptUserData = (encryptedData) => {
-  if (!encryptedData) return null;
-  try {
-    const dataStr = atob(encryptedData);
-    return JSON.parse(dataStr);
-  } catch (e) {
-    console.error("Failed to decrypt user data", e);
-    return null;
-  }
-};
-
-const sanitizeUserForCookie = (user) => {
-  if (!user) return null;
-  
-  return {
-    uid: user.uid,
-    firstName: user.firstName || '',
-    lastName: user.lastName || '',
-    username: user.username || '',
-    email: user.email || '',
-    role: user.role || 'user',
-    lastLogin: user.lastLogin,
-    cookieCreatedAt: new Date().toISOString(),
-    version: USER_COOKIE_VERSION
-  };
-};
-
+// Auth Provider Component
 export const AuthProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState(null);
+  const [authState, setAuthState] = useState({
+    isAuthenticated: AuthService.isAuthenticated(),
+    userProfile: null,
+  });
   const [loading, setLoading] = useState(true);
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
-  const [authError, setAuthError] = useState(null);
-  
-  // Use refs to track state without triggering effects
-  const currentUserRef = useRef(currentUser);
-  currentUserRef.current = currentUser;
-  
-  // Save user data to cookie whenever it changes
-  // This won't cause infinite loops because it doesn't depend on state that changes inside other effects
+  const { toast } = useToast();
+
+  // Initialize auth state
   useEffect(() => {
-    if (currentUser) {
-      const sanitizedUser = sanitizeUserForCookie(currentUser);
-      const encryptedData = encryptUserData(sanitizedUser);
-      
-      Cookies.set(USER_COOKIE_NAME, encryptedData, { 
-        expires: COOKIE_EXPIRY, 
-        secure: window.location.protocol === 'https:',
-        sameSite: 'strict',
-        path: '/'
-      });
-    }
-  }, [currentUser]); // Only depends on currentUser
-  
-  // Logout function
-  const logout = useCallback(async () => {
-    try {
-      await auth.signOut();
-      Cookies.remove(USER_COOKIE_NAME, { path: '/' });
-      setCurrentUser(null);
-    } catch (error) {
-      console.error("Logout error:", error);
-      setAuthError("Failed to logout. Please try again.");
-    }
-  }, []); // No dependencies
-  
-  // Function to refresh user data from Firebase
-  const refreshUserData = useCallback(async (silent = true) => {
-    if (!silent) setLoading(true);
-    
-    try {
-      const freshUserData = await getCurrentUser();
-      
-      if (freshUserData) {
-        setCurrentUser(freshUserData);
-      } else {
-        // User is no longer authenticated in Firebase
-        setCurrentUser(null);
-        Cookies.remove(USER_COOKIE_NAME, { path: '/' });
-      }
-      
-      setAuthError(null);
-    } catch (error) {
-      console.error("User data refresh error:", error);
-      setAuthError("Failed to refresh user data. Please try logging in again.");
-      
-      // If there's an auth error, clear the cookie
-      if (error.message?.includes('auth')) {
-        Cookies.remove(USER_COOKIE_NAME, { path: '/' });
-      }
-    } finally {
-      if (!silent) setLoading(false);
-    }
-  }, []); // No dependencies
-  
-  // Initial load - only runs once
-  useEffect(() => {
-    const loadUserData = async () => {
-      setLoading(true);
-      
+    const initAuth = async () => {
       try {
-        // First try cookie for instant load
-        const cookieData = Cookies.get(USER_COOKIE_NAME);
-        
-        if (cookieData) {
-          try {
-            const decryptedData = decryptUserData(cookieData);
-            
-            // Validate cookie data
-            if (
-              decryptedData && 
-              decryptedData.uid && 
-              decryptedData.version === USER_COOKIE_VERSION
-            ) {
-              // Use cookie data for immediate render
-              setCurrentUser(decryptedData);
-              setLoading(false);
-              
-              // Verify with Firebase in background
-              refreshUserData(true);
-            } else {
-              // Invalid or old version cookie
-              Cookies.remove(USER_COOKIE_NAME, { path: '/' });
-              await refreshUserData(false);
-            }
-          } catch (e) {
-            console.error("Cookie parsing error:", e);
-            Cookies.remove(USER_COOKIE_NAME, { path: '/' });
-            await refreshUserData(false);
+        if (AuthService.isAuthenticated()) {
+          const currentUser = AuthService.getCurrentUser();
+          if (currentUser) {
+            setAuthState({
+              isAuthenticated: true,
+              userProfile: {
+                userId: currentUser.id,
+                firstName: currentUser.firstName || "",
+                lastName: currentUser.lastName || "",
+                email: currentUser.email || "",
+                avatarUrl: currentUser.avatarUrl || "",
+                role: currentUser.role || "user",
+              },
+            });
           }
-        } else {
-          // No cookie, load directly from Firebase
-          await refreshUserData(false);
         }
       } catch (error) {
-        console.error("Authentication error:", error);
-        setAuthError("Authentication error. Please try again later.");
-        setLoading(false);
+        console.error("Error initializing auth state:", error);
       } finally {
-        setInitialLoadComplete(true);
+        setLoading(false);
       }
     };
-    
-    loadUserData();
-    
-    // Listen for auth state changes (logout from another tab, token expiry)
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      // Use the ref to access latest state without adding a dependency
-      const userState = currentUserRef.current;
-      
-      if (!user && userState) {
-        // User logged out in another tab/window
-        setCurrentUser(null);
-        Cookies.remove(USER_COOKIE_NAME, { path: '/' });
-      } else if (user && (!userState || user.uid !== userState.uid)) {
-        // User logged in from another tab or token refreshed
-        await refreshUserData(true);
+
+    initAuth();
+  }, []);
+
+  const login = async (email, password, rememberMe = false) => {
+    try {
+      const response = await AuthService.login(email, password);
+
+      if (response.success) {
+        const currentUser = AuthService.getCurrentUser();
+        setAuthState({
+          isAuthenticated: true,
+          userProfile: {
+            userId: currentUser.id,
+            firstName: currentUser.firstName || "",
+            lastName: currentUser.lastName || "",
+            email: currentUser.email || "",
+            avatarUrl: currentUser.avatarUrl || "",
+            role: currentUser.role || "user",
+          },
+        });
       }
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const logout = () => {
+    AuthService.logout();
+    setAuthState({
+      isAuthenticated: false,
+      userProfile: null,
     });
-    
-    return () => unsubscribe();
-  }, [refreshUserData]); // Only depends on refreshUserData which never changes
-  
-  // Periodic background refresh - no state dependencies
-  useEffect(() => {
-    if (!currentUser) return;
-    
-    const intervalId = setInterval(() => {
-      refreshUserData(true);
-    }, REFRESH_INTERVAL);
-    
-    return () => clearInterval(intervalId);
-  }, [currentUser, refreshUserData]);
-  
-  // Context value
-  const value = {
-    currentUser,
-    setCurrentUser,
-    loading,
-    initialLoadComplete,
-    authError,
-    logout,
-    refreshUserData: () => refreshUserData(false),
-    isAdmin: currentUser?.role === 'admin',
-    isModerator: ['admin', 'moderator'].includes(currentUser?.role)
+    toast({
+      title: "Success",
+      description: "Signed out successfully",
+    });
+  };
+
+  const updateUser = (userData) => {
+    setAuthState((prev) => ({
+      ...prev,
+      userProfile: { ...prev.userProfile, ...userData },
+    }));
+
+    // Update in localStorage
+    const currentUser = AuthService.getCurrentUser();
+    if (currentUser) {
+      const updatedUser = { ...currentUser, ...userData };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+    }
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider
+      value={{
+        ...authState,
+        login,
+        logout,
+        updateUser,
+        loading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
 };
 
+// Custom hook to use auth context
 export const useAuth = () => useContext(AuthContext);
+
+// Updated UserAuthButton Component
+export const UserAuthButton = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const { isAuthenticated, userProfile, logout, loading } = useAuth();
+
+  const handleSignOut = async () => {
+    try {
+      logout();
+      navigate("/");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (loading) {
+    return (
+      <Button variant="outline" className="flex items-center gap-2" disabled>
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+        Loading...
+      </Button>
+    );
+  }
+
+  if (!isAuthenticated || !userProfile) {
+    return (
+      <Button
+        variant="ghost"
+        className="flex items-center gap-2"
+        onClick={() => navigate("/login")}
+        size="icon"
+      >
+        <LogIn className="h-4 w-4" />
+      </Button>
+    );
+  }
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+          <Avatar className="h-8 w-8">
+            <AvatarImage
+              src={
+                userProfile.avatarUrl ||
+                `https://ui-avatars.com/api/?name=${
+                  userProfile.firstName || "User"
+                }`
+              }
+              alt={userProfile.firstName}
+            />
+            <AvatarFallback>
+              {userProfile.firstName?.charAt(0) || <User className="h-4 w-4" />}
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              {`${userProfile.firstName} ${userProfile.lastName}`}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              {userProfile.email}
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => navigate("/profile")}>
+          Profile
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+};

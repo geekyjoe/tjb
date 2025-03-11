@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthService } from "../api/auth";
+import { useAuth } from "../services/authContext"; // Update with correct path
 import {
   AlertDialog,
   AlertDialogContent,
@@ -11,14 +11,6 @@ import {
   AlertDialogAction,
 } from "../components/ui/alert-dialog";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
-import {
   Card,
   CardContent,
   CardDescription,
@@ -26,130 +18,15 @@ import {
   CardHeader,
   CardTitle,
 } from "../components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Checkbox } from "../components/ui/checkbox";
 import { useToast } from "../hooks/use-toast";
-import { Eye, EyeOff, Github, LogIn, LucideLoader, User } from "lucide-react";
+import { Eye, EyeOff, Github, LucideLoader } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
 import { ThemeToggle } from "../ThemeToggle";
 import Footer from "../components/Footer";
-
-export const UserAuthButton = () => {
-  const [userProfile, setUserProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    // Check if user is authenticated
-    const checkAuth = async () => {
-      try {
-        if (AuthService.isAuthenticated()) {
-          const currentUser = AuthService.getCurrentUser();
-          if (currentUser) {
-            setUserProfile({
-              userId: currentUser.id,
-              firstName: currentUser.firstName || '',
-              email: currentUser.email || '',
-              avatarUrl: currentUser.avatarUrl || '',
-              role: currentUser.role || 'user',
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error checking authentication:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  const handleSignOut = async () => {
-    try {
-      AuthService.logout();
-      setUserProfile(null);
-      toast({
-        title: "Success",
-        description: "Signed out successfully",
-      });
-      navigate("/");
-    } catch (error) {
-      toast({
-        title: "Error",
-        description: "Failed to sign out",
-        variant: "destructive",
-      });
-    }
-  };
-
-  if (loading) {
-    return (
-      <Button variant="outline" className="flex items-center gap-2" disabled>
-        <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
-        Loading...
-      </Button>
-    );
-  }
-
-  if (!userProfile) {
-    return (
-      <Button
-        variant="ghost"
-        className="flex items-center gap-2"
-        onClick={() => navigate("/login")}
-        size="icon"
-      >
-        <LogIn className="h-4 w-4" />
-      </Button>
-    );
-  }
-
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={
-                userProfile.avatarUrl ||
-                `https://ui-avatars.com/api/?name=${userProfile.firstName || "User"}`
-              }
-              alt={userProfile.firstName}
-            />
-            <AvatarFallback>
-              {userProfile.firstName?.charAt(0) || <User className="h-4 w-4" />}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {userProfile.firstName || "User"}
-            </p>
-            <p className="text-xs leading-none text-muted-foreground">
-              {userProfile.email}
-            </p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate("/profile")}>
-          Profile
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
-          Sign out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
-};
 
 const UserLogin = () => {
   const [formData, setFormData] = useState({
@@ -167,13 +44,14 @@ const UserLogin = () => {
   });
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { login, isAuthenticated } = useAuth();
 
   useEffect(() => {
     // Check if already logged in
-    if (AuthService.isAuthenticated()) {
+    if (isAuthenticated) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [isAuthenticated, navigate]);
 
   const handleChange = (e) => {
     const value =
@@ -198,17 +76,14 @@ const UserLogin = () => {
     setIsLoading(true);
 
     try {
-      const response = await AuthService.login(formData.email, formData.password);
-      
+      const response = await login(
+        formData.email,
+        formData.password,
+        formData.rememberMe
+      );
+
       if (response.success) {
         const userData = response.data.user;
-        
-        if (!formData.rememberMe) {
-          // If remember me is not checked, set token to expire in session
-          // This would require backend support or a custom implementation
-          // For now, we'll just log the preference
-          console.log("Session-only login requested");
-        }
 
         toast({
           title: "Welcome back!",
@@ -219,7 +94,7 @@ const UserLogin = () => {
         navigate("/");
       } else {
         showLoginAlert(false, response.message || "Login failed");
-        
+
         toast({
           title: "Error",
           description: response.message || "Login failed",
@@ -241,11 +116,7 @@ const UserLogin = () => {
     }
   };
 
-  // Note: For social login, we would need to adapt to whatever authentication flow the API supports
-  // The current implementation assumes there would be OAuth endpoints for these providers
-  
   const handleGoogleLogin = async () => {
-    // This would need to be implemented based on how the backend handles OAuth
     toast({
       title: "Not Implemented",
       description: "Google login is not yet implemented with the new API",
@@ -254,7 +125,6 @@ const UserLogin = () => {
   };
 
   const handleGithubLogin = async () => {
-    // This would need to be implemented based on how the backend handles OAuth
     toast({
       title: "Not Implemented",
       description: "Github login is not yet implemented with the new API",
@@ -387,7 +257,6 @@ const UserLogin = () => {
                   </div>
                 </div>
 
-                {/* Remember Me Checkbox */}
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="rememberMe"

@@ -1,5 +1,5 @@
 import React, { lazy, useState, useEffect, Suspense } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Bell,
   Moon,
@@ -598,11 +598,11 @@ const Profile = () => {
   }
 
   return (
-    <section className="justify-center bg-cornsilk dark:bg-cornsilk-dark">
+    <section className="bg-cornsilk dark:bg-cornsilk-d1">
       <Toaster />
 
       {/* Header section */}
-      <div className="p-6 border-b border-black/10 dark:border-cornsilk-dark flex items-center gap-4">
+      <div className="p-6 border-b border-black/10 dark:border-white/20 flex items-center gap-4">
         <img
           src={
             user.avatarUrl ||
@@ -625,18 +625,18 @@ const Profile = () => {
       {/* Main content with sidebar and content area */}
       <div className="flex flex-row">
         {/* Left sidebar with tabs */}
-        <div className="md:w-64 sm:w-45 w-fit border-r border-black/10 dark:border-cornsilk-dark p-4 bg-white dark:bg-cornsilk-d2">
+        <div className="md:w-64 sm:w-45 w-fit border-r border-black/10 dark:border-white/10 p-4 bg-cornsilk dark:bg-cornsilk-d1">
           <h3 className="font-medium sm:text-lg mb-4">Profile Settings</h3>
           <nav className="space-y-2 min-h-svh">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center px-3 py-2 sm:text-sm text-xs rounded-md transition-colors
+                className={`w-full flex items-center px-3 py-2 sm:text-sm text-xs rounded-md
                   ${
                     activeTab === tab.id
-                      ? "bg-stone-100 dark:bg-cornsilk-d1 font-medium"
-                      : "hover:bg-stone-50 dark:hover:bg-cornsilk-d1/50"
+                      ? "bg-stone-200 dark:bg-stone-700 font-semibold"
+                      : "hover:bg-cornsilk-d1/5 dark:hover:bg-cornsilk-d1/50"
                   }`}
               >
                 {tab.icon}
@@ -1133,6 +1133,9 @@ const Profile = () => {
                   <Shield className="w-4 h-4 mr-2" />
                   {showUserManagement ? "Hide Users" : "Manage Users"}
                 </Button>
+                <Link to="/adminpanel" className="text-blue-600">
+                  Go to Admin Panel
+                </Link>
               </div>
               {showUserManagement && (
                 <Suspense fallback={<p>Loading...</p>}>
