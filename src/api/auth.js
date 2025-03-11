@@ -2,7 +2,7 @@
 
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api";
+const API_URL = "https://appi-csvt.onrender.com/api";
 
 // Create axios instance with default configs
 const apiClient = axios.create({
