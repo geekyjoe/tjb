@@ -35,11 +35,11 @@ const Cart = () => {
   }, []);
 
   return (
-    <div className="min-h-full">
+    <div className="bg-cornsilk dark:bg-cornsilk-d1 min-h-full">
       <Toaster richcolors/>
       <div className="h-full font-inter grow text-neutral-800 dark:text-neutral-200">
         <div className="flex justify-between items-center p-5">
-          <h2 className="text-2xl font-semibold text-left">Your Cart</h2>
+          <h2 className="text-2xl font-semibold text-left">Bag</h2>
           {cartItems.length > 0 && (
             <AlertDialog>
               <AlertDialogTrigger asChild>
@@ -174,7 +174,6 @@ const Cart = () => {
           </div>
         )}
       </div>
-
       <Footer />
     </div>
   );

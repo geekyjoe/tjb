@@ -2,7 +2,7 @@ import React from "react";
 import { Button } from "./ui/button";
 
 const OrderSummaryCard = ({ totalItems, totalCost }) => (
-  <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 h-fit">
+  <div className="bg-white dark:bg-neutral-800 border rounded-lg p-6 h-fit">
     <h3 className="text-2xl font-bold mb-4">Order Summary</h3>
     <div className="space-y-4">
       <div className="flex justify-between">

@@ -400,7 +400,7 @@ const ProductDetailPage = () => {
   }
 
   return (
-    <div className="mx-auto px-4 py-8">
+    <div className="mx-auto px-4 py-8 bg-cornsilk dark:bg-cornsilk-d1">
       <Toaster richColors />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Image Gallery with Left Thumbnails */}
@@ -599,9 +599,9 @@ const ProductDetailPage = () => {
       {/* Enhanced Full-screen Image Gallery Modal without pinch-to-zoom */}
       {galleryOpen && (
         <div className="fixed inset-0 bg-zinc-100 bg-opacity-90 z-50 flex items-center justify-center">
-          <div className="relative w-full h-full flex flex-col touch-none overflow-hidden">
+          <div className="relative w-full h-full flex flex-col touch-none bg-cornsilk dark:bg-cornsilk-d1 text-black dark:text-white overflow-hidden">
             {/* Gallery Toolbar */}
-            <div className="flex justify-between items-center p-4 text-black">
+            <div className="flex justify-between items-center p-4">
               <div className="flex items-center space-x-2">
                 <button
                   onClick={zoomIn}

@@ -92,7 +92,7 @@ const SearchBar = () => {
             : ""
         }`}
       >
-        {open && (
+        {!open && (
           <Button
             variant="ghost"
             size="icon"
