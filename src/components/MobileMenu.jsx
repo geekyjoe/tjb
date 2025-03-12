@@ -15,7 +15,7 @@ const MobileMenu = ({}) => {
             "px-2.5 py-3.5 dark:hover:bg-zinc-700 focus:outline-hidden focus:underline focus:decoration-solid focus:underline-offset-4 text-cornsilk-dark dark:text-cornsilk dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
           }
         >
-          Catalog
+          Catalogue
         </Link>
         <div className="flex items-center gap-2">
           <UserAuthButton />

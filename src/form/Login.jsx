@@ -131,7 +131,10 @@ const UserLogin = () => {
       variant: "destructive",
     });
   };
-
+  useEffect(() => {
+    document.title = "Login - TJB Store"; // Set the document title
+  }, []);
+  
   return (
     <div className="md:min-h-dvh bg-cornsilk dark:bg-[#211915]">
       <header className="z-10 flex justify-between items-center font-inter w-full p-2">

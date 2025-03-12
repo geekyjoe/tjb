@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -108,11 +108,11 @@ const UserSignup = () => {
         username: formData.username,
         email: formData.email,
         phoneNumber: formData.phoneNumber || null,
-        password: formData.password
+        password: formData.password,
       };
-      
+
       const response = await AuthService.register(userData);
-      
+
       if (response.success) {
         toast({
           title: "Success!",
@@ -149,7 +149,7 @@ const UserSignup = () => {
         description: `Sign up with ${provider} is not implemented yet.`,
         variant: "default",
       });
-      
+
       /* When implemented, it would look something like this:
       if (provider === "google") {
         // Redirect to Google OAuth or handle it via a popup
@@ -179,6 +179,10 @@ const UserSignup = () => {
       phoneNumber: input,
     });
   };
+
+  useEffect(() => {
+    document.title = "Signup - TJB Store"; // Set the document title
+  }, []);
 
   return (
     <div className="bg-cornsilk dark:bg-zinc-900">

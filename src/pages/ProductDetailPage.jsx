@@ -39,7 +39,10 @@ const ProductDetailPage = () => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const imageContainerRef = useRef(null);
-  
+  const imgRef = useRef(null);
+  const lensRef = useRef(null);
+  const resultRef = useRef(null);
+
   // Added state for gallery modal
   const [galleryOpen, setGalleryOpen] = useState(false);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -48,45 +51,167 @@ const ProductDetailPage = () => {
   const [isDragging, setIsDragging] = useState(false);
   const galleryImageRef = useRef(null);
 
+  // State for the separate zoom result window
+  const [showZoomResult, setShowZoomResult] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  // Detect if the device is touch-enabled
+  useEffect(() => {
+    const isTouchEnabled =
+      "ontouchstart" in window ||
+      navigator.maxTouchPoints > 0 ||
+      navigator.msMaxTouchPoints > 0;
+
+    setIsTouchDevice(isTouchEnabled);
+  }, []);
+
+  // Initialize the zoom functionality when the image is loaded or selectedImage changes
+  useEffect(() => {
+    if (product && imageContainerRef.current && !isTouchDevice) {
+      // Clean up previous zoom elements
+      cleanupZoomElements();
+      // Setup new zoom elements
+      setupImageZoom();
+    }
+
+    // Cleanup on unmount
+    return () => {
+      cleanupZoomElements();
+    };
+  }, [product, selectedImage, isTouchDevice]);
+
+  // Clean up zoom elements
+  const cleanupZoomElements = () => {
+    if (lensRef.current && lensRef.current.parentNode) {
+      lensRef.current.parentNode.removeChild(lensRef.current);
+      lensRef.current = null;
+    }
+    if (resultRef.current && resultRef.current.parentNode) {
+      resultRef.current.parentNode.removeChild(resultRef.current);
+      resultRef.current = null;
+    }
+  };
+
+  // Setup image zoom functionality
+  const setupImageZoom = () => {
+    // Create lens element
+    const lens = document.createElement("div");
+    lens.className =
+      "absolute pointer-events-none border border-cyan-400 bg-cyan-200 opacity-40";
+    lens.style.width = "100px";
+    lens.style.height = "100px";
+    lens.style.display = "none";
+    lens.style.position = "absolute";
+    lens.style.zIndex = "5";
+    imageContainerRef.current.style.position = "relative";
+    imageContainerRef.current.appendChild(lens);
+    lensRef.current = lens;
+
+    // Create result element
+    const result = document.createElement("div");
+    result.className =
+      "fixed bg-white size-100 border border-gray-300 rounded-lg overflow-hidden shadow-lg z-50";
+    // result.style.width = "300px";
+    // result.style.height = "300px";
+    result.style.display = "none";
+    result.style.backgroundRepeat = "no-repeat";
+    result.style.position = "absolute";
+    document.body.appendChild(result);
+    resultRef.current = result;
+  };
+
+  // Calculate zoom ratio and position the result window
+  const calculateZoomRatio = () => {
+    if (!imgRef.current || !lensRef.current || !resultRef.current)
+      return { cx: 0, cy: 0 };
+
+    const cx = resultRef.current.offsetWidth / lensRef.current.offsetWidth;
+    const cy = resultRef.current.offsetHeight / lensRef.current.offsetHeight;
+
+    return { cx, cy };
+  };
+
   const handleMouseMove = (e) => {
-    if (!imageContainerRef.current) return;
+    if (
+      isTouchDevice ||
+      !product ||
+      !lensRef.current ||
+      !resultRef.current ||
+      !imgRef.current
+    )
+      return;
 
-    const { left, top, width, height } =
-      imageContainerRef.current.getBoundingClientRect();
+    e.preventDefault();
 
-    // Calculate the cursor position relative to image boundaries
-    let mouseX = e.pageX - left;
-    let mouseY = e.pageY - top;
+    // Show lens and result
+    lensRef.current.style.display = "block";
+    resultRef.current.style.display = "block";
+    setShowZoomResult(true);
 
-    // Account for scroll position
-    mouseX = mouseX - window.pageXOffset;
-    mouseY = mouseY - window.pageYOffset;
+    // Get cursor position
+    const img = imgRef.current;
+    const imgRect = img.getBoundingClientRect();
 
-    // Convert to a scale from -1 to 1 for smoother zooming
-    const ratioX = (mouseX / width) * 2 - 1;
-    const ratioY = (mouseY / height) * 2 - 1;
+    // Calculate cursor position relative to image
+    let x = e.clientX - imgRect.left;
+    let y = e.clientY - imgRect.top;
 
-    // Apply constraints to keep zoom within bounds
-    const boundedX = Math.max(-1, Math.min(1, ratioX));
-    const boundedY = Math.max(-1, Math.min(1, ratioY));
+    // Calculate lens position
+    const lensWidth = lensRef.current.offsetWidth;
+    const lensHeight = lensRef.current.offsetHeight;
 
-    // Convert to percentage with adjustment for centered zoom
-    const zoomX = (boundedX + 1) * 50;
-    const zoomY = (boundedY + 1) * 50;
+    x = x - lensWidth / 2;
+    y = y - lensHeight / 2;
 
-    setMousePosition({ x: zoomX, y: zoomY });
+    // Constrain lens to image boundaries
+    if (x > imgRect.width - lensWidth) x = imgRect.width - lensWidth;
+    if (x < 0) x = 0;
+    if (y > imgRect.height - lensHeight) y = imgRect.height - lensHeight;
+    if (y < 0) y = 0;
+
+    // Position the lens
+    lensRef.current.style.left = x + "px";
+    lensRef.current.style.top = y + "px";
+
+    // Calculate the ratio between result div and lens
+    const { cx, cy } = calculateZoomRatio();
+
+    // Position the result area to the right of the image container
+    const containerRect = imageContainerRef.current.getBoundingClientRect();
+    resultRef.current.style.left = containerRect.right + 10 + "px";
+    resultRef.current.style.top = containerRect.top + "px";
+
+    // Set the background of the result div
+    resultRef.current.style.backgroundImage = `url('${product.images[selectedImage]}')`;
+    resultRef.current.style.backgroundSize = `${imgRect.width * cx}px ${
+      imgRect.height * cy
+    }px`;
+    resultRef.current.style.backgroundPosition = `-${x * cx}px -${y * cy}px`;
+  };
+
+  const handleMouseLeave = () => {
+    if (isTouchDevice || !lensRef.current || !resultRef.current) return;
+
+    // Hide lens and result when mouse leaves the image
+    lensRef.current.style.display = "none";
+    resultRef.current.style.display = "none";
+    setShowZoomResult(false);
   };
 
   // Gallery image navigation handlers
   const goToPreviousImage = () => {
     if (!product) return;
-    setSelectedImage((prev) => (prev === 0 ? product.images.length - 1 : prev - 1));
+    setSelectedImage((prev) =>
+      prev === 0 ? product.images.length - 1 : prev - 1
+    );
     resetZoom();
   };
 
   const goToNextImage = () => {
     if (!product) return;
-    setSelectedImage((prev) => (prev === product.images.length - 1 ? 0 : prev + 1));
+    setSelectedImage((prev) =>
+      prev === product.images.length - 1 ? 0 : prev + 1
+    );
     resetZoom();
   };
 
@@ -118,7 +243,7 @@ const ProductDetailPage = () => {
       setIsDragging(true);
       setDragStart({
         x: e.clientX,
-        y: e.clientY
+        y: e.clientY,
       });
     }
   };
@@ -132,17 +257,23 @@ const ProductDetailPage = () => {
       const maxOffset = (zoomLevel - 1) * 200; // Adjust this value based on your image size
 
       // Calculate new offsets with boundaries
-      const newOffsetX = Math.min(maxOffset, Math.max(-maxOffset, dragOffset.x + deltaX));
-      const newOffsetY = Math.min(maxOffset, Math.max(-maxOffset, dragOffset.y + deltaY));
+      const newOffsetX = Math.min(
+        maxOffset,
+        Math.max(-maxOffset, dragOffset.x + deltaX)
+      );
+      const newOffsetY = Math.min(
+        maxOffset,
+        Math.max(-maxOffset, dragOffset.y + deltaY)
+      );
 
       setDragOffset({
         x: newOffsetX,
-        y: newOffsetY
+        y: newOffsetY,
       });
 
       setDragStart({
         x: e.clientX,
-        y: e.clientY
+        y: e.clientY,
       });
     }
   };
@@ -155,20 +286,20 @@ const ProductDetailPage = () => {
   const handleKeyDown = (e) => {
     if (galleryOpen) {
       switch (e.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           goToPreviousImage();
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           goToNextImage();
           break;
-        case 'Escape':
+        case "Escape":
           setGalleryOpen(false);
           resetZoom();
           break;
-        case '+':
+        case "+":
           zoomIn();
           break;
-        case '-':
+        case "-":
           zoomOut();
           break;
         default:
@@ -178,16 +309,11 @@ const ProductDetailPage = () => {
   };
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
     };
   }, [galleryOpen, product]);
-
-  // Reset zoom and drag when changing images
-  useEffect(() => {
-    resetZoom();
-  }, [selectedImage]);
 
   useEffect(() => {
     const loadProduct = async () => {
@@ -210,11 +336,6 @@ const ProductDetailPage = () => {
     };
 
     loadProduct();
-
-    // Clean up to reset the title when the component unmounts
-    // return () => {
-    //   document.title = "E-Commerce App"; // Replace with your app's default title
-    // };
   }, [id]);
 
   const isInCart = product && cartItems.some((item) => item.id === product.id);
@@ -305,32 +426,26 @@ const ProductDetailPage = () => {
             ))}
           </div>
 
-          {/* Main Image */}
-          <div className="flex-1">
+          {/* Main Image Container - With improved mouse overlay */}
+          <div className="flex-1 relative">
             <div
               ref={imageContainerRef}
-              className="border border-neutral-200 dark:border-neutral-500 aspect-square w-full rounded-lg overflow-hidden relative cursor-zoom-in"
-              onMouseEnter={() => setIsZoomed(true)}
-              onMouseLeave={() => setIsZoomed(false)}
+              className="md:size-140 border border-neutral-200 dark:border-neutral-500 aspect-square rounded-lg overflow-hidden relative md:cursor-zoom-in"
               onMouseMove={handleMouseMove}
+              onMouseLeave={handleMouseLeave}
               onClick={() => setGalleryOpen(true)}
             >
               <img
+                ref={imgRef}
                 src={product.images[selectedImage]}
                 alt={product.title}
-                className={`w-full h-full object-contain transition-transform duration-200 ${
-                  isZoomed ? "scale-200" : "scale-100"
-                }`}
-                style={
-                  isZoomed
-                    ? {
-                        transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
-                      }
-                    : undefined
-                }
+                className="w-full h-full object-contain"
               />
+
               <div className="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white p-1 rounded text-xs">
-                Click to expand
+                {isTouchDevice
+                  ? "Tap to expand"
+                  : "Hover to zoom, click to expand"}
               </div>
             </div>
           </div>
@@ -387,7 +502,7 @@ const ProductDetailPage = () => {
             )}
           </div>
 
-          <Tabs defaultValue="description" className="w-full">
+          <Tabs defaultValue="description" className="w-full m-0">
             <TabsList>
               <TabsTrigger value="description">Description</TabsTrigger>
               <TabsTrigger value="specifications">Details</TabsTrigger>
@@ -423,8 +538,8 @@ const ProductDetailPage = () => {
             </TabsContent>
           </Tabs>
 
-          {/* Delivery Check - Modified */}
-          <div className="p-4">
+          {/* Delivery Check */}
+          <div className="p-4 my-4">
             <div className="flex items-center space-x-4">
               <Input
                 type="text"
@@ -440,7 +555,11 @@ const ProductDetailPage = () => {
                 }}
                 className="w-40 dark:ring-zinc-400"
               />
-              <Button onClick={checkDelivery} variant="outline" className="rounded-md dark:bg-stone-800">
+              <Button
+                onClick={checkDelivery}
+                variant="outline"
+                className="rounded-md dark:bg-stone-800"
+              >
                 Check
               </Button>
             </div>
@@ -452,7 +571,7 @@ const ProductDetailPage = () => {
             )}
           </div>
 
-          {/* Offers - Modified */}
+          {/* Offers */}
           <div className="border-2 border-neutral-200 dark:border-neutral-700 rounded-xl p-4">
             <h3 className="text-lg font-semibold mb-4">Available Offers</h3>
             <ul className="space-y-3">
@@ -477,35 +596,42 @@ const ProductDetailPage = () => {
         </div>
       </div>
 
-      {/* Full-screen Image Gallery Modal */}
+      {/* Enhanced Full-screen Image Gallery Modal without pinch-to-zoom */}
       {galleryOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center">
-          <div className="relative w-full h-full flex flex-col">
+        <div className="fixed inset-0 bg-zinc-100 bg-opacity-90 z-50 flex items-center justify-center">
+          <div className="relative w-full h-full flex flex-col touch-none overflow-hidden">
             {/* Gallery Toolbar */}
-            <div className="flex justify-between items-center p-4 text-white">
+            <div className="flex justify-between items-center p-4 text-black">
               <div className="flex items-center space-x-2">
-                <button 
-                  onClick={zoomIn} 
-                  className="p-2 rounded-full hover:bg-gray-800 transition"
+                <button
+                  onClick={zoomIn}
+                  className="p-2 rounded-full hover:bg-gray-200 transition"
                   aria-label="Zoom in"
                 >
                   <ZoomIn className="w-6 h-6" />
                 </button>
-                <button 
-                  onClick={zoomOut} 
-                  className="p-2 rounded-full hover:bg-gray-800 transition"
+                <button
+                  onClick={zoomOut}
+                  className="p-2 rounded-full hover:bg-gray-200 transition"
                   aria-label="Zoom out"
                 >
                   <ZoomOut className="w-6 h-6" />
                 </button>
-                <span className="text-sm ml-2">{Math.round(zoomLevel * 100)}%</span>
+                <span className="text-sm ml-2">
+                  {Math.round(zoomLevel * 100)}%
+                </span>
               </div>
-              <button 
+              <div className="text-sm text-gray-500">
+                {!isTouchDevice
+                  ? "Use buttons to zoom"
+                  : "Drag to pan when zoomed"}
+              </div>
+              <button
                 onClick={() => {
                   setGalleryOpen(false);
                   resetZoom();
-                }} 
-                className="p-2 rounded-full hover:bg-gray-800 transition"
+                }}
+                className="p-2 rounded-full hover:bg-gray-200 transition"
                 aria-label="Close gallery"
               >
                 <X className="w-6 h-6" />
@@ -513,58 +639,56 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Gallery Main Area */}
-            <div 
+            <div
               className="flex-1 flex items-center justify-center overflow-hidden"
               onMouseDown={handleDragStart}
               onMouseMove={handleDragMove}
               onMouseUp={handleDragEnd}
               onMouseLeave={handleDragEnd}
-              style={{ cursor: zoomLevel > 1 ? isDragging ? 'grabbing' : 'grab' : 'default' }}
+              style={{
+                cursor:
+                  zoomLevel > 1
+                    ? isDragging
+                      ? "grabbing"
+                      : "grab"
+                    : "default",
+                touchAction: "auto",
+              }}
             >
-              <div 
+              <div
                 ref={galleryImageRef}
                 className="relative"
                 style={{
                   transform: `scale(${zoomLevel}) translate(${dragOffset.x}px, ${dragOffset.y}px)`,
-                  transition: isDragging ? 'none' : 'transform 0.2s ease'
+                  transition: isDragging ? "none" : "transform 0.2s ease",
                 }}
               >
                 <img
                   src={product.images[selectedImage]}
                   alt={product.title}
                   className="max-h-screen max-w-screen object-contain"
+                  draggable="false" // Prevent image dragging conflicts with our custom drag
                 />
               </div>
             </div>
 
-            {/* Image Navigation */}
-            <div className="absolute left-0 top-1/2 transform -translate-y-1/2 p-4">
-              <button 
-                onClick={goToPreviousImage} 
+            {/* Thumbnail Navigation */}
+            <div className="p-4 flex items-center justify-between">
+              <button
+                onClick={goToPreviousImage}
                 className="p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 text-white transition"
                 aria-label="Previous image"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
-            </div>
-            <div className="absolute right-0 top-1/2 transform -translate-y-1/2 p-4">
-              <button 
-                onClick={goToNextImage} 
-                className="p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 text-white transition"
-                aria-label="Next image"
-              >
-                <ChevronRight className="w-6 h-6" />
-              </button>
-            </div>
-
-            {/* Thumbnail Navigation */}
-            <div className="p-4 flex justify-center">
               <div className="flex space-x-2 overflow-x-auto pb-2 max-w-full">
                 {product.images.map((image, index) => (
                   <div
                     key={index}
                     className={`w-16 h-16 rounded-md overflow-hidden cursor-pointer border-2 ${
-                      selectedImage === index ? "border-white" : "border-transparent"
+                      selectedImage === index
+                        ? "border-black"
+                        : "border-transparent"
                     } hover:border-gray-400 transition-colors`}
                     onClick={() => {
                       setSelectedImage(index);
@@ -579,6 +703,13 @@ const ProductDetailPage = () => {
                   </div>
                 ))}
               </div>
+              <button
+                onClick={goToNextImage}
+                className="p-3 rounded-full bg-black bg-opacity-50 hover:bg-opacity-70 text-white transition"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
             </div>
           </div>
         </div>

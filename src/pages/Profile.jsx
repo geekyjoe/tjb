@@ -106,6 +106,10 @@ const Profile = () => {
   const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
 
   useEffect(() => {
+    document.title = "Profile - TJB Store"; // Set the document title
+  }, []);
+
+  useEffect(() => {
     // Check if user is authenticated
     if (!AuthService.isAuthenticated()) {
       navigate("/login");
@@ -834,7 +838,9 @@ const Profile = () => {
                     </DialogTrigger>
                     <DialogContent className="max-w-sm sm:max-w-md rounded-md">
                       <DialogHeader className="space-y-2">
-                        <DialogTitle className="text-base sm:text-lg">Change Password</DialogTitle>
+                        <DialogTitle className="text-base sm:text-lg">
+                          Change Password
+                        </DialogTitle>
                         <DialogDescription className="text-sm space-y-2 text-stone-500">
                           Update your account password
                         </DialogDescription>
@@ -926,7 +932,12 @@ const Profile = () => {
                       </div>
                       <DialogFooter className="sm:flex grid grid-cols-2 justify-items-center sm:justify-between">
                         <DialogClose asChild>
-                          <Button variant="outline" className="w-fit text-xs sm:text-sm">Cancel</Button>
+                          <Button
+                            variant="outline"
+                            className="w-fit text-xs sm:text-sm"
+                          >
+                            Cancel
+                          </Button>
                         </DialogClose>
                         <DialogClose asChild>
                           <Button
@@ -956,7 +967,9 @@ const Profile = () => {
                     </DialogTrigger>
                     <DialogContent className="max-w-sm sm:max-w-md rounded-md">
                       <DialogHeader className="space-y-2">
-                        <DialogTitle className="text-base sm:text-lg">Profile Avatar</DialogTitle>
+                        <DialogTitle className="text-base sm:text-lg">
+                          Profile Avatar
+                        </DialogTitle>
                         <DialogDescription className="text-xs sm:text-sm space-y-2 text-stone-500">
                           Upload or update your profile picture
                         </DialogDescription>
@@ -1015,7 +1028,12 @@ const Profile = () => {
                         </Button>
                         <div className="space-x-2 grid grid-cols-2 gap-2 justify-items-center">
                           <DialogClose asChild>
-                            <Button variant="outline" className="w-fit text-xs sm:text-sm">Cancel</Button>
+                            <Button
+                              variant="outline"
+                              className="w-fit text-xs sm:text-sm"
+                            >
+                              Cancel
+                            </Button>
                           </DialogClose>
                           <DialogClose asChild>
                             <Button

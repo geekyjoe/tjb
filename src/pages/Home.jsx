@@ -37,11 +37,11 @@ const Home = () => {
     <div className="min-h-screen font-host bg-cornsilk dark:bg-cornsilk-dark text-gray-900 dark:text-gray-100">
       {/* Hero Section */}
       <section
-        className="relative h-screen flex items-center justify-center text-center md:bg-cover bg-center bg-fixed h-screen"
+        className="relative h-screen bg-cornsilk-d1/75 flex items-center justify-center text-center md:bg-cover bg-center bg-fixed h-screen"
         style={{
           backgroundImage: `url(${BgImage})`,
           backgroundBlendMode: "overlay",
-          backgroundColor: "rgba(0,0,0,0.25)",
+          // backgroundColor: "rgba(0,0,0,0.25)",
         }}
       >
         <div className="absolute inset-0 bg-black/40 dark:bg-black/60 "></div>
