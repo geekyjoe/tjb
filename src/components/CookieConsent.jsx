@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Switch } from '../components/ui/switch';
-import { IoWarning } from 'react-icons/io5';
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Switch } from "../components/ui/switch";
+import { IoWarning } from "react-icons/io5";
 
-const COOKIE_NAME = 'cookiePreferences';
+const COOKIE_NAME = "cookiePreferences";
 const COOKIE_EXPIRY_DAYS = 365;
 
 const getCookie = (name) => {
@@ -12,7 +12,7 @@ const getCookie = (name) => {
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) {
     try {
-      return JSON.parse(parts.pop().split(';').shift());
+      return JSON.parse(parts.pop().split(";").shift());
     } catch {
       return null;
     }
@@ -22,9 +22,11 @@ const getCookie = (name) => {
 
 const setCookie = (name, value, days) => {
   const date = new Date();
-  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
   const expires = `expires=${date.toUTCString()}`;
-  document.cookie = `${name}=${JSON.stringify(value)};${expires};path=/;SameSite=Strict`;
+  document.cookie = `${name}=${JSON.stringify(
+    value
+  )};${expires};path=/;SameSite=Strict`;
 };
 
 const CookieConsent = () => {
@@ -34,16 +36,16 @@ const CookieConsent = () => {
     essential: true,
     performance: false,
     analytics: false,
-    marketing: false
+    marketing: false,
   });
 
   useEffect(() => {
     // Check for existing consent in both cookies and localStorage
     const cookiePreferences = getCookie(COOKIE_NAME);
     const localPreferences = localStorage.getItem(COOKIE_NAME);
-    
+
     let savedPreferences = null;
-    
+
     if (cookiePreferences) {
       savedPreferences = cookiePreferences;
     } else if (localPreferences) {
@@ -68,7 +70,7 @@ const CookieConsent = () => {
       essential: true,
       performance: true,
       analytics: true,
-      marketing: true
+      marketing: true,
     };
     savePreferences(allEnabled);
   };
@@ -81,7 +83,7 @@ const CookieConsent = () => {
   const savePreferences = (prefs) => {
     setCookie(COOKIE_NAME, prefs, COOKIE_EXPIRY_DAYS);
     localStorage.setItem(COOKIE_NAME, JSON.stringify(prefs));
-    
+
     setPreferences(prefs);
     setShowBanner(false);
     setShowDetails(false);
@@ -91,14 +93,14 @@ const CookieConsent = () => {
 
   const updateTrackingConsent = (prefs) => {
     if (prefs.analytics) {
-      window.gtag?.('consent', 'update', {
-        analytics_storage: 'granted'
+      window.gtag?.("consent", "update", {
+        analytics_storage: "granted",
       });
     }
 
     if (prefs.marketing) {
-      window.gtag?.('consent', 'update', {
-        ad_storage: 'granted'
+      window.gtag?.("consent", "update", {
+        ad_storage: "granted",
       });
     }
   };
@@ -108,7 +110,7 @@ const CookieConsent = () => {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 p-4 animate-in slide-in-from-bottom duration-300">
+    <div className="fixed inset-x-0 bottom-15 md:bottom-0 p-4">
       <div className="max-w-2xl mx-auto">
         <Card className="rounded-xl bg-zinc-100 dark:bg-zinc-800 shadow-lg border">
           <CardContent className="p-6">
@@ -116,20 +118,23 @@ const CookieConsent = () => {
               <div className="space-y-4">
                 <div className="flex flex-col md:flex-row gap-4 justify-between">
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">We value your privacy</h3>
+                    <h3 className="font-semibold text-lg">
+                      We value your privacy
+                    </h3>
                     <p className="text-sm text-muted-foreground">
-                      We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic.
+                      We use cookies to enhance your browsing experience, serve
+                      personalized content, and analyze our traffic.
                     </p>
                   </div>
                   <div className="flex items-center justify-end gap-2">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       onClick={() => setShowDetails(true)}
                       className="whitespace-nowrap"
                     >
                       Customize
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleAcceptAll}
                       className="whitespace-nowrap"
                     >
@@ -140,17 +145,15 @@ const CookieConsent = () => {
               </div>
             ) : (
               <div>
-                <CookieSettings 
+                <CookieSettings
                   preferences={preferences}
                   setPreferences={setPreferences}
                 />
                 <div className="flex justify-end gap-2 mt-6">
-                  <Button 
-                    onClick={() => setShowDetails(false)}
-                  >
+                  <Button variant="ghost" onClick={() => setShowDetails(false)}>
                     Back
                   </Button>
-                  <Button variant="ghost" onClick={handleSavePreferences}>
+                  <Button onClick={handleSavePreferences}>
                     Save Preferences
                   </Button>
                 </div>
@@ -167,46 +170,57 @@ const CookieSettings = ({ preferences, setPreferences }) => {
   const cookieTypes = {
     essential: {
       title: "Essential Cookies",
-      description: "Required for the website to function properly."
+      description: "Required for the website to function properly.",
     },
     performance: {
       title: "Performance Cookies",
-      description: "Help us improve site speed and user experience."
+      description: "Help us improve site speed and user experience.",
     },
     analytics: {
       title: "Analytics Cookies",
-      description: "Help us understand how visitors interact with our website."
+      description: "Help us understand how visitors interact with our website.",
     },
     marketing: {
       title: "Marketing Cookies",
-      description: "Used to deliver relevant advertisements and track their effectiveness."
-    }
+      description:
+        "Used to deliver relevant advertisements and track their effectiveness.",
+    },
   };
 
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="font-semibold text-lg">Cookie Settings</h3>
-        <p className="text-xs md:text-sm text-muted-foreground">Manage your cookie preferences</p>
+        <h3 className="font-semibold md:text-lg">Cookie Settings</h3>
+        <p className="text-xs md:text-sm text-muted-foreground">
+          Manage your cookie preferences
+        </p>
       </div>
-      
+
       <div className="space-y-4">
         {Object.entries(cookieTypes).map(([key, { title, description }]) => (
           <div key={key} className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <p className="font-medium text-sm">{title}</p>
-              <p className="flex items-center text-xs md:text-sm text-muted-foreground">{description} {key === 'essential' && <span className='flex items-center ml-2 text-yellow-500'>Cannot be disabled. <IoWarning className='ml-1 text-amber-500'/></span>}</p>
+              <p className="font-bold text-xs sm:text-sm leading-5">{title}</p>
+              <p className="flex items-center text-xs md:text-sm text-muted-foreground">
+                {description}{" "}
+                {key === "essential" && (
+                  <span className="flex items-center ml-2 text-yellow-500">
+                    Cannot be disabled.{" "}
+                    <IoWarning className="ml-1 text-amber-500" />
+                  </span>
+                )}
+              </p>
             </div>
             <Switch
               checked={preferences[key]}
-              disabled={key === 'essential'}
-              onCheckedChange={(checked) => 
-                setPreferences(prev => ({ ...prev, [key]: checked }))
+              disabled={key === "essential"}
+              onCheckedChange={(checked) =>
+                setPreferences((prev) => ({ ...prev, [key]: checked }))
               }
               className={`mt-1 ${
-                key === 'essential' 
-                  ? 'opacity-50 cursor-not-allowed data-[state=checked]:bg-black' 
-                  : 'data-[state=checked]:bg-yellow-300'
+                key === "essential"
+                  ? "opacity-50 cursor-not-allowed data-[state=checked]:bg-black"
+                  : "data-[state=checked]:bg-yellow-300"
               }`}
             />
           </div>
