@@ -14,7 +14,7 @@ import { Label } from "../components/ui/label";
 import { useToast } from "../hooks/use-toast";
 import { AlertCircle, Eye, EyeOff, Github } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
-import { AuthService } from "../api/auth"; // Updated import
+import { AuthService } from "../api/client"; // Updated import
 import { ThemeToggle } from "../ThemeToggle";
 import Footer from "../components/Footer";
 

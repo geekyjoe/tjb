@@ -6,9 +6,10 @@ import { SiAffinitydesigner } from "react-icons/si";
 import { FaGifts } from "react-icons/fa6";
 import { ImGift } from "react-icons/im";
 import { BsBox2HeartFill } from "react-icons/bs";
-import { IoHeartCircleSharp} from "react-icons/io5";
+import { IoHeartCircleSharp } from "react-icons/io5";
 import Footer from "../components/Footer";
 import BgImage from "/hero.webp";
+import HeroCarousel from "../components/HC";
 
 const Home = () => {
   const featuredCollections = [
@@ -35,43 +36,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen font-host bg-cornsilk dark:bg-cornsilk-dark text-gray-900 dark:text-gray-100">
-      {/* Hero Section */}
-      <section
-        className="relative h-screen bg-cornsilk-d1/75 flex items-center justify-center text-center md:bg-cover bg-center bg-fixed h-screen"
-        style={{
-          backgroundImage: `url(${BgImage})`,
-          backgroundBlendMode: "overlay",
-          // backgroundColor: "rgba(0,0,0,0.25)",
-        }}
-      >
-        <div className="absolute inset-0 bg-black/40 dark:bg-black/60 "></div>
-        <div className="relative z-0 px-6 pt-5 pb-8 rounded-xl text-white bg-black/60">
-          <h1 className="text-3xl md:text-6xl font-bold mb-4">
-            The Jeweller Bee
-          </h1>
-          <p className="text- md:text-xl mb-8 max-w-2xl mx-auto">
-            Crafting Elegance, Celebrating Individuality
-          </p>
-          <div className="space-x-4">
-            <Link
-              to="/products"
-              className="relative px-4 py-2.5 md:px-6 md:py-3 max-sm:text-sm bg-yellow-500 hover:bg-yellow-400 text-black dark:text-white rounded-xl transition duration-75 group"
-            >
-              <span className="relative">
-                Shop Now
-                <span className="absolute left-0 -bottom-1 w-0 h-0.5 bg-black dark:bg-white transition-all duration-300 group-hover:w-full"></span>
-              </span>
-            </Link>
-
-            <Link
-              to="#"
-              className="px-4 py-2 md:px-6 md:py-3 max-sm:text-sm border-2 border-white hover:bg-white hover:text-black rounded-xl transition duration-75"
-            >
-              View Collections
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HeroCarousel />
 
       {/* Featured Collections */}
       <section className="container mx-auto px-4 py-16">

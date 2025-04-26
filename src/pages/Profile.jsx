@@ -57,7 +57,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { AuthService, UserService, AdminService } from "../api/auth";
+import { AuthService, UserService, AdminService } from "../api/client";
 
 const UserManagement = lazy(() => import("../services/UM"));
 

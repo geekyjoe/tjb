@@ -1,6 +1,6 @@
 import { useState, useEffect, createContext, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthService } from "../api/auth";
+import { AuthService } from "../api/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -198,6 +198,9 @@ export const UserAuthButton = () => {
               {`${userProfile.firstName} ${userProfile.lastName}`}
             </p>
             <p className="text-xs leading-none text-muted-foreground">
+              {userProfile.role}
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
               {userProfile.email}
             </p>
           </div>
@@ -206,6 +209,12 @@ export const UserAuthButton = () => {
         <DropdownMenuItem onClick={() => navigate("/profile")}>
           Profile
         </DropdownMenuItem>
+        {userProfile.role === "admin" &&
+        (
+          <DropdownMenuItem onClick={() => navigate("/pp")}>
+            Manage Products
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
           Sign out

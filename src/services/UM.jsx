@@ -42,7 +42,7 @@ import {
   MoreVertical,
   UserCircle,
 } from "lucide-react";
-import { AuthService, UserService, AdminService } from "../api/auth";
+import { AuthService, UserService, AdminService } from "../api/client";
 import { useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
