@@ -294,7 +294,7 @@ const Products = () => {
             {/* Header with sorting and view options */}
             <div className="font-oSans flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center max-lg:justify-between gap-4 w-full sm:w-auto">
-                <h2 className="max-sm:text-lg text-2xl pl-2 font-inter font-medium">
+                <h2 className="max-sm:text-lg text-2xl pl-2 leading-8 font-inter font-medium">
                   {selectedCategories.size > 0
                     ? `${Array.from(selectedCategories)
                         .map(
@@ -375,8 +375,8 @@ const Products = () => {
                 <div
                   className={
                     viewMode === "grid"
-                      ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 lg:gap-1"
-                      : "space-y-2"
+                      ? "pr-2 lg:p-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 lg:gap-3"
+                      : "space-y-3 px-2"
                   }
                 >
                   {products.map((product) => (

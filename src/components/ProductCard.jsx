@@ -15,7 +15,7 @@ import { Star, ArrowRight } from "lucide-react";
 const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
   const navigate = useNavigate();
   const { addToCart, cartItems } = useCart();
-  const isInCart = cartItems.some(item => item.id === product.id);
+  const isInCart = cartItems.some((item) => item.id === product.id);
 
   const handleProductClick = () => {
     navigate(`/products/${product.id}`);
@@ -32,12 +32,12 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
 
   const handleGoToCart = (e) => {
     e.stopPropagation();
-    navigate('/cart');
+    navigate("/cart");
   };
 
   if (viewMode === "list") {
     return (
-      <div 
+      <div
         className="flex gap-4 border dark:border-neutral-600 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 p-4 rounded-lg hover:shadow-sm cursor-pointer"
         onClick={handleProductClick}
       >
@@ -50,21 +50,26 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
         </div>
         <div className="flex flex-col grow">
           <div>
-            <h3 className="min-xl:text-xl l:text-sm s:text-xs font-semibold text-gray-800 dark:text-gray-100">
-              {product.title}
-            </h3>
-            <p className="max-l:text-xs text-gray-600 line-clamp-2 dark:text-gray-300 mt-2">
+            <div className="flex justify-between gap-2">
+              <h3 className="text-sm md:text-lg font-semibold text-gray-800 dark:text-gray-100 leading-6">
+                {product.title}
+              </h3>
+              <h2 className="md:text-lg text-xs font-bold text-gray-800 dark:text-gray-100 leading-6 line-clamp-1">
+                {product.brand}
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 dark:text-gray-300">
               {product.description}
             </p>
-            <div className="flex items-center mt-2">
+            <div className="flex items-center">
               <Star className="max-l:w-3 max-l:h-3 w-4 h-4 text-yellow-400 fill-yellow-400" />
-              <span className="ml-1 max-l:text-xs text-sm text-gray-600 dark:text-gray-300">
+              <span className="ml-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300 leading-8">
                 {product.rating}
               </span>
             </div>
           </div>
-          <div className="mt-2 flex justify-between items-center">
-            <span className="max-l:text-sm text-xl font-bold text-gray-800 dark:text-gray-100">
+          <div className="flex justify-between items-center">
+            <span className="text-sm sm:text-xl font-bold text-gray-800 dark:text-gray-100">
               ${product.price.toFixed(2)}
             </span>
             {/* {!isInCart ? (
@@ -91,7 +96,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
 
   return (
     <Card
-        className={`w-full h-full rounded-md border-none my-1 mx-1 dark:shadow-neutral-600 cursor-pointer ${className}`}
+      className={`w-full h-full rounded-md border-none my-1 mx-1 dark:shadow-neutral-600 cursor-pointer ${className}`}
       onClick={handleProductClick}
     >
       <CardHeader className="p-0 border dark:border-cornsilk/30 rounded-t-md">
@@ -103,17 +108,17 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
           />
         </div>
       </CardHeader>
-      <CardContent className="max-l:p-2 p-4">
-        <div className="max-sm:mb-2 mb-4">
-          <CardTitle className="max-sm:text-sm text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2 line-clamp-1">
+      <CardContent className="p-2">
+        <div className="">
+          <CardTitle className="max-sm:text-sm text-lg font-bold text-gray-800 dark:text-gray-100 leading-5 line-clamp-1">
             {product.brand}
           </CardTitle>
-          <CardDescription className="max-sm:text-xs text-md text-gray-600 dark:text-gray-300 line-clamp-1">
+          <CardDescription className="max-sm:text-xs text-md text-gray-600 dark:text-gray-300 leading-6 line-clamp-1">
             {product.title}
           </CardDescription>
         </div>
         <div className="flex justify-between items-center">
-          <span className="max-sm:text-sm text-lg font-bold text-gray-800 dark:text-gray-100">
+          <span className="max-sm:text-sm text-lg leading-8 font-bold text-gray-800 dark:text-gray-100">
             ${product.price.toFixed(2)}
           </span>
           <div className="flex items-center">
