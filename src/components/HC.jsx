@@ -64,7 +64,7 @@ export default function HeroCarousel() {
 
   // Auto advance slides every 5 seconds
   useEffect(() => {
-    const interval = setInterval(nextSlide, 5000);
+    const interval = setInterval(nextSlide, 7500);
     return () => clearInterval(interval);
   }, []);
 
@@ -164,7 +164,7 @@ export default function HeroCarousel() {
       </div>
 
       {/* Carousel Controls - Bottom Right, with responsive positioning */}
-      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-2 md:space-x-4 bg-black/30 md:bg-black/10 backdrop-blur-sm p-1 md:p-2 rounded-full z-20">
+      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-2 md:space-x-4 bg-black/30 md:bg-black/10 backdrop-blur-sm p-1 md:p-2 rounded-full z-1">
         <button
           onClick={prevSlide}
           className="p-1 md:p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors duration-300"
