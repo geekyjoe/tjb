@@ -103,17 +103,17 @@ export default function HeroCarousel() {
               }}
             >
               {/* Dark overlay for better text visibility */}
-              <div className="absolute inset-0 bg-black/20"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent"></div>
 
               {/* Content on top of background */}
-              <div className="relative z-10 text-center backdrop-blur-sm bg-black/10 rounded-md p-4 max-w-2xl">
-                <h1 className="text-2xl sm:text-3xl font-bold leading-tight text-white">
+              <div className="relative z-0 text-left backdrop-opacity-100 backdrop-blur-xs rounded-md p-4 max-w-2xl">
+                <h1 className="text-xl sm:text-3xl font-bold leading-12 text-white">
                   {slide.title}
                 </h1>
-                <p className="text-lg sm:text-xl mb-4 max-w-2xl text-left font-semibold text-white/90">
+                <p className="text-lg sm:text-xl max-w-2xl text-left leading-8 font-semibold text-white/90">
                   {slide.subtitle}
                 </p>
-                <div className="space-x-4 py-3 flex items-center justify-center">
+                <div className="space-x-4 py-1.5 flex items-center">
                   <Link
                     to="/products"
                     className="relative px-4 py-2 text-sm bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl transition duration-75 group"
@@ -164,7 +164,7 @@ export default function HeroCarousel() {
       </div>
 
       {/* Carousel Controls - Bottom Right, with responsive positioning */}
-      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-2 md:space-x-4 bg-black/30 md:bg-black/10 backdrop-blur-sm p-1 md:p-2 rounded-full z-1">
+      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-1 md:space-x-2 max-md:bg-black/15 max-md:backdrop-blur-sm p-1 rounded-full z-1">
         <button
           onClick={prevSlide}
           className="p-1 md:p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors duration-300"
@@ -184,8 +184,8 @@ export default function HeroCarousel() {
         </button>
 
         <div className="flex items-center justify-center px-3 py-1 md:px-4 md:py-2">
-          <span className="md:text-cornsilk-dark text-neutral-200 text-xs md:text-sm font-medium">
-            <span className="md:text-black text-white text-base md:text-xl font-bold">
+          <span className="md:text-cornsilk-dark dark:md:text-neutral-200 text-neutral-200 text-xs md:text-sm font-medium">
+            <span className="md:text-black dark:md:text-white text-white text-base md:text-xl font-bold">
               {currentSlide + 1}
             </span>
             <span className="mx-1">/</span>
