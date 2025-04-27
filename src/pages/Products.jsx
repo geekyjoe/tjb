@@ -157,7 +157,9 @@ const Products = () => {
     const newSkip = pagination.skip + pagination.limit;
     await fetchProductsData(pagination.limit, newSkip, selectedCategories);
   };
-
+  useEffect(() => {
+    document.title = "Collections - TJB Store"; // Set the document title
+  }, []);
   // Mobile Sidebar Component
   const MobileSidebar = ({ isOpen, onClose }) => {
     if (!isOpen) return null;

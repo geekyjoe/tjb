@@ -31,14 +31,14 @@ const AppContent = () => {
       {showHeader && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/products" element={<Products />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/collections" element={<Products />} />
+        <Route path="/account" element={<Profile />} />
         <Route path="/adminpanel" element={<UserManagement />} />
         <Route path="/pp" element={<ProductPanel />} />
         <Route path="/products/:id" element={<ProductDetailPage />} />
         <Route path="/cart" element={<Cart />} />
-        <Route path="/signup" element={<UserSignup />} />
-        <Route path="/login" element={<UserLogin />} />
+        {/* <Route path="/signup" element={<UserSignup />} />
+        <Route path="/login" element={<UserLogin />} /> */}
       </Routes>
       <MobileMenu />
     </>

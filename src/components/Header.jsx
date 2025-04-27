@@ -61,7 +61,7 @@ const Header = () => {
       <div className="hidden md:flex items-center gap-2 mr-3">
         <SearchBar />
         <NavLink
-          to="/products"
+          to="/collections"
           className={
             "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-hidden focus:underline focus:decoration-solid focus:underline-offset-4 text-cornsilk-dark dark:text-cornsilk dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
           }

@@ -13,6 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
 import { Button } from "../components/ui/button";
 import { useToast } from "../hooks/use-toast";
 import { LogIn, User } from "lucide-react";
+import LoginModal from "../form/Login";
 
 // Create Auth Context
 export const AuthContext = createContext({
@@ -130,16 +131,22 @@ export const AuthProvider = ({ children }) => {
 // Custom hook to use auth context
 export const useAuth = () => useContext(AuthContext);
 
-// Updated UserAuthButton Component
+
+// Updated UserAuthButton component that integrates with the LoginModal
 export const UserAuthButton = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const { isAuthenticated, userProfile, logout, loading } = useAuth();
+  const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSignOut = async () => {
     try {
       logout();
-      navigate("/");
+      toast({
+        title: "Success",
+        description: "Signed out successfully",
+      });
+      navigate('/');
     } catch (error) {
       toast({
         title: "Error",
@@ -160,14 +167,21 @@ export const UserAuthButton = () => {
 
   if (!isAuthenticated || !userProfile) {
     return (
-      <Button
-        variant="ghost"
-        className="flex items-center gap-2"
-        onClick={() => navigate("/login")}
-        size="icon"
-      >
-        <LogIn className="h-4 w-4" />
-      </Button>
+      <>
+        <Button
+          variant="ghost"
+          className="flex items-center gap-2"
+          onClick={() => setIsLoginModalOpen(true)}
+          size="icon"
+        >
+          <LogIn className="h-4 w-4" />
+        </Button>
+        
+        <LoginModal 
+          isOpen={isLoginModalOpen} 
+          onClose={() => setIsLoginModalOpen(false)} 
+        />
+      </>
     );
   }
 
@@ -206,11 +220,10 @@ export const UserAuthButton = () => {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate("/profile")}>
+        <DropdownMenuItem onClick={() => navigate("/account")}>
           Profile
         </DropdownMenuItem>
-        {userProfile.role === "admin" &&
-        (
+        {userProfile.role === "admin" && (
           <DropdownMenuItem onClick={() => navigate("/pp")}>
             Manage Products
           </DropdownMenuItem>
@@ -223,3 +236,5 @@ export const UserAuthButton = () => {
     </DropdownMenu>
   );
 };
+
+export default UserAuthButton;

@@ -112,7 +112,7 @@ const Profile = () => {
   useEffect(() => {
     // Check if user is authenticated
     if (!AuthService.isAuthenticated()) {
-      navigate("/login");
+      navigate("/");
       return;
     }
 
@@ -122,7 +122,7 @@ const Profile = () => {
         const currentUser = AuthService.getCurrentUser();
 
         if (!currentUser) {
-          navigate("/login");
+          navigate("/");
           return;
         }
 

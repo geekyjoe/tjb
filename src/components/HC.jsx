@@ -115,7 +115,7 @@ export default function HeroCarousel() {
                 </p>
                 <div className="space-x-4 py-1.5 flex items-center">
                   <Link
-                    to="/products"
+                    to="/collections"
                     className="relative px-4 py-2 text-sm bg-yellow-500 hover:bg-yellow-400 text-black rounded-xl transition duration-75 group"
                   >
                     <span className="relative">
