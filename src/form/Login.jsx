@@ -388,7 +388,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 htmlFor="rememberMe"
                 className="text-sm font-medium leading-none cursor-pointer"
               >
-                Remember me
+                Remember me for 30 days
               </Label>
             </div>
 
