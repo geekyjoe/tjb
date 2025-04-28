@@ -16,6 +16,10 @@
   animation: typing-circle7124 0.5s alternate infinite ease;
 }
 
+:root.dark .typing-circle {
+  background-color: black; /* Dark mode color */
+}
+
 @keyframes typing-circle7124 {
   0% {
     top: 20px;
