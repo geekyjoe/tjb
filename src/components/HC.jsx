@@ -12,17 +12,17 @@ export default function HeroCarousel() {
     {
       title: "Timeless Treasures, Handcrafted for You",
       subtitle: "Where Elegance Meets Artistry",
-      image: "/ban.png",
+      image: "/ban.webp",
     },
     {
       title: "Discover Unique Artisan Creations",
       subtitle: "Each Piece Tells a Story",
-      image: "/ring.png",
+      image: "/ring.webp",
     },
     {
       title: "Premium Quality Craftsmanship",
       subtitle: "Expertly Made with Passion and Care",
-      image: "/b3.png",
+      image: "/b3.webp",
     },
   ];
 
