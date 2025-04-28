@@ -13,16 +13,22 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Checkbox } from "../components/ui/checkbox";
 import { useToast } from "../hooks/use-toast";
+import { Dialog, DialogContent, DialogOverlay } from "../components/ui/dialog";
 import {
-  Dialog,
-  DialogContent,
-  DialogOverlay
-} from "../components/ui/dialog";
-import { AlertCircle, Eye, EyeOff, Github, ChevronLeft, ChevronRight, UserPlus, LogIn, X } from "lucide-react";
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Github,
+  ChevronLeft,
+  ChevronRight,
+  UserPlus,
+  LogIn,
+  X,
+} from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
 import { AuthService } from "../api/client";
 import Cookies from "js-cookie"; // Make sure to install this package: npm install js-cookie
-
+import "./login.css"; // Import your CSS file for styling
 const LoginModal = ({ isOpen, onClose }) => {
   // States for form mode and steps
   const [mode, setMode] = useState("login"); // login or signup
@@ -32,7 +38,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [authError, setAuthError] = useState("");
-  
+
   // Form data state
   const [formData, setFormData] = useState({
     // Login fields
@@ -46,10 +52,10 @@ const LoginModal = ({ isOpen, onClose }) => {
     phoneNumber: "",
     confirmPassword: "",
   });
-  
+
   // Validation errors
   const [errors, setErrors] = useState({});
-  
+
   const { toast } = useToast();
   const { login, isAuthenticated } = useAuth();
 
@@ -99,7 +105,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         [id]: undefined,
       });
     }
-    
+
     // Clear auth error when user edits fields
     if (authError && (id === "email" || id === "password")) {
       setAuthError("");
@@ -134,7 +140,7 @@ const LoginModal = ({ isOpen, onClose }) => {
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
           newErrors.email = "Email is invalid";
         }
-        
+
         // Phone validation (if provided)
         if (
           formData.phoneNumber &&
@@ -187,26 +193,31 @@ const LoginModal = ({ isOpen, onClose }) => {
     try {
       // Set cookie with appropriate expiration
       const expiryDays = rememberMe ? REMEMBER_ME_EXPIRY : DEFAULT_EXPIRY;
-      
+
       // Set cookie options
       const cookieOptions = {
         expires: expiryDays, // Days until expiry
-        secure: process.env.NODE_ENV === 'production', // Use secure in production
-        sameSite: 'strict' // Strict same-site policy for security
+        secure: process.env.NODE_ENV === "production", // Use secure in production
+        sameSite: "strict", // Strict same-site policy for security
       };
-      
+
       // Save token to cookie
       Cookies.set(TOKEN_COOKIE_NAME, token, cookieOptions);
-      
+
       console.log(`Token saved with ${expiryDays} day expiry`);
     } catch (error) {
       console.error("Error saving authentication token:", error);
     }
   };
 
+  const handleSubmit1 = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateStep()) {
       return;
     }
@@ -229,14 +240,18 @@ const LoginModal = ({ isOpen, onClose }) => {
             // Save token based on remember me selection
             saveAuthToken(response.token, formData.rememberMe);
           }
-          
+
           toast({
             title: "Welcome back!",
-            description: `Logged in as ${formData.email}${formData.rememberMe ? "" : " (Session expires in 24 hours)"}`,
+            description: `Logged in as ${formData.email}${
+              formData.rememberMe ? "" : " (Session expires in 24 hours)"
+            }`,
           });
           onClose();
         } else {
-          setAuthError(response.message || "Invalid email or password. Please try again.");
+          setAuthError(
+            response.message || "Invalid email or password. Please try again."
+          );
         }
       } else {
         // Handle signup
@@ -256,23 +271,30 @@ const LoginModal = ({ isOpen, onClose }) => {
             title: "Success!",
             description: "Account created successfully.",
           });
-          
+
           // Auto-login after signup
           const loginResponse = await login(formData.email, formData.password);
-          
+
           // Save token with default expiry after signup (not using remember me by default)
           if (loginResponse.success && loginResponse.token) {
             saveAuthToken(loginResponse.token, false);
           }
-          
+
           onClose();
         } else {
-          setAuthError(response.message || "Failed to create account. Please try again.");
+          setAuthError(
+            response.message || "Failed to create account. Please try again."
+          );
         }
       }
     } catch (error) {
       console.error(`${mode} error:`, error);
-      setAuthError(error.message || `Failed to ${mode === "login" ? "log in" : "create account"}. Please try again.`);
+      setAuthError(
+        error.message ||
+          `Failed to ${
+            mode === "login" ? "log in" : "create account"
+          }. Please try again.`
+      );
     } finally {
       setIsLoading(false);
     }
@@ -285,12 +307,16 @@ const LoginModal = ({ isOpen, onClose }) => {
     try {
       toast({
         title: "Feature Not Implemented",
-        description: `Sign ${mode === "login" ? "in" : "up"} with ${provider} is not implemented yet.`,
+        description: `Sign ${
+          mode === "login" ? "in" : "up"
+        } with ${provider} is not implemented yet.`,
         variant: "default",
       });
     } catch (error) {
       console.error(`${provider} auth error:`, error);
-      setAuthError(`Failed to authenticate with ${provider}. Please try again.`);
+      setAuthError(
+        `Failed to authenticate with ${provider}. Please try again.`
+      );
     } finally {
       setSocialLoading("");
     }
@@ -315,9 +341,12 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <span>{authError}</span>
               </div>
             )}
-            
+
             <div className="flex flex-col space-y-2">
-              <Label htmlFor="email" className={errors.email ? "text-red-500" : ""}>
+              <Label
+                htmlFor="email"
+                className={errors.email ? "text-red-500" : ""}
+              >
                 Email
               </Label>
               <Input
@@ -336,9 +365,12 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </p>
               )}
             </div>
-            
+
             <div className="flex flex-col space-y-2">
-              <Label htmlFor="password" className={errors.password ? "text-red-500" : ""}>
+              <Label
+                htmlFor="password"
+                className={errors.password ? "text-red-500" : ""}
+              >
                 Password
               </Label>
               <div className="relative">
@@ -348,7 +380,11 @@ const LoginModal = ({ isOpen, onClose }) => {
                   placeholder="Enter your password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={errors.password || authError ? "border-red-500 pr-10" : "pr-10"}
+                  className={
+                    errors.password || authError
+                      ? "border-red-500 pr-10"
+                      : "pr-10"
+                  }
                   aria-invalid={errors.password || authError ? "true" : "false"}
                 />
                 <Button
@@ -359,7 +395,10 @@ const LoginModal = ({ isOpen, onClose }) => {
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex="-1"
                 >
-                  <Tooltip content={showPassword ? "Hide password" : "Show password"} placement="right">
+                  <Tooltip
+                    content={showPassword ? "Hide password" : "Show password"}
+                    placement="right"
+                  >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4 text-gray-500" />
                     ) : (
@@ -388,15 +427,22 @@ const LoginModal = ({ isOpen, onClose }) => {
                 htmlFor="rememberMe"
                 className="text-sm font-medium leading-none cursor-pointer"
               >
-                Remember me for 30 days
+                Remember me
               </Label>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <div className="flex items-center gap-2 ">
-                  <span className="animate-spin mr-2">⟳</span>
-                  Logging in...
+                  <div class="typing-indicator">
+                    <div class="typing-circle"></div>
+                    <div class="typing-circle"></div>
+                    <div class="typing-circle"></div>
+                    <div class="typing-shadow"></div>
+                    <div class="typing-shadow"></div>
+                    <div class="typing-shadow"></div>
+                  </div>
+                  {/* Logging in... */}
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
@@ -418,7 +464,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <span>{authError}</span>
               </div>
             )}
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col space-y-2">
                 <Label
@@ -491,7 +537,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </p>
               )}
             </div>
-            
+
             <Button type="button" onClick={nextStep} className="w-full">
               <div className="flex items-center gap-2">
                 Next
@@ -509,7 +555,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <span>{authError}</span>
               </div>
             )}
-            
+
             <div className="flex flex-col space-y-2">
               <Label
                 htmlFor="email"
@@ -559,7 +605,12 @@ const LoginModal = ({ isOpen, onClose }) => {
             </div>
 
             <div className="flex gap-2">
-              <Button type="button" onClick={prevStep} variant="outline" className="w-1/2">
+              <Button
+                type="button"
+                onClick={prevStep}
+                variant="outline"
+                className="w-1/2"
+              >
                 <div className="flex items-center gap-2">
                   <ChevronLeft className="w-4 h-4" />
                   Back
@@ -584,7 +635,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                   <span>{authError}</span>
                 </div>
               )}
-              
+
               <div className="flex flex-col space-y-2">
                 <Label
                   htmlFor="password"
@@ -599,7 +650,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                     placeholder="Create a password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={errors.password ? "border-red-500 pr-10" : "pr-10"}
+                    className={
+                      errors.password ? "border-red-500 pr-10" : "pr-10"
+                    }
                     aria-invalid={errors.password ? "true" : "false"}
                   />
                   <Button
@@ -610,7 +663,10 @@ const LoginModal = ({ isOpen, onClose }) => {
                     onClick={() => setShowPassword(!showPassword)}
                     tabIndex="-1"
                   >
-                    <Tooltip content={showPassword ? "Hide password" : "Show password"} placement="right">
+                    <Tooltip
+                      content={showPassword ? "Hide password" : "Show password"}
+                      placement="right"
+                    >
                       {showPassword ? (
                         <EyeOff className="h-4 w-4 text-gray-500" />
                       ) : (
@@ -641,7 +697,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                     placeholder="Confirm your password"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className={errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"}
+                    className={
+                      errors.confirmPassword ? "border-red-500 pr-10" : "pr-10"
+                    }
                     aria-invalid={errors.confirmPassword ? "true" : "false"}
                   />
                   <Button
@@ -652,7 +710,12 @@ const LoginModal = ({ isOpen, onClose }) => {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     tabIndex="-1"
                   >
-                    <Tooltip content={showConfirmPassword ? "Hide password" : "Show password"} placement="right">
+                    <Tooltip
+                      content={
+                        showConfirmPassword ? "Hide password" : "Show password"
+                      }
+                      placement="right"
+                    >
                       {showConfirmPassword ? (
                         <EyeOff className="h-4 w-4 text-gray-500" />
                       ) : (
@@ -670,7 +733,12 @@ const LoginModal = ({ isOpen, onClose }) => {
               </div>
 
               <div className="flex gap-2">
-                <Button type="button" onClick={prevStep} variant="outline" className="w-1/2">
+                <Button
+                  type="button"
+                  onClick={prevStep}
+                  variant="outline"
+                  className="w-1/2"
+                >
                   <div className="flex items-center gap-2">
                     <ChevronLeft className="w-4 h-4" />
                     Back
@@ -738,7 +806,11 @@ const LoginModal = ({ isOpen, onClose }) => {
                 {socialLoading === "google" ? (
                   <span className="animate-spin mr-2">⟳</span>
                 ) : (
-                  <img src="/google.svg" alt="Google" className="w-5 h-5 mr-2" />
+                  <img
+                    src="/google.svg"
+                    alt="Google"
+                    className="w-5 h-5 mr-2"
+                  />
                 )}
                 Google
               </Button>
@@ -773,12 +845,10 @@ const LoginModal = ({ isOpen, onClose }) => {
           </CardContent>
           <CardFooter className="flex flex-col space-y-2">
             <p className="text-sm text-center text-zinc-700 dark:text-zinc-300">
-              {mode === "login" ? "Don't have an account? " : "Already have an account? "}
-              <Button
-                variant="link"
-                className="p-0"
-                onClick={toggleMode}
-              >
+              {mode === "login"
+                ? "Don't have an account? "
+                : "Already have an account? "}
+              <Button variant="link" className="p-0" onClick={toggleMode}>
                 {mode === "login" ? "Sign Up" : "Login"}
               </Button>
             </p>

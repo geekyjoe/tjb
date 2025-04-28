@@ -70,7 +70,7 @@ export default function HeroCarousel() {
 
   return (
     <div
-      className="relative overflow-hidden py-2 md:py-12 "
+      className="relative overflow-hidden dark:bg-cornsilk-d1 py-2 md:py-12 "
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -151,11 +151,11 @@ export default function HeroCarousel() {
               </div>
 
               {/* Image Side - only visible on desktop */}
-              <div className="relative h-80 w-80 lg:h-96 lg:w-96">
+              <div className="relative select-none h-80 w-80 lg:h-96 lg:w-96">
                 <img
                   src={slide.image}
                   alt={slide.title}
-                  className="h-full w-full object-cover select-none rounded-xl shadow-md"
+                  className="h-full w-full object-cover select-none rounded-xl shadow-xl"
                 />
               </div>
             </div>

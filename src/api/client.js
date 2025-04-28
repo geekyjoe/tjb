@@ -28,7 +28,7 @@ const AuthService = {
   // Register a new user
   register: async (userData) => {
     try {
-      const response = await apiClient.post("/register", userData);
+      const response = await apiClient.post("/api/register", userData);
       if (response.data.success) {
         localStorage.setItem("token", response.data.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.data.user));
@@ -42,7 +42,7 @@ const AuthService = {
   // Login user
   login: async (email, password) => {
     try {
-      const response = await apiClient.post("/login", {
+      const response = await apiClient.post("/api/login", {
         email,
         password,
       });
@@ -79,7 +79,7 @@ const UserService = {
   // Get user profile
   getUserProfile: async (userId) => {
     try {
-      const response = await apiClient.get(`/user/${userId}`);
+      const response = await apiClient.get(`/api/user/${userId}`);
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;
@@ -89,7 +89,7 @@ const UserService = {
   // Update user profile
   updateUserProfile: async (userId, userData) => {
     try {
-      const response = await apiClient.put(`/user/${userId}`, userData);
+      const response = await apiClient.put(`/api/user/${userId}`, userData);
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;
@@ -99,7 +99,7 @@ const UserService = {
   // Change password
   changePassword: async (userId, currentPassword, newPassword) => {
     try {
-      const response = await apiClient.put(`/user/${userId}`, {
+      const response = await apiClient.put(`/api/user/${userId}`, {
         password: newPassword,
         // Some APIs might require current password verification
         currentPassword: currentPassword,
@@ -113,7 +113,7 @@ const UserService = {
   // Delete user account
   deleteUserAccount: async (userId) => {
     try {
-      const response = await apiClient.delete(`/user/${userId}`);
+      const response = await apiClient.delete(`/api/user/${userId}`);
       if (response.data.success) {
         // Clear local storage on successful account deletion
         localStorage.removeItem("token");
@@ -141,7 +141,7 @@ const UserService = {
       };
 
       const response = await axios.post(
-        `${API_URL}/user/${userId}/avatar`,
+        `${API_URL}/api/user/${userId}/avatar`,
         formData,
         config
       );
@@ -164,7 +164,7 @@ const UserService = {
   // Get avatar URL
   getAvatarUrl: async (userId) => {
     try {
-      const response = await axios.get(`${API_URL}/user/${userId}/avatar`);
+      const response = await axios.get(`${API_URL}/api/user/${userId}/avatar`);
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;
@@ -174,7 +174,7 @@ const UserService = {
   // Delete avatar
   deleteAvatar: async (userId) => {
     try {
-      const response = await apiClient.delete(`/user/${userId}/avatar`);
+      const response = await apiClient.delete(`/api/user/${userId}/avatar`);
 
       // Update user in localStorage - remove avatar URL
       if (response.data.success) {
@@ -197,7 +197,7 @@ const AdminService = {
   // Get all users (admin only)
   getAllUsers: async () => {
     try {
-      const response = await apiClient.get("/users");
+      const response = await apiClient.get("/api/users");
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;
@@ -207,7 +207,7 @@ const AdminService = {
   // Update user role (admin only)
   updateUserRole: async (userId, role) => {
     try {
-      const response = await apiClient.put(`/user/${userId}`, { role });
+      const response = await apiClient.put(`/api/user/${userId}`, { role });
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;
@@ -217,7 +217,7 @@ const AdminService = {
   // Update user login history (admin only)
   updateLoginHistory: async (userId, loginHistory) => {
     try {
-      const response = await apiClient.put(`/user/${userId}`, { loginHistory });
+      const response = await apiClient.put(`/api/user/${userId}`, { loginHistory });
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;
@@ -228,7 +228,7 @@ const AdminService = {
   deleteLoginHistoryEntries: async (userId, entryIndexesToRemove) => {
     try {
       // First get the current user profile to access the login history
-      const userResponse = await apiClient.get(`/user/${userId}`);
+      const userResponse = await apiClient.get(`/api/user/${userId}`);
 
       if (!userResponse.data.success) {
         throw new Error("Failed to retrieve user data");
@@ -243,7 +243,7 @@ const AdminService = {
       );
 
       // Update the user with the filtered login history
-      const response = await apiClient.put(`/user/${userId}`, {
+      const response = await apiClient.put(`/api/user/${userId}`, {
         loginHistory: updatedLoginHistory,
       });
 
@@ -256,7 +256,7 @@ const AdminService = {
   // Clear all login history (admin only)
   clearLoginHistory: async (userId) => {
     try {
-      const response = await apiClient.put(`/user/${userId}`, {
+      const response = await apiClient.put(`/api/user/${userId}`, {
         loginHistory: [],
       });
       return response.data;

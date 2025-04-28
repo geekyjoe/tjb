@@ -486,7 +486,7 @@ const ProductDetailPage = () => {
             {!isInCart ? (
               <Button
                 onClick={handleAddToCart}
-                className="w-fit bg-yellow-500 hover:bg-yellow-600 text-neutral-700 hover:text-neutral-50"
+                className="w-fit bg-yellow-500 hover:bg-yellow-400 text-neutral-700"
                 disabled={product.stock === 0}
               >
                 {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
@@ -494,7 +494,7 @@ const ProductDetailPage = () => {
             ) : (
               <Button
                 onClick={goToCart}
-                className="w-fit bg-yellow-500 hover:bg-yellow-600 text-neutral-700 hover:text-neutral-50"
+                className="w-fit bg-yellow-500 hover:bg-yellow-400 text-neutral-700"
               >
                 <span className="max-l:text-xs">Go to Cart</span>
                 <ArrowRight className="w-4 h-4" />
@@ -585,7 +585,7 @@ const ProductDetailPage = () => {
               )}
               <li className="flex items-center">
                 <Package className="w-4 h-4 mr-2" />
-                <span>Free shipping on orders above $999</span>
+                <span>Free shipping on orders above ₹499</span>
               </li>
               <li className="flex items-center">
                 <Truck className="w-4 h-4 mr-2" />
