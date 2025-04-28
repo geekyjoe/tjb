@@ -13,7 +13,12 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Checkbox } from "../components/ui/checkbox";
 import { useToast } from "../hooks/use-toast";
-import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "../components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogOverlay,
+  DialogTitle,
+} from "../components/ui/dialog";
 import {
   AlertCircle,
   Eye,
@@ -28,7 +33,7 @@ import {
 import Tooltip from "../components/ui/Tooltip";
 import { AuthService } from "../api/client";
 import Cookies from "js-cookie"; // Make sure to install this package: npm install js-cookie
-import "./login.css"; // Import your CSS file for styling
+import "./Login.css"; // Import your CSS file for styling
 const LoginModal = ({ isOpen, onClose }) => {
   // States for form mode and steps
   const [mode, setMode] = useState("login"); // login or signup
@@ -747,8 +752,15 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <Button type="submit" className="w-1/2" disabled={isLoading}>
                   {isLoading ? (
                     <div className="flex items-center gap-2">
-                      <span className="animate-spin mr-2">⟳</span>
-                      Creating...
+                      <div className="typing-indicator">
+                        <div className="typing-circle"></div>
+                        <div className="typing-circle"></div>
+                        <div className="typing-circle"></div>
+                        <div className="typing-shadow"></div>
+                        <div className="typing-shadow"></div>
+                        <div className="typing-shadow"></div>
+                      </div>
+                      {/* Creating... */}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
@@ -768,7 +780,10 @@ const LoginModal = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="backdrop-blur-xs bg-black/1" />
-      <DialogContent aria-describedby={undefined} className="max-w-sm sm:max-w-md p-0 overflow-hidden rounded-lg">
+      <DialogContent
+        aria-describedby={undefined}
+        className="max-w-sm sm:max-w-md p-0 overflow-hidden rounded-lg"
+      >
         <DialogTitle className="sr-only">Login or Sign Up</DialogTitle>
         <Card className="border-0 shadow-none">
           <CardHeader className="relative">
