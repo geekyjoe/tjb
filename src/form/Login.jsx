@@ -13,7 +13,7 @@ import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Checkbox } from "../components/ui/checkbox";
 import { useToast } from "../hooks/use-toast";
-import { Dialog, DialogContent, DialogOverlay } from "../components/ui/dialog";
+import { Dialog, DialogContent, DialogOverlay, DialogTitle } from "../components/ui/dialog";
 import {
   AlertCircle,
   Eye,
@@ -434,13 +434,13 @@ const LoginModal = ({ isOpen, onClose }) => {
             <Button type="submit" className="w-full" disabled={isLoading}>
               {isLoading ? (
                 <div className="flex items-center gap-2 ">
-                  <div class="typing-indicator">
-                    <div class="typing-circle"></div>
-                    <div class="typing-circle"></div>
-                    <div class="typing-circle"></div>
-                    <div class="typing-shadow"></div>
-                    <div class="typing-shadow"></div>
-                    <div class="typing-shadow"></div>
+                  <div className="typing-indicator">
+                    <div className="typing-circle"></div>
+                    <div className="typing-circle"></div>
+                    <div className="typing-circle"></div>
+                    <div className="typing-shadow"></div>
+                    <div className="typing-shadow"></div>
+                    <div className="typing-shadow"></div>
                   </div>
                   {/* Logging in... */}
                 </div>
@@ -768,7 +768,8 @@ const LoginModal = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="backdrop-blur-xs bg-black/1" />
-      <DialogContent className="max-w-sm sm:max-w-md p-0 overflow-hidden rounded-lg">
+      <DialogContent aria-describedby={undefined} className="max-w-sm sm:max-w-md p-0 overflow-hidden rounded-lg">
+        <DialogTitle className="sr-only">Login or Sign Up</DialogTitle>
         <Card className="border-0 shadow-none">
           <CardHeader className="relative">
             {/* <Button
