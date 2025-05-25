@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -7,6 +7,7 @@ export default function HeroCarousel() {
   const [direction, setDirection] = useState(0); // -1 for left, 1 for right
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const intervalRef = useRef(null);
 
   const slides = [
     {
@@ -26,6 +27,14 @@ export default function HeroCarousel() {
     },
   ];
 
+  // Function to reset the auto-advance timer
+  const resetTimer = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    intervalRef.current = setInterval(nextSlide, 7500);
+  };
+
   const nextSlide = () => {
     setDirection(1);
     setCurrentSlide((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
@@ -44,6 +53,8 @@ export default function HeroCarousel() {
   // Handle touch events for swipe gestures
   const handleTouchStart = (e) => {
     setTouchStart(e.targetTouches[0].clientX);
+    // Reset timer when touch is detected
+    resetTimer();
   };
 
   const handleTouchMove = (e) => {
@@ -54,18 +65,26 @@ export default function HeroCarousel() {
     if (touchStart - touchEnd > 75) {
       // Swipe left
       nextSlide();
+      // Reset timer after swipe action
+      resetTimer();
     }
 
     if (touchEnd - touchStart > 75) {
       // Swipe right
       prevSlide();
+      // Reset timer after swipe action
+      resetTimer();
     }
   };
 
-  // Auto advance slides every 5 seconds
+  // Auto advance slides every 7.5 seconds
   useEffect(() => {
-    const interval = setInterval(nextSlide, 7500);
-    return () => clearInterval(interval);
+    intervalRef.current = setInterval(nextSlide, 7500);
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
   }, []);
 
   return (
@@ -166,8 +185,11 @@ export default function HeroCarousel() {
       {/* Carousel Controls - Bottom Right, with responsive positioning */}
       <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-1 md:space-x-2 max-md:bg-black/15 max-md:backdrop-blur-sm p-1 rounded-full z-1">
         <button
-          onClick={prevSlide}
-          className="p-1 md:p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors duration-300"
+          onClick={() => {
+            prevSlide();
+            resetTimer();
+          }}
+          className="hidden md:block p-1 md:p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors duration-300"
           aria-label="Previous slide"
         >
           <ChevronLeft size={16} className="md:hidden" />
@@ -175,8 +197,11 @@ export default function HeroCarousel() {
         </button>
 
         <button
-          onClick={nextSlide}
-          className="p-1 md:p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors duration-300"
+          onClick={() => {
+            nextSlide();
+            resetTimer();
+          }}
+          className="hidden md:block p-1 md:p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors duration-300"
           aria-label="Next slide"
         >
           <ChevronRight size={16} className="md:hidden" />
