@@ -112,7 +112,7 @@ const CookieConsent = () => {
   return (
     <div className="fixed inset-x-0 bottom-15 md:bottom-0 p-4 z-5">
       <div className="max-w-2xl mx-auto">
-        <Card className="rounded-xl bg-zinc-100 dark:bg-zinc-900 shadow-lg border">
+        <Card className="rounded-xl bg-zinc-100 dark:bg-cornsilk-dark shadow-lg border">
           <CardContent className="p-6">
             {!showDetails ? (
               <div className="space-y-4">
