@@ -436,7 +436,7 @@ const LoginModal = ({ isOpen, onClose }) => {
               </Label>
             </div>
 
-            <Button type="submit" className="w-full" disabled={isLoading}>
+            <Button type="submit" className={`w-full ${isLoading && 'bg-transparent dark:bg-transparent shadow-none'}`} disabled={isLoading}>
               {isLoading ? (
                 <div className="flex items-center gap-2 ">
                   <div className="typing-indicator">
@@ -742,14 +742,14 @@ const LoginModal = ({ isOpen, onClose }) => {
                   type="button"
                   onClick={prevStep}
                   variant="outline"
-                  className="w-1/2"
+                  className={`flex-1 ${isLoading && 'hidden'}`}
                 >
                   <div className="flex items-center gap-2">
                     <ChevronLeft className="w-4 h-4" />
                     Back
                   </div>
                 </Button>
-                <Button type="submit" className="w-1/2" disabled={isLoading}>
+                <Button type="submit" className={`flex-1 ${isLoading && 'bg-transparent dark:bg-transparent shadow-none'}`} disabled={isLoading}>
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="typing-indicator">
@@ -760,7 +760,6 @@ const LoginModal = ({ isOpen, onClose }) => {
                         <div className="typing-shadow"></div>
                         <div className="typing-shadow"></div>
                       </div>
-                      {/* Creating... */}
                     </div>
                   ) : (
                     <div className="flex items-center gap-2">
@@ -851,7 +850,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 <span className="w-full border-t" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-zinc-800 px-2 text-muted-foreground">
+                <span className="bg-white text-neutral-600 dark:text-neutral-200 dark:bg-cornsilk-dark px-2 text-muted-foreground">
                   Or continue with email
                 </span>
               </div>

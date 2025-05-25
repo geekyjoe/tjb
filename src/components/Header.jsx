@@ -63,16 +63,16 @@ const Header = () => {
         <NavLink
           to="/collections"
           className={
-            "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-700 focus:outline-hidden focus:underline focus:decoration-solid focus:underline-offset-4 text-cornsilk-dark dark:text-cornsilk dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
+            "px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-800 focus:outline-hidden focus:underline focus:decoration-solid focus:underline-offset-4 text-cornsilk-dark dark:text-cornsilk dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
           }
         >
           Catalogue
         </NavLink>
         <Link
           to="..\cart"
-          className="relative text-cornsilk-dark hover:bg-cornsilk-hover dark:hover:bg-zinc-600 p-2 rounded-full"
+          className="relative text-cornsilk-dark hover:bg-cornsilk-hover dark:hover:bg-zinc-800 p-2 rounded-full"
         >
-          <MdOutlineShoppingBag size={23} />
+          <MdOutlineShoppingBag size={23} className="dark:text-cornsilk"/>
           {totalItems > 0 && (
             <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
               {totalItems}
