@@ -29,11 +29,14 @@ import {
   UserPlus,
   LogIn,
   X,
+  Mail,
+  Lock,
 } from "lucide-react";
 import Tooltip from "../components/ui/Tooltip";
 import { AuthService } from "../api/client";
 import Cookies from "js-cookie"; // Make sure to install this package: npm install js-cookie
 import "./Login.css"; // Import your CSS file for styling
+
 const LoginModal = ({ isOpen, onClose }) => {
   // States for form mode and steps
   const [mode, setMode] = useState("login"); // login or signup
@@ -66,7 +69,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   // Cookie configuration constants
   const TOKEN_COOKIE_NAME = "auth_token";
-  const REMEMBER_ME_EXPIRY = 7; // 30 days for remember me
+  const REMEMBER_ME_EXPIRY = 7; // 7 days for remember me
   const DEFAULT_EXPIRY = 1; // 1 day default expiry
 
   // Reset form when opening modal
@@ -129,7 +132,21 @@ const LoginModal = ({ isOpen, onClose }) => {
   const validateStep = () => {
     const newErrors = {};
 
-    if (mode === "signup") {
+    if (mode === "login") {
+      if (currentStep === 1) {
+        // Validate email step
+        if (!formData.email.trim()) {
+          newErrors.email = "Email is required";
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+          newErrors.email = "Email is invalid";
+        }
+      } else if (currentStep === 2) {
+        // Validate password step
+        if (!formData.password) {
+          newErrors.password = "Password is required";
+        }
+      }
+    } else if (mode === "signup") {
       if (currentStep === 1) {
         // Validate first step of signup
         if (!formData.firstName.trim())
@@ -164,14 +181,6 @@ const LoginModal = ({ isOpen, onClose }) => {
         if (formData.password !== formData.confirmPassword) {
           newErrors.confirmPassword = "Passwords do not match";
         }
-      }
-    } else if (mode === "login") {
-      // Login validation
-      if (!formData.email.trim()) {
-        newErrors.email = "Email is required";
-      }
-      if (!formData.password) {
-        newErrors.password = "Password is required";
       }
     }
 
@@ -213,11 +222,6 @@ const LoginModal = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error("Error saving authentication token:", error);
     }
-  };
-
-  const handleSubmit1 = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
   };
 
   const handleSubmit = async (e) => {
@@ -334,11 +338,27 @@ const LoginModal = ({ isOpen, onClose }) => {
     setAuthError("");
   };
 
+  // Get step description for current mode and step
+  const getStepDescription = () => {
+    if (mode === "login") {
+      return currentStep === 1
+        ? "Enter your email address"
+        : "Enter your password and preferences";
+    } else {
+      return currentStep === 1
+        ? "Your info"
+        : currentStep === 2
+        ? "Contact details"
+        : "Security";
+    }
+  };
+
   // Render the correct form based on mode and step
   const renderForm = () => {
     if (mode === "login") {
-      return (
-        <form onSubmit={handleSubmit}>
+      if (currentStep === 1) {
+        // Login Step 1: Email
+        return (
           <div className="space-y-4">
             {authError && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600 flex items-start">
@@ -352,7 +372,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 htmlFor="email"
                 className={errors.email ? "text-red-500" : ""}
               >
-                Email
+                Email Address
               </Label>
               <Input
                 id="email"
@@ -362,6 +382,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                 onChange={handleChange}
                 className={errors.email || authError ? "border-red-500" : ""}
                 aria-invalid={errors.email || authError ? "true" : "false"}
+                autoFocus
               />
               {errors.email && (
                 <p className="text-xs text-red-500 flex items-center mt-1">
@@ -371,94 +392,147 @@ const LoginModal = ({ isOpen, onClose }) => {
               )}
             </div>
 
-            <div className="flex flex-col space-y-2">
-              <Label
-                htmlFor="password"
-                className={errors.password ? "text-red-500" : ""}
-              >
-                Password
-              </Label>
-              <div className="relative">
-                <Input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className={
-                    errors.password || authError
-                      ? "border-red-500 pr-10"
-                      : "pr-10"
-                  }
-                  aria-invalid={errors.password || authError ? "true" : "false"}
-                />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent"
-                  onClick={() => setShowPassword(!showPassword)}
-                  tabIndex="-1"
-                >
-                  <Tooltip
-                    content={showPassword ? "Hide password" : "Show password"}
-                    placement="right"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-gray-500" />
-                    ) : (
-                      <Eye className="h-4 w-4 text-gray-500" />
-                    )}
-                  </Tooltip>
-                </Button>
+            <Button type="button" onClick={nextStep} className="w-full" disabled={!formData.email}>
+              <div className="flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Continue
+                <ChevronRight className="w-4 h-4" />
               </div>
-              {errors.password && (
-                <p className="text-xs text-red-500 flex items-center mt-1">
-                  <AlertCircle className="h-3 w-3 mr-1" />
-                  {errors.password}
-                </p>
-              )}
-            </div>
-
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="rememberMe"
-                checked={formData.rememberMe}
-                onCheckedChange={(checked) =>
-                  setFormData({ ...formData, rememberMe: checked })
-                }
-              />
-              <Label
-                htmlFor="rememberMe"
-                className="text-sm font-medium leading-none cursor-pointer"
-              >
-                Remember me
-              </Label>
-            </div>
-
-            <Button type="submit" className={`w-full ${isLoading && 'bg-transparent dark:bg-transparent shadow-none'}`} disabled={isLoading}>
-              {isLoading ? (
-                <div className="flex items-center gap-2 ">
-                  <div className="typing-indicator">
-                    <div className="typing-circle"></div>
-                    <div className="typing-circle"></div>
-                    <div className="typing-circle"></div>
-                    <div className="typing-shadow"></div>
-                    <div className="typing-shadow"></div>
-                    <div className="typing-shadow"></div>
-                  </div>
-                  {/* Logging in... */}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <LogIn className="w-4 h-4" />
-                  Login
-                </div>
-              )}
             </Button>
           </div>
-        </form>
-      );
+        );
+      } else if (currentStep === 2) {
+        // Login Step 2: Password and Options
+        return (
+          <form onSubmit={handleSubmit}>
+            <div className="space-y-4">
+              {authError && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-md text-sm text-red-600 flex items-start">
+                  <AlertCircle className="h-4 w-4 mr-2 mt-0.5 flex-shrink-0" />
+                  <span>{authError}</span>
+                </div>
+              )}
+
+              {/* Show email for context */}
+              <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
+                <p className="text-sm text-gray-600 dark:text-gray-300">
+                  Logging in as:{" "}
+                  <span className="font-medium">{formData.email}</span>
+                </p>
+              </div>
+
+              <div className="flex flex-col space-y-2">
+                <Label
+                  htmlFor="password"
+                  className={errors.password ? "text-red-500" : ""}
+                >
+                  Password
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="Enter your password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={
+                      errors.password || authError
+                        ? "border-red-500 pr-10"
+                        : "pr-10"
+                    }
+                    aria-invalid={
+                      errors.password || authError ? "true" : "false"
+                    }
+                    autoFocus
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-0 top-1/2 -translate-y-1/2 hover:bg-transparent"
+                    onClick={() => setShowPassword(!showPassword)}
+                    tabIndex="-1"
+                  >
+                    <Tooltip
+                      content={showPassword ? "Hide password" : "Show password"}
+                      placement="right"
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-gray-500" />
+                      )}
+                    </Tooltip>
+                  </Button>
+                </div>
+                {errors.password && (
+                  <p className="text-xs text-red-500 flex items-center mt-1">
+                    <AlertCircle className="h-3 w-3 mr-1" />
+                    {errors.password}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center space-x-2">
+                <Checkbox
+                  id="rememberMe"
+                  checked={formData.rememberMe}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, rememberMe: checked })
+                  }
+                />
+                <Label
+                  htmlFor="rememberMe"
+                  className="text-sm font-medium leading-none cursor-pointer"
+                >
+                  Remember me for 7 days
+                </Label>
+              </div>
+
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={prevStep}
+                  variant="outline"
+                  className={`w-1/2 ${isLoading && "hidden"}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <ChevronLeft className="w-4 h-4" />
+                    Back
+                  </div>
+                </Button>
+                <Button
+                  type="submit"
+                  className={`${
+                    isLoading
+                      ? "w-full bg-transparent dark:bg-transparent shadow-none"
+                      : "w-1/2"
+                  }`}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <div className="flex items-center gap-2">
+                      <div className="typing-indicator">
+                        <div className="typing-circle"></div>
+                        <div className="typing-circle"></div>
+                        <div className="typing-circle"></div>
+                        <div className="typing-shadow"></div>
+                        <div className="typing-shadow"></div>
+                        <div className="typing-shadow"></div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <LogIn className="w-4 h-4" />
+                      Login
+                    </div>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </form>
+        );
+      }
     } else if (mode === "signup") {
       if (currentStep === 1) {
         return (
@@ -742,14 +816,21 @@ const LoginModal = ({ isOpen, onClose }) => {
                   type="button"
                   onClick={prevStep}
                   variant="outline"
-                  className={`flex-1 ${isLoading && 'hidden'}`}
+                  className={`flex-1 ${isLoading && "hidden"}`}
                 >
                   <div className="flex items-center gap-2">
                     <ChevronLeft className="w-4 h-4" />
                     Back
                   </div>
                 </Button>
-                <Button type="submit" className={`flex-1 ${isLoading && 'bg-transparent dark:bg-transparent shadow-none'}`} disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className={`flex-1 ${
+                    isLoading &&
+                    "bg-transparent dark:bg-transparent shadow-none"
+                  }`}
+                  disabled={isLoading}
+                >
                   {isLoading ? (
                     <div className="flex items-center gap-2">
                       <div className="typing-indicator">
@@ -780,81 +861,72 @@ const LoginModal = ({ isOpen, onClose }) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogOverlay className="backdrop-blur-xs bg-black/1" />
       <DialogContent
-        aria-describedby={undefined}
+        aria-describedby={"Login or Sign Up"}
         className="max-w-sm sm:max-w-md p-0 overflow-hidden rounded-lg"
       >
         <DialogTitle className="sr-only">Login or Sign Up</DialogTitle>
         <Card className="border-0 shadow-none">
           <CardHeader className="relative">
-            {/* <Button
-              variant="ghost"
-              size="icon"
-              className="absolute right-2 top-2"
-              onClick={onClose}
-            >
-              <X className="h-4 w-4" />
-            </Button> */}
             <CardTitle>
               {mode === "login" ? "Welcome Back" : "Create Account"}
             </CardTitle>
             <CardDescription>
               {mode === "login"
-                ? "Enter your credentials to access your account"
-                : `Step ${currentStep} of 3: ${
-                    currentStep === 1
-                      ? "Your info"
-                      : currentStep === 2
-                      ? "Contact details"
-                      : "Security"
-                  }`}
+                ? `Step ${currentStep} of 2: ${getStepDescription()}`
+                : `Step ${currentStep} of 3: ${getStepDescription()}`}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => handleSocialAuth("google")}
-                disabled={isLoading || !!socialLoading}
-              >
-                {socialLoading === "google" ? (
-                  <span className="animate-spin mr-2">⟳</span>
-                ) : (
-                  <img
-                    src="/google.svg"
-                    alt="Google"
-                    className="w-5 h-5 mr-2"
-                  />
-                )}
-                Google
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => handleSocialAuth("github")}
-                disabled={isLoading || !!socialLoading}
-              >
-                {socialLoading === "github" ? (
-                  <span className="animate-spin mr-2">⟳</span>
-                ) : (
-                  <Github className="w-5 h-5 mr-2" />
-                )}
-                Github
-              </Button>
-            </div>
+            {/* Only show social auth on first step */}
+            {currentStep === 1 && (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleSocialAuth("google")}
+                    disabled={isLoading || !!socialLoading}
+                  >
+                    {socialLoading === "google" ? (
+                      <span className="animate-spin mr-2">⟳</span>
+                    ) : (
+                      <img
+                        src="/google.svg"
+                        alt="Google"
+                        className="w-5 h-5 mr-2"
+                      />
+                    )}
+                    Google
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => handleSocialAuth("github")}
+                    disabled={isLoading || !!socialLoading}
+                  >
+                    {socialLoading === "github" ? (
+                      <span className="animate-spin mr-2">⟳</span>
+                    ) : (
+                      <Github className="w-5 h-5 mr-2" />
+                    )}
+                    Github
+                  </Button>
+                </div>
 
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white text-neutral-600 dark:text-neutral-200 dark:bg-cornsilk-dark px-2 text-muted-foreground">
-                  Or continue with email
-                </span>
-              </div>
-            </div>
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-white text-neutral-600 dark:text-neutral-200 dark:bg-cornsilk-dark px-2 text-muted-foreground">
+                      Or continue with email
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
 
             {renderForm()}
           </CardContent>
