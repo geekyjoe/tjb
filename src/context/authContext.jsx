@@ -22,6 +22,9 @@ export const AuthContext = createContext({
   login: () => {},
   logout: () => {},
   updateUser: () => {},
+  googleLogin: () => {},
+  linkGoogleAccount: () => {},
+  unlinkGoogleAccount: () => {},
 });
 
 // Auth Provider Component
@@ -49,6 +52,8 @@ export const AuthProvider = ({ children }) => {
                 email: currentUser.email || "",
                 avatarUrl: currentUser.avatarUrl || "",
                 role: currentUser.role || "user",
+                authProvider: currentUser.authProvider || "local",
+                googleId: currentUser.googleId || null,
               },
             });
           }
@@ -78,11 +83,116 @@ export const AuthProvider = ({ children }) => {
             email: currentUser.email || "",
             avatarUrl: currentUser.avatarUrl || "",
             role: currentUser.role || "user",
+            authProvider: currentUser.authProvider || "local",
+            googleId: currentUser.googleId || null,
           },
         });
       }
       return response;
     } catch (error) {
+      throw error;
+    }
+  };
+
+  const googleLogin = async (credential) => {
+    try {
+      const response = await AuthService.googleAuth(credential);
+
+      if (response.success) {
+        const currentUser = AuthService.getCurrentUser();
+        setAuthState({
+          isAuthenticated: true,
+          userProfile: {
+            userId: currentUser.id,
+            firstName: currentUser.firstName || "",
+            lastName: currentUser.lastName || "",
+            email: currentUser.email || "",
+            avatarUrl: currentUser.avatarUrl || "",
+            role: currentUser.role || "user",
+            authProvider: currentUser.authProvider || "google",
+            googleId: currentUser.googleId || null,
+          },
+        });
+        
+        toast({
+          title: "Success",
+          description: response.message || "Google sign-in successful",
+        });
+      }
+      return response;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Google sign-in failed",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const linkGoogleAccount = async (credential) => {
+    try {
+      const response = await AuthService.linkGoogleAccount(credential);
+
+      if (response.success) {
+        // Update the current user profile with Google info
+        const currentUser = AuthService.getCurrentUser();
+        const updatedProfile = {
+          ...authState.userProfile,
+          authProvider: "both",
+          googleId: currentUser.googleId,
+        };
+        
+        setAuthState((prev) => ({
+          ...prev,
+          userProfile: updatedProfile,
+        }));
+
+        toast({
+          title: "Success",
+          description: "Google account linked successfully",
+        });
+      }
+      return response;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to link Google account",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const unlinkGoogleAccount = async () => {
+    try {
+      const response = await AuthService.unlinkGoogleAccount();
+
+      if (response.success) {
+        // Update the current user profile to remove Google info
+        const updatedProfile = {
+          ...authState.userProfile,
+          authProvider: "local",
+          googleId: null,
+        };
+        
+        setAuthState((prev) => ({
+          ...prev,
+          userProfile: updatedProfile,
+        }));
+
+        toast({
+          title: "Success",
+          description: "Google account unlinked successfully",
+        });
+      }
+      return response;
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to unlink Google account",
+        variant: "destructive",
+      });
       throw error;
     }
   };
@@ -120,6 +230,9 @@ export const AuthProvider = ({ children }) => {
         login,
         logout,
         updateUser,
+        googleLogin,
+        linkGoogleAccount,
+        unlinkGoogleAccount,
         loading,
       }}
     >
@@ -130,7 +243,6 @@ export const AuthProvider = ({ children }) => {
 
 // Custom hook to use auth context
 export const useAuth = () => useContext(AuthContext);
-
 
 // Updated UserAuthButton component that integrates with the LoginModal
 export const UserAuthButton = () => {
@@ -217,6 +329,11 @@ export const UserAuthButton = () => {
             <p className="text-xs leading-none text-muted-foreground">
               {userProfile.email}
             </p>
+            {userProfile.authProvider && (
+              <p className="text-xs leading-none text-muted-foreground">
+                Auth: {userProfile.authProvider}
+              </p>
+            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />

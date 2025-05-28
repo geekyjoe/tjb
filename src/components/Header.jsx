@@ -13,7 +13,7 @@ import {
 } from "../components/ui/popover";
 import { TbMenu } from "react-icons/tb";
 import MobileMenu from "./MobileMenu";
-import { UserAuthButton } from "../services/authContext";
+import { UserAuthButton } from "../context/authContext";
 import Tooltip from "./ui/Tooltip";
 
 const Header = () => {

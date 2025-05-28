@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useCart } from "./CartContext";
 import { Link } from "react-router-dom";
-import { UserAuthButton } from "../services/authContext";
+import { UserAuthButton } from "../context/authContext";
 import { MdOutlineShoppingBag } from "react-icons/md";
 
 const MobileMenu = ({}) => {

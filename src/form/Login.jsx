@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../services/authContext";
+import { useAuth } from "../context/authContext";
 import {
   Card,
   CardContent,
@@ -36,6 +36,7 @@ import Tooltip from "../components/ui/Tooltip";
 import { AuthService } from "../api/client";
 import Cookies from "js-cookie"; // Make sure to install this package: npm install js-cookie
 import "./Login.css"; // Import your CSS file for styling
+import { GoogleLoginButton } from "./google-auth";
 
 const LoginModal = ({ isOpen, onClose }) => {
   // States for form mode and steps
@@ -881,7 +882,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             {currentStep === 1 && (
               <>
                 <div className="grid grid-cols-2 gap-4">
-                  <Button
+                  {/* <Button
                     type="button"
                     variant="outline"
                     className="w-full"
@@ -898,7 +899,8 @@ const LoginModal = ({ isOpen, onClose }) => {
                       />
                     )}
                     Google
-                  </Button>
+                  </Button> */}
+                  <GoogleLoginButton disabled={isLoading} className="mb-4"/>
                   <Button
                     type="button"
                     variant="outline"

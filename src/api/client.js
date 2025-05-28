@@ -1,7 +1,7 @@
 // api.js - Frontend API service for communicating with the backend
 
 import axios from "axios";
-import { API_URL } from "./index";
+import { API_URL } from "./url";
 
 // Create axios instance with default configs
 const apiClient = axios.create({
@@ -28,7 +28,7 @@ const AuthService = {
   // Register a new user
   register: async (userData) => {
     try {
-      const response = await apiClient.post("/api/register", userData);
+      const response = await apiClient.post("/api/auth/register", userData);
       if (response.data.success) {
         localStorage.setItem("token", response.data.data.token);
         localStorage.setItem("user", JSON.stringify(response.data.data.user));
@@ -42,7 +42,7 @@ const AuthService = {
   // Login user
   login: async (email, password) => {
     try {
-      const response = await apiClient.post("/api/login", {
+      const response = await apiClient.post("/api/auth/login", {
         email,
         password,
       });
@@ -71,6 +71,43 @@ const AuthService = {
   getCurrentUser: () => {
     const user = localStorage.getItem("user");
     return user ? JSON.parse(user) : null;
+  },
+  // Google OAuth login/register
+  googleAuth: async (credential) => {
+    try {
+      const response = await apiClient.post("/api/auth/google", {
+        credential,
+      });
+      if (response.data.success) {
+        localStorage.setItem("token", response.data.data.token);
+        localStorage.setItem("user", JSON.stringify(response.data.data.user));
+      }
+      return response.data;
+    } catch (error) {
+      throw error.response ? error.response.data : error;
+    }
+  },
+
+  // Link Google account to existing user account
+  linkGoogleAccount: async (credential) => {
+    try {
+      const response = await apiClient.post("/api/auth/link-google", {
+        credential,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response ? error.response.data : error;
+    }
+  },
+
+  // Unlink Google account from user account
+  unlinkGoogleAccount: async () => {
+    try {
+      const response = await apiClient.post("/api/auth/unlink-google");
+      return response.data;
+    } catch (error) {
+      throw error.response ? error.response.data : error;
+    }
   },
 };
 
@@ -194,6 +231,16 @@ const UserService = {
 
 // Admin API calls
 const AdminService = {
+  // Create a new user (admin only)
+  createUser: async (userData) => {
+    try {
+      const response = await apiClient.post("/api/user", userData);
+      return response.data;
+    } catch (error) {
+      throw error.response ? error.response.data : error;
+    }
+  },
+
   // Get all users (admin only)
   getAllUsers: async () => {
     try {
@@ -217,7 +264,9 @@ const AdminService = {
   // Update user login history (admin only)
   updateLoginHistory: async (userId, loginHistory) => {
     try {
-      const response = await apiClient.put(`/api/user/${userId}`, { loginHistory });
+      const response = await apiClient.put(`/api/user/${userId}`, {
+        loginHistory,
+      });
       return response.data;
     } catch (error) {
       throw error.response ? error.response.data : error;
