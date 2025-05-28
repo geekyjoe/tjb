@@ -1,5 +1,5 @@
 // google-auth.js - Google Authentication utilities
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import { useToast } from "../hooks/use-toast";
 
 // Google Client Configuration
