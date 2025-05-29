@@ -15,8 +15,6 @@ import ProductDetailPage from "./pages/ProductDetailPage";
 import ProductPanel from "./pages/ProductPanel";
 import Profile from "./pages/Profile";
 import CookieConsent from "./components/CookieConsent";
-import UserSignup from "./form/Signup";
-import UserLogin from "./form/Login";
 import UserManagement from "./services/UM";
 import MobileMenu from "./components/MobileMenu";
 

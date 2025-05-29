@@ -110,58 +110,56 @@ const CookieConsent = () => {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-15 md:bottom-0 p-4 z-5">
-      <div className="max-w-2xl mx-auto">
-        <Card className="rounded-xl bg-zinc-100 dark:bg-cornsilk-dark shadow-lg border">
-          <CardContent className="p-6">
-            {!showDetails ? (
-              <div className="space-y-4">
-                <div className="flex flex-col md:flex-row gap-4 justify-between">
-                  <div className="space-y-2">
-                    <h3 className="font-semibold text-lg">
-                      We value your privacy
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      We use cookies to enhance your browsing experience, serve
-                      personalized content, and analyze our traffic.
-                    </p>
-                  </div>
-                  <div className="flex items-center justify-end gap-2">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setShowDetails(true)}
-                      className="whitespace-nowrap"
-                    >
-                      Customize
-                    </Button>
-                    <Button
-                      onClick={handleAcceptAll}
-                      className="whitespace-nowrap"
-                    >
-                      Accept All
-                    </Button>
-                  </div>
+    <div className="fixed inset-x-0 bottom-15 md:bottom-0 p-4 z-5 max-w-2xl mx-auto">
+      <Card className="rounded-xl bg-zinc-100 dark:bg-cornsilk-dark shadow-lg border">
+        <CardContent className="p-6">
+          {!showDetails ? (
+            <div className="space-y-4">
+              <div className="flex flex-col md:flex-row gap-4 justify-between">
+                <div className="space-y-2">
+                  <h3 className="font-semibold text-lg">
+                    We value your privacy
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    We use cookies to enhance your browsing experience, serve
+                    personalized content, and analyze our traffic.
+                  </p>
                 </div>
-              </div>
-            ) : (
-              <div>
-                <CookieSettings
-                  preferences={preferences}
-                  setPreferences={setPreferences}
-                />
-                <div className="flex justify-end gap-2 mt-6">
-                  <Button variant="ghost" onClick={() => setShowDetails(false)}>
-                    Back
+                <div className="flex items-center justify-end gap-2">
+                  <Button
+                    variant="ghost"
+                    onClick={() => setShowDetails(true)}
+                    className="whitespace-nowrap"
+                  >
+                    Customize
                   </Button>
-                  <Button onClick={handleSavePreferences}>
-                    Save Preferences
+                  <Button
+                    onClick={handleAcceptAll}
+                    className="whitespace-nowrap"
+                  >
+                    Accept All
                   </Button>
                 </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
+            </div>
+          ) : (
+            <div>
+              <CookieSettings
+                preferences={preferences}
+                setPreferences={setPreferences}
+              />
+              <div className="flex justify-end gap-2 mt-6">
+                <Button variant="ghost" onClick={() => setShowDetails(false)}>
+                  Back
+                </Button>
+                <Button onClick={handleSavePreferences}>
+                  Save Preferences
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
