@@ -57,7 +57,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../components/ui/dropdown-menu";
-import { AuthService, UserService, AdminService } from "../api/client";
+import { AuthService, UserService } from "../api/client";
 
 const UserManagement = lazy(() => import("../services/UM"));
 
@@ -76,6 +76,7 @@ const Profile = () => {
     email: "",
     phoneNumber: "",
     username: "",
+    dob: "",
   });
   const [tempProfile, setTempProfile] = useState({ ...userProfile });
   const [notifications, setNotifications] = useState({
@@ -144,6 +145,7 @@ const Profile = () => {
             email: userData.email || currentUser.email || "",
             phoneNumber: userData.phoneNumber || "",
             username: userData.username || userData.email?.split("@")[0] || "",
+            dob: userData.dob || "",
           });
 
           setTempProfile({
@@ -152,6 +154,7 @@ const Profile = () => {
             email: userData.email || currentUser.email || "",
             phoneNumber: userData.phoneNumber || "",
             username: userData.username || userData.email?.split("@")[0] || "",
+            dob: userData.dob || "",
           });
         } else {
           // Fallback to auth user data if API doesn't return profile
@@ -167,6 +170,7 @@ const Profile = () => {
             email: currentUser.email || "",
             phoneNumber: currentUser.phoneNumber || "",
             username: currentUser.email?.split("@")[0] || "",
+            dob: userData.dob || "",
           });
 
           setTempProfile({
@@ -175,6 +179,7 @@ const Profile = () => {
             email: currentUser.email || "",
             phoneNumber: currentUser.phoneNumber || "",
             username: currentUser.email?.split("@")[0] || "",
+            dob: userData.dob || "",
           });
 
           setUserRole(currentUser.role || "user");
@@ -711,6 +716,53 @@ const Profile = () => {
                       </div>
                     </div>
                   ))}
+
+                  {/* Date of Birth with Date Picker */}
+                  <div className="space-y-2">
+                    <Label htmlFor="dob">Date Of Birth</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="dob"
+                        type={editingField === "dob" ? "date" : "text"}
+                        value={
+                          editingField === "dob"
+                            ? tempProfile.dob
+                            : userProfile.dob
+                        }
+                        onChange={(e) => handleFieldEdit("dob", e.target.value)}
+                        disabled={editingField !== "dob"}
+                        className="flex-1"
+                        placeholder="Select your date of birth"
+                        max={new Date().toISOString().split("T")[0]} // Prevent future dates
+                      />
+                      {editingField === "dob" ? (
+                        <div className="space-x-2">
+                          <Button
+                            onClick={() => handleFieldSave("dob")}
+                            size="sm"
+                          >
+                            <Save className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            onClick={() => setEditingField(null)}
+                            size="sm"
+                            variant="secondary"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <Button
+                          onClick={() => setEditingField("dob")}
+                          size="sm"
+                          variant="ghost"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
                     <Input

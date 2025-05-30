@@ -17,6 +17,8 @@ import Profile from "./pages/Profile";
 import CookieConsent from "./components/CookieConsent";
 import UserManagement from "./services/UM";
 import MobileMenu from "./components/MobileMenu";
+import { ProductProvider } from "./pages/ProductPanel";
+import { Toaster } from "./components/ui/toaster";
 
 4856;
 const AppContent = () => {
@@ -46,10 +48,13 @@ const App = () => {
   return (
     <ThemeProvider>
       <CartProvider storagePreference="both">
-        <Router>
-          <AppContent />
-          <CookieConsent />
-        </Router>
+        <ProductProvider>
+          <Router>
+            <AppContent />
+            <CookieConsent />
+            <Toaster /> 
+          </Router>
+        </ProductProvider>
       </CartProvider>
     </ThemeProvider>
   );
