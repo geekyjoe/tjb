@@ -24,7 +24,9 @@ import {
   Loader,
 } from "lucide-react";
 import productAPI from "../api/products"; // Your API file
-
+import { useAuth } from "../context/authContext";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "../hooks/use-toast";
 // At the top of the file with other imports
 // Add this validation function near the top of the file, after imports
 
@@ -56,143 +58,6 @@ const validateProduct = (product, isUpdate = false) => {
   }
 
   return true;
-};
-// Create Product Context
-const ProductContext = createContext();
-
-const useProducts = () => {
-  const context = useContext(ProductContext);
-  if (!context) {
-    throw new Error("useProducts must be used within a ProductProvider");
-  }
-  return context;
-};
-
-// Product Provider Component
-export const ProductProvider = ({ children }) => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [pagination, setPagination] = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    itemsPerPage: 10,
-  });
-  const [filters, setFilters] = useState({
-    search: "",
-    productType: "",
-    category: "",
-    status: "active",
-    sortBy: "createdAt",
-    sortOrder: "desc",
-  });
-
-  const fetchProducts = useCallback(
-    async (page = 1) => {
-      setLoading(true);
-      setError(null);
-      try {
-        const params = {
-          page,
-          limit: pagination.itemsPerPage,
-          ...filters,
-        };
-        const response = await productAPI.getAllProducts(params);
-        setProducts(response.data);
-        setPagination(response.pagination);
-      } catch (err) {
-        setError(err.message || "Failed to fetch products");
-      } finally {
-        setLoading(false);
-      }
-    },
-    [filters, pagination.itemsPerPage]
-  );
-
-  const createProduct = async (productData, images) => {
-    try {
-      const response = await productAPI.createProduct(productData, images);
-      await fetchProducts(pagination.currentPage);
-      return response;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const updateProduct = async (
-    productId,
-    productData,
-    images,
-    replaceAllImages = false
-  ) => {
-    try {
-      const response = await productAPI.updateProduct(
-        productId,
-        productData,
-        images,
-        replaceAllImages
-      );
-      await fetchProducts(pagination.currentPage);
-      return response;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const deleteProduct = async (productId) => {
-    try {
-      const response = await productAPI.deleteProduct(productId);
-      await fetchProducts(pagination.currentPage);
-      return response;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const bulkDelete = async (productIds) => {
-    try {
-      const response = await productAPI.bulkOperations("delete", productIds);
-      await fetchProducts(pagination.currentPage);
-      return response;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const searchProducts = async (query) => {
-    try {
-      const response = await productAPI.searchProducts(query);
-      setProducts(response.data);
-      setPagination((prev) => ({ ...prev, totalItems: response.data.length }));
-      return response;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts(1);
-  }, [filters]);
-
-  const value = {
-    products,
-    loading,
-    error,
-    pagination,
-    filters,
-    setFilters,
-    fetchProducts,
-    createProduct,
-    updateProduct,
-    deleteProduct,
-    bulkDelete,
-    searchProducts,
-  };
-
-  return (
-    <ProductContext.Provider value={value}>{children}</ProductContext.Provider>
-  );
 };
 
 // Dialog Component (Radix UI style)
@@ -839,20 +704,110 @@ const ProductDetailView = ({ product, onClose }) => {
 
 // Main Product Management Component
 const ProductManagement = () => {
-  const {
-    products,
-    loading,
-    error,
-    pagination,
-    filters,
-    setFilters,
-    fetchProducts,
-    createProduct,
-    updateProduct,
-    deleteProduct,
-    bulkDelete,
-    searchProducts,
-  } = useProducts();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    itemsPerPage: 10,
+  });
+  const [filters, setFilters] = useState({
+    search: "",
+    productType: "",
+    category: "",
+    status: "active",
+    sortBy: "createdAt",
+    sortOrder: "desc",
+  });
+
+  const fetchProducts = useCallback(
+    async (page = 1) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const params = {
+          page,
+          limit: pagination.itemsPerPage,
+          ...filters,
+        };
+        const response = await productAPI.getAllProducts(params);
+        setProducts(response.data);
+        setPagination(response.pagination);
+      } catch (err) {
+        setError(err.message || "Failed to fetch products");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [filters, pagination.itemsPerPage]
+  );
+
+  const createProduct = async (productData, images) => {
+    try {
+      const response = await productAPI.createProduct(productData, images);
+      await fetchProducts(pagination.currentPage);
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const updateProduct = async (
+    productId,
+    productData,
+    images,
+    replaceAllImages = false
+  ) => {
+    try {
+      const response = await productAPI.updateProduct(
+        productId,
+        productData,
+        images,
+        replaceAllImages
+      );
+      await fetchProducts(pagination.currentPage);
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteProduct = async (productId) => {
+    try {
+      const response = await productAPI.deleteProduct(productId);
+      await fetchProducts(pagination.currentPage);
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const bulkDelete = async (productIds) => {
+    try {
+      const response = await productAPI.bulkOperations("delete", productIds);
+      await fetchProducts(pagination.currentPage);
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const searchProducts = async (query) => {
+    try {
+      const response = await productAPI.searchProducts(query);
+      setProducts(response.data);
+      setPagination((prev) => ({ ...prev, totalItems: response.data.length }));
+      return response;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts(1);
+  }, [filters]);
 
   const [showForm, setShowForm] = useState(false);
   const [showDetail, setShowDetail] = useState(false);

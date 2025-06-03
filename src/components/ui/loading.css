@@ -1,0 +1,24 @@
+.loader {
+  overflow: visible;
+  height: fit-content;
+  width: fit-content;
+  padding: 20px;
+  display: flex;
+}
+
+.logo {
+  fill: none;
+  stroke-dasharray: 20px;
+  stroke: black;
+  animation: load 10s infinite linear;
+}
+
+@keyframes load {
+  0% {
+    stroke-dashoffset: 0px;
+  }
+
+  100% {
+    stroke-dashoffset: 250px;
+  }
+}

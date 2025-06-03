@@ -1,12 +1,12 @@
 import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { StarOutlined } from "@ant-design/icons";
+import { CopyrightCircleOutlined, StarOutlined } from "@ant-design/icons";
 import { GiGlobeRing } from "react-icons/gi";
 import { SiAffinitydesigner } from "react-icons/si";
 import { FaGifts } from "react-icons/fa6";
 import { ImGift } from "react-icons/im";
 import { BsBox2HeartFill } from "react-icons/bs";
-import { IoHeartCircleSharp } from "react-icons/io5";
+import { IoHeartCircleSharp, IoLogoInstagram } from "react-icons/io5";
 import Footer from "../components/Footer";
 import BgImage from "/hero.webp";
 import HeroCarousel from "../components/HC";
@@ -146,24 +146,92 @@ const Home = () => {
         </div>
       </section>
       <Footer />
-      {/* <footer className="flex justify-between p-5 border-t mt-5">
-        <div className="flex space-x-1 p-2 text-neutral-800 dark:text-neutral-300">
-          <CopyrightCircleOutlined className="text-sm p-0.5" />
-          <h2 className="text-md">
-            2025<p className="inline-flex ml-2 text-md">The Jeweller Bee</p>
-          </h2>
+      {/* Footer */}
+      <footer className="bg-gray-900 text-white py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-amber-500">
+                The JewellerBee
+              </h3>
+              <p className="text-gray-300 leading-relaxed">
+                Crafting memories, one piece at a time. Where every jewelry
+                tells a story of love, commitment, and timeless elegance.
+              </p>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Collections</h4>
+              <ul className="space-y-2 text-gray-300">
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-amber-500 transition-colors"
+                  >
+                    Engagement Rings
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-amber-500 transition-colors"
+                  >
+                    Wedding Bands
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-amber-500 transition-colors"
+                  >
+                    Necklaces
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-amber-500 transition-colors"
+                  >
+                    Bracelets
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="hover:text-amber-500 transition-colors"
+                  >
+                    Earrings
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-lg font-semibold mb-4">Connect</h4>
+              <div className="space-y-3">
+                <a
+                  href="https://www.instagram.com/_thejewelerbee_"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 text-gray-300 hover:text-amber-500 transition-colors"
+                >
+                  <IoLogoInstagram size={20} />
+                  Follow us on Instagram
+                </a>
+                <p className="text-gray-300">📧 sal@outlook.com</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center gap-2 text-gray-400 mb-4 md:mb-0">
+              <CopyrightCircleOutlined />
+              <span>2025 The JewellerBee. All rights reserved.</span>
+            </div>
+            <div className="text-gray-400 text-sm">
+              Crafted with 💎 and passion
+            </div>
+          </div>
         </div>
-        <div className="grid grid-cols-1">
-          <a
-            className="flex items-center gap-1 text-md hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4"
-            href="https://www.instagram.com/_thejewelerbee_"
-            target="_blank"
-          >
-            <IoLogoInstagram size={16} />
-            Instagram
-          </a>
-        </div>
-      </footer> */}
+      </footer>
     </div>
   );
 };

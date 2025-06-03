@@ -1,6 +1,6 @@
-import { useState, useEffect, createContext, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthService } from "../api/client";
+import { useState, useEffect, createContext, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { AuthService } from '../api/client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,12 +8,11 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "../components/ui/avatar";
-import { Button } from "../components/ui/button";
-import { useToast } from "../hooks/use-toast";
-import { LogIn, User } from "lucide-react";
-import LoginModal from "../form/Login";
+} from '../components/ui/dropdown-menu';
+import { Button } from '../components/ui/button';
+import { useToast } from '../hooks/use-toast';
+import { LogIn, User } from 'lucide-react';
+import LoginModal from '../form/Login';
 
 // Create Auth Context
 export const AuthContext = createContext({
@@ -47,19 +46,19 @@ export const AuthProvider = ({ children }) => {
               isAuthenticated: true,
               userProfile: {
                 userId: currentUser.id,
-                firstName: currentUser.firstName || "",
-                lastName: currentUser.lastName || "",
-                email: currentUser.email || "",
-                avatarUrl: currentUser.avatarUrl || "",
-                role: currentUser.role || "user",
-                authProvider: currentUser.authProvider || "local",
+                firstName: currentUser.firstName || '',
+                lastName: currentUser.lastName || '',
+                email: currentUser.email || '',
+                avatarUrl: currentUser.avatarUrl || '',
+                role: currentUser.role || 'user',
+                authProvider: currentUser.authProvider || 'local',
                 googleId: currentUser.googleId || null,
               },
             });
           }
         }
       } catch (error) {
-        console.error("Error initializing auth state:", error);
+        console.error('Error initializing auth state:', error);
       } finally {
         setLoading(false);
       }
@@ -67,6 +66,32 @@ export const AuthProvider = ({ children }) => {
 
     initAuth();
   }, []);
+
+  // Listen for token expiration events
+  useEffect(() => {
+    const handleTokenExpiration = () => {
+      console.log('Token expired, clearing auth state...');
+      
+      setAuthState({
+        isAuthenticated: false,
+        userProfile: null,
+      });
+
+      toast({
+        title: 'Session Expired',
+        description: 'Your session has expired. Please sign in again.',
+        variant: 'destructive',
+      });
+    };
+
+    // Listen for the custom token expiration event
+    window.addEventListener('auth:expired', handleTokenExpiration);
+
+    // Cleanup listener
+    return () => {
+      window.removeEventListener('auth:expired', handleTokenExpiration);
+    };
+  }, [toast]);
 
   const login = async (email, password, rememberMe = false) => {
     try {
@@ -78,12 +103,12 @@ export const AuthProvider = ({ children }) => {
           isAuthenticated: true,
           userProfile: {
             userId: currentUser.id,
-            firstName: currentUser.firstName || "",
-            lastName: currentUser.lastName || "",
-            email: currentUser.email || "",
-            avatarUrl: currentUser.avatarUrl || "",
-            role: currentUser.role || "user",
-            authProvider: currentUser.authProvider || "local",
+            firstName: currentUser.firstName || '',
+            lastName: currentUser.lastName || '',
+            email: currentUser.email || '',
+            avatarUrl: currentUser.avatarUrl || '',
+            role: currentUser.role || 'user',
+            authProvider: currentUser.authProvider || 'local',
             googleId: currentUser.googleId || null,
           },
         });
@@ -104,27 +129,27 @@ export const AuthProvider = ({ children }) => {
           isAuthenticated: true,
           userProfile: {
             userId: currentUser.id,
-            firstName: currentUser.firstName || "",
-            lastName: currentUser.lastName || "",
-            email: currentUser.email || "",
-            avatarUrl: currentUser.avatarUrl || "",
-            role: currentUser.role || "user",
-            authProvider: currentUser.authProvider || "google",
+            firstName: currentUser.firstName || '',
+            lastName: currentUser.lastName || '',
+            email: currentUser.email || '',
+            avatarUrl: currentUser.avatarUrl || '',
+            role: currentUser.role || 'user',
+            authProvider: currentUser.authProvider || 'google',
             googleId: currentUser.googleId || null,
           },
         });
-        
+
         toast({
-          title: "Success",
-          description: response.message || "Google sign-in successful",
+          title: 'Success',
+          description: response.message || 'Google sign-in successful',
         });
       }
       return response;
     } catch (error) {
       toast({
-        title: "Error",
-        description: error.message || "Google sign-in failed",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Google sign-in failed',
+        variant: 'destructive',
       });
       throw error;
     }
@@ -139,26 +164,26 @@ export const AuthProvider = ({ children }) => {
         const currentUser = AuthService.getCurrentUser();
         const updatedProfile = {
           ...authState.userProfile,
-          authProvider: "both",
+          authProvider: 'both',
           googleId: currentUser.googleId,
         };
-        
+
         setAuthState((prev) => ({
           ...prev,
           userProfile: updatedProfile,
         }));
 
         toast({
-          title: "Success",
-          description: "Google account linked successfully",
+          title: 'Success',
+          description: 'Google account linked successfully',
         });
       }
       return response;
     } catch (error) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to link Google account",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Failed to link Google account',
+        variant: 'destructive',
       });
       throw error;
     }
@@ -172,26 +197,26 @@ export const AuthProvider = ({ children }) => {
         // Update the current user profile to remove Google info
         const updatedProfile = {
           ...authState.userProfile,
-          authProvider: "local",
+          authProvider: 'local',
           googleId: null,
         };
-        
+
         setAuthState((prev) => ({
           ...prev,
           userProfile: updatedProfile,
         }));
 
         toast({
-          title: "Success",
-          description: "Google account unlinked successfully",
+          title: 'Success',
+          description: 'Google account unlinked successfully',
         });
       }
       return response;
     } catch (error) {
       toast({
-        title: "Error",
-        description: error.message || "Failed to unlink Google account",
-        variant: "destructive",
+        title: 'Error',
+        description: error.message || 'Failed to unlink Google account',
+        variant: 'destructive',
       });
       throw error;
     }
@@ -204,8 +229,8 @@ export const AuthProvider = ({ children }) => {
       userProfile: null,
     });
     toast({
-      title: "Success",
-      description: "Signed out successfully",
+      title: 'Success',
+      description: 'Signed out successfully',
     });
   };
 
@@ -219,7 +244,7 @@ export const AuthProvider = ({ children }) => {
     const currentUser = AuthService.getCurrentUser();
     if (currentUser) {
       const updatedUser = { ...currentUser, ...userData };
-      localStorage.setItem("user", JSON.stringify(updatedUser));
+      localStorage.setItem('user', JSON.stringify(updatedUser));
     }
   };
 
@@ -255,23 +280,23 @@ export const UserAuthButton = () => {
     try {
       logout();
       toast({
-        title: "Success",
-        description: "Signed out successfully",
+        title: 'Success',
+        description: 'Signed out successfully',
       });
       navigate('/');
     } catch (error) {
       toast({
-        title: "Error",
-        description: "Failed to sign out",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to sign out',
+        variant: 'destructive',
       });
     }
   };
 
   if (loading) {
     return (
-      <Button variant="outline" className="flex items-center gap-2" disabled>
-        <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></span>
+      <Button variant='outline' className='flex items-center gap-2' disabled>
+        <span className='h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent'></span>
         Loading...
       </Button>
     );
@@ -281,17 +306,17 @@ export const UserAuthButton = () => {
     return (
       <>
         <Button
-          variant="ghost"
-          className="flex items-center gap-2"
+          variant='ghost'
+          className='flex items-center gap-2'
           onClick={() => setIsLoginModalOpen(true)}
-          size="icon"
+          size='icon'
         >
-          <LogIn className="h-4 w-4" />
+          <LogIn className='h-4 w-4' />
         </Button>
-        
-        <LoginModal 
-          isOpen={isLoginModalOpen} 
-          onClose={() => setIsLoginModalOpen(false)} 
+
+        <LoginModal
+          isOpen={isLoginModalOpen}
+          onClose={() => setIsLoginModalOpen(false)}
         />
       </>
     );
@@ -300,53 +325,58 @@ export const UserAuthButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8">
-            <AvatarImage
-              src={
-                userProfile.avatarUrl ||
-                `https://ui-avatars.com/api/?name=${
-                  userProfile.firstName || "User"
-                }`
-              }
-              alt={userProfile.firstName}
-            />
-            <AvatarFallback>
-              {userProfile.firstName?.charAt(0) || <User className="h-4 w-4" />}
-            </AvatarFallback>
-          </Avatar>
-        </Button>
+        <button className='focus:outline-none rounded-full'>
+          <img
+            src={
+              userProfile.avatarUrl ||
+              `https://ui-avatars.com/api/?name=${
+                userProfile.firstName || ''
+              }+${userProfile.lastName || ''}`
+            }
+            alt={userProfile.firstName || 'User'}
+            className='rounded-full size-8'
+          />
+        </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" align="end" forceMount>
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">
+      <DropdownMenuContent className='w-56' align='end' forceMount>
+        <DropdownMenuLabel className='font-normal'>
+          <div className='flex flex-col space-y-1'>
+            <p className='text-sm font-medium leading-none'>
               {`${userProfile.firstName} ${userProfile.lastName}`}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className='text-xs leading-none text-muted-foreground'>
               {userProfile.role}
             </p>
-            <p className="text-xs leading-none text-muted-foreground">
+            <p className='text-xs leading-none text-muted-foreground'>
               {userProfile.email}
             </p>
             {userProfile.authProvider && (
-              <p className="text-xs leading-none text-muted-foreground">
+              <p className='text-xs leading-none text-muted-foreground'>
                 Auth: {userProfile.authProvider}
               </p>
             )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate("/account")}>
+        <DropdownMenuItem onClick={() => navigate('/account')}>
           Profile
         </DropdownMenuItem>
-        {userProfile.role === "admin" && (
-          <DropdownMenuItem onClick={() => navigate("/pp")}>
+        {userProfile.role === 'admin' && (
+          <DropdownMenuItem
+            onClick={() => {
+              navigate('/manageproducts');
+              // Optional: Add loading state feedback
+              toast({
+                title: 'Loading',
+                description: 'Opening product management panel...',
+              });
+            }}
+          >
             Manage Products
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="text-red-600">
+        <DropdownMenuItem onClick={handleSignOut} className='text-red-600'>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>
