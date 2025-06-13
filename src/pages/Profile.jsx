@@ -1,13 +1,12 @@
 import React, { lazy, useState, useEffect, Suspense } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FiSmartphone } from 'react-icons/fi';
 import {
   Bell,
   Moon,
   Sun,
   User,
-  Package,
   Settings,
-  LogOut,
   Pencil,
   Save,
   X,
@@ -16,12 +15,15 @@ import {
   Laptop,
   Shield,
   EditIcon,
-  AlertTriangle,
   Upload,
   Eye,
   EyeOff,
   Trash2,
   AlertTriangleIcon,
+  MailCheck,
+  Calendar,
+  AtSign,
+  User2,
 } from 'lucide-react';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
@@ -59,6 +61,8 @@ import {
 } from '../components/ui/dropdown-menu';
 import { AuthService, UserService } from '../api/client';
 import { Separator } from '../components/ui/separator';
+import Loading from '../components/ui/Loading';
+import { MdOutlineSecurity } from 'react-icons/md';
 
 const UserManagement = lazy(() => import('../services/UM'));
 
@@ -234,6 +238,17 @@ const Profile = () => {
     });
   };
 
+  const getFieldIcon = (field) => {
+    const icons = {
+      firstName: User2,
+      lastName: User2,
+      phoneNumber: FiSmartphone,
+      username: AtSign,
+    };
+    const Icon = icons[field] || User;
+    return <Icon className='size-4 text-slate-500' />;
+  };
+
   const handleFieldEdit = (field, value) => {
     setTempProfile((prev) => ({ ...prev, [field]: value }));
   };
@@ -244,37 +259,36 @@ const Profile = () => {
         throw new Error('User not authenticated');
       }
 
-      // Create update data object with only the changed field
-      const updateData = { [field]: tempProfile[field] };
+      // If editing all fields, create update data for all changed fields
+      const updateData =
+        field === 'all'
+          ? Object.keys(tempProfile).reduce((acc, key) => {
+              if (tempProfile[key] !== userProfile[key]) {
+                acc[key] = tempProfile[key];
+              }
+              return acc;
+            }, {})
+          : { [field]: tempProfile[field] };
 
-      // Update the user profile using the API
       const response = await UserService.updateUserProfile(user.id, updateData);
 
       if (response.success) {
-        // Update the local state after successful API update
-        setUserProfile((prev) => ({ ...prev, [field]: tempProfile[field] }));
+        setUserProfile((prev) => ({ ...prev, ...updateData }));
         setEditingField(null);
-
-        // Update the user in localStorage if needed
-        const currentUser = AuthService.getCurrentUser();
-        if (currentUser && currentUser.id === user.id) {
-          const updatedUser = { ...currentUser, [field]: tempProfile[field] };
-          localStorage.setItem('user', JSON.stringify(updatedUser));
-        }
 
         showToast(
           'Profile Updated',
-          `Your ${field} has been updated successfully`,
+          'Your profile has been updated successfully',
           'success'
         );
       } else {
-        throw new Error(response.message || `Failed to update ${field}`);
+        throw new Error(response.message || 'Failed to update profile');
       }
     } catch (error) {
-      console.error('Error updating field:', error);
+      console.error('Error updating profile:', error);
       showToast(
         'Update Failed',
-        error.message || `Failed to update ${field}`,
+        error.message || 'Failed to update profile',
         'destructive'
       );
     }
@@ -510,9 +524,9 @@ const Profile = () => {
             }`}
             onClick={() => handleThemeChange('light')}
           >
-            <Sun className='mr-2 h-4 w-4' />
+            <Sun className='mr-2 size-4' />
             <span>Light</span>
-            {theme === 'light' && <Check className='ml-auto h-4 w-4' />}
+            {theme === 'light' && <Check className='ml-auto size-4' />}
           </DropdownMenuItem>
           <DropdownMenuItem
             className={`${
@@ -522,9 +536,9 @@ const Profile = () => {
             }`}
             onClick={() => handleThemeChange('dark')}
           >
-            <Moon className='mr-2 h-4 w-4' />
+            <Moon className='mr-2 size-4' />
             <span>Dark</span>
-            {theme === 'dark' && <Check className='ml-auto h-4 w-4' />}
+            {theme === 'dark' && <Check className='ml-auto size-4' />}
           </DropdownMenuItem>
           <DropdownMenuItem
             className={`${
@@ -534,9 +548,9 @@ const Profile = () => {
             }`}
             onClick={() => handleThemeChange('system')}
           >
-            <Laptop className='mr-2 h-4 w-4' />
+            <Laptop className='mr-2 size-4' />
             <span>System</span>
-            {theme === 'system' && <Check className='ml-auto h-4 w-4' />}
+            {theme === 'system' && <Check className='ml-auto size-4' />}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -547,7 +561,7 @@ const Profile = () => {
     return (
       <div className='flex items-center justify-center min-h-screen'>
         <div className='text-center space-y-2'>
-          <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto'></div>
+          <Loading />
           <p>Loading profile...</p>
         </div>
       </div>
@@ -574,27 +588,32 @@ const Profile = () => {
     {
       id: 'profile',
       label: 'Profile',
-      icon: <User className='h-4 w-4 mr-2' />,
+      icon: <User className='size-4.5 md:mr-2' />,
     },
     {
       id: 'appearance',
       label: 'Appearance',
-      icon: <Sun className='h-4 w-4 mr-2' />,
+      icon: <Sun className='size-4.5 md:mr-2' />,
     },
     {
       id: 'notifications',
       label: 'Notifications',
-      icon: <Bell className='h-4 w-4 mr-2' />,
+      icon: <Bell className='size-4.5 md:mr-2' />,
     },
     {
-      id: 'cookies',
-      label: 'Cookies',
-      icon: <Cookie className='h-4 w-4 mr-2' />,
+      id: 'security',
+      label: 'Security',
+      icon: <MdOutlineSecurity className='size-4.5 md:mr-2' />,
     },
     {
       id: 'account',
       label: 'Account',
-      icon: <Settings className='h-4 w-4 mr-2' />,
+      icon: <Settings className='size-4.5 md:mr-2' />,
+    },
+    {
+      id: 'cookies',
+      label: 'Cookies',
+      icon: <Cookie className='size-4.5 md:mr-2' />,
     },
   ];
 
@@ -603,25 +622,27 @@ const Profile = () => {
     tabs.push({
       id: 'admin',
       label: 'Admin',
-      icon: <Shield className='h-4 w-4 mr-2' />,
+      icon: <Shield className='size-4.5 md:mr-2' />,
     });
   }
 
   return (
     <section className='bg-cornsilk dark:bg-cornsilk-d1 p-2 md:p-5'>
       {/* Main content with sidebar and content area */}
-      <div className='md:max-w-6xl mx-auto grid grid-cols-12 gap-0 md:gap-6'>
+      <div className='md:max-w-6xl mx-auto grid ml-16 md:ml-20 md:grid-cols-12 gap-0 md:gap-6'>
         {/* Left sidebar with tabs */}
-        <div className='col-span-3 md:col-span-2 h-fit p-4'>
-          <div className='fixed md:left-25 left-4 md:w-48 max-w-[inherit]'>
-            <div className='shadow-md rounded-lg border-black/10 dark:border-white/10 p-4 bg-cornsilk dark:bg-cornsilk-d1'>
-              <h3 className='font-medium sm:text-lg mb-4'>Profile Settings</h3>
-              <nav className='space-y-2 w-fit md:w-full'>
+        <div className='col-span-1 md:col-span-2 h-fit p-2'>
+          <div className='fixed left-2.5 md:absolute sm:left-3 md:left-4.5 lg:left-15 xl:left-25 top-20 w-12 md:w-48'>
+            <div className='shadow-md rounded-lg border-black/10 dark:border-white/10 p-1 bg-cornsilk dark:bg-cornsilk-d1'>
+              <h3 className='font-medium sm:text-lg mb-4 hidden md:block'>
+                Profile Settings
+              </h3>
+              <nav className='flex flex-col space-y-1.5'>
                 {tabs.map((tab) => (
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-full flex items-center px-3 py-2 sm:text-sm text-xs rounded-md
+                    className={`w-10 h-10 md:w-full md:h-auto flex items-center justify-center md:justify-start md:px-3 md:py-2 rounded-md
                   ${
                     activeTab === tab.id
                       ? 'bg-stone-200 dark:bg-stone-700 font-semibold'
@@ -629,7 +650,7 @@ const Profile = () => {
                   }`}
                   >
                     {tab.icon}
-                    {tab.label}
+                    <span className='ml-2 hidden md:inline'>{tab.label}</span>
                   </button>
                 ))}
               </nav>
@@ -638,7 +659,9 @@ const Profile = () => {
         </div>
 
         {/* Main content area */}
-        <div className='col-span-9 p-6 min-h-svh'>
+        <div className='col-span-9 sm:px-2 lg:px-8 md:px-6 min-h-svh'>
+          <h1 className='text-2xl font-semibold mb-4 border-b border-black/10 dark:border-white/20 pb-2 md:hidden'>{tabs.find(tab => tab.id === activeTab)?.label || ''}</h1>
+
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className='space-y-6'>
@@ -667,121 +690,128 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
-              <div className='p-5'>
-                <h3 className='sm:text-lg font-medium mb-4'>
-                  Personal Information
-                </h3>
+              <div className='sm:p-5'>
+                <div className='flex items-center justify-between mb-4'>
+                  <h3 className='sm:text-lg font-medium'>
+                    Personal Information
+                  </h3>
+                  {editingField ? (
+                    <div className='flex gap-2'>
+                      <Button
+                        onClick={() => {
+                          // Save all fields at once
+                          Object.keys(tempProfile).forEach((field) => {
+                            handleFieldSave(field);
+                          });
+                          setEditingField(null);
+                        }}
+                        size='icon'
+                        variant='ghost'
+                        className='h-8 w-8'
+                      >
+                        <Save className='size-4' />
+                      </Button>
+                      <Button
+                        onClick={() => setEditingField(null)}
+                        size='icon'
+                        variant='ghost'
+                        className='h-8 w-8'
+                      >
+                        <X className='size-4' />
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={() => setEditingField('all')}
+                      size='icon'
+                      variant='ghost'
+                      className='h-8 w-8 hover:bg-cornsilk-hover hover:shadow'
+                    >
+                      <Pencil className='size-4' />
+                    </Button>
+                  )}
+                </div>
                 <div className='space-y-4 max-w-2xl'>
                   {Object.entries({
                     firstName: 'First Name',
                     lastName: 'Last Name',
                     phoneNumber: 'Phone Number',
                     username: 'Username',
-                  }).map(([field, label]) => (
-                    <div key={field} className='space-y-2'>
-                      <Label htmlFor={field}>{label}</Label>
-                      <div className='flex gap-2'>
-                        <Input
-                          id={field}
-                          value={
-                            editingField === field
-                              ? tempProfile[field]
-                              : userProfile[field]
-                          }
-                          onChange={(e) =>
-                            handleFieldEdit(field, e.target.value)
-                          }
-                          disabled={editingField !== field}
-                          className='flex-1 disabled:border-none disabled:shadow-none'
-                          placeholder={`Enter your ${label.toLowerCase()}`}
-                        />
-                        {editingField === field ? (
-                          <div className='space-x-2'>
-                            <Button
-                              onClick={() => handleFieldSave(field)}
-                              size='icon'
-                              className=''
-                            >
-                              <Save className='h-4 w-4' />
-                            </Button>
-                            <Button
-                              onClick={() => setEditingField(null)}
-                              size='icon'
-                              variant='outline'
-                            >
-                              <X className='h-4 w-4' />
-                            </Button>
+                  }).map(([field, label], index, array) => (
+                    <React.Fragment key={field}>
+                      <div className='group flex items-center justify-between gap-6'>
+                        <Label
+                          htmlFor={field}
+                          className='text-sm font-medium text-slate-700 min-w-24 sm:min-w-25 md:min-w-30 lg:min-w-40 flex-shrink-0'
+                        >
+                          {label}
+                        </Label>
+                        <div className='relative flex-1'>
+                          <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                            <span> {getFieldIcon(field)}</span>
                           </div>
-                        ) : (
-                          <Button
-                            onClick={() => setEditingField(field)}
-                            size='icon'
-                            variant='ghost'
-                            className='hover:bg-cornsilk-hover hover:shadow'
-                          >
-                            <Pencil className='h-4 w-4' />
-                          </Button>
-                        )}
+                          <Input
+                            id={field}
+                            value={
+                              editingField
+                                ? tempProfile[field]
+                                : userProfile[field]
+                            }
+                            onChange={(e) =>
+                              handleFieldEdit(field, e.target.value)
+                            }
+                            disabled={!editingField}
+                            className='flex-1 pl-10 pr-4 py-3 disabled:border-none disabled:shadow-none'
+                            placeholder={`Enter your ${label.toLowerCase()}`}
+                          />
+                        </div>
                       </div>
-                      <Separator />
-                    </div>
+                    </React.Fragment>
                   ))}
 
-                  {/* Date of Birth with Date Picker */}
-                  <div className='space-y-2'>
-                    <Label htmlFor='dob'>Date Of Birth</Label>
-                    <div className='flex gap-2'>
+                  {/* Date of Birth */}
+                  <div className='flex items-center justify-between gap-6'>
+                    <Label
+                      htmlFor='dob'
+                      className='text-sm font-medium text-slate-700 min-w-24 sm:min-w-25 md:min-w-30 lg:min-w-40 flex-shrink-0'
+                    >
+                      Date Of Birth
+                    </Label>{' '}
+                    <div className='relative flex-1'>
+                      {!editingField && (
+                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
+                          <Calendar className='size-4 text-slate-500' />
+                        </div>
+                      )}
                       <Input
                         id='dob'
-                        type={editingField === 'dob' ? 'date' : 'text'}
-                        value={
-                          editingField === 'dob'
-                            ? tempProfile.dob
-                            : userProfile.dob
-                        }
+                        type={editingField ? 'date' : 'text'}
+                        value={editingField ? tempProfile.dob : userProfile.dob}
                         onChange={(e) => handleFieldEdit('dob', e.target.value)}
-                        disabled={editingField !== 'dob'}
-                        className='flex-1 disabled:border-none disabled:shadow-none'
+                        disabled={!editingField}
+                        className='flex-1 pl-10 pr-4 py-3 disabled:border-none disabled:shadow-none placeholder:text-sm'
                         placeholder='Select your date of birth'
-                        max={new Date().toISOString().split('T')[0]} // Prevent future dates
+                        max={new Date().toISOString().split('T')[0]}
                       />
-                      {editingField === 'dob' ? (
-                        <div className='space-x-2'>
-                          <Button
-                            onClick={() => handleFieldSave('dob')}
-                            size='sm'
-                          >
-                            <Save className='h-4 w-4' />
-                          </Button>
-                          <Button
-                            onClick={() => setEditingField(null)}
-                            size='sm'
-                            variant='secondary'
-                          >
-                            <X className='h-4 w-4' />
-                          </Button>
-                        </div>
-                      ) : (
-                        <Button
-                          onClick={() => setEditingField('dob')}
-                          size='sm'
-                          variant='ghost'
-                        >
-                          <Pencil className='h-4 w-4' />
-                        </Button>
-                      )}
                     </div>
                   </div>
+                  <Separator />
 
-                  <div className='flex flex-row items-center'>
-                    <Label htmlFor='email'>Email</Label>
-                    <Input
-                      id='email'
-                      type='email'
-                      value={userProfile.email}
-                      disabled={true}
-                    />
+                  {/* Email section remains unchanged */}
+                  <div className='group flex items-center justify-between gap-6'>
+                    <label className='text-sm font-medium text-slate-700 min-w-24 sm:min-w-25 md:min-w-30 lg:min-w-40'>
+                      Email Address
+                    </label>
+                    <div className='flex items-center gap-3 p-3 flex-1'>
+                      <MailCheck className='size-4 text-emerald-400' />
+                      <span className='text-slate-500 font-medium'>
+                        {userProfile.email}
+                      </span>
+                    </div>
                   </div>
+                  <p className='text-xs text-slate-400 -mt-4 underline underline-offset-2'>
+                    Email cannot be changed. Contact support if needed.
+                  </p>
                 </div>
               </div>
             </div>
@@ -894,7 +924,7 @@ const Profile = () => {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant='outline'>
-                        <EditIcon className='h-4 w-4 mr-2' />
+                        <EditIcon className='size-4 mr-2' />
                         Change Password
                       </Button>
                     </DialogTrigger>
@@ -933,9 +963,9 @@ const Profile = () => {
                               className='absolute right-3 top-1/2 transform -translate-y-1/2'
                             >
                               {showCurrentPassword ? (
-                                <EyeOff className='h-4 w-4 text-gray-500' />
+                                <EyeOff className='size-4 text-gray-500' />
                               ) : (
-                                <Eye className='h-4 w-4 text-gray-500' />
+                                <Eye className='size-4 text-gray-500' />
                               )}
                             </button>
                           </div>
@@ -963,9 +993,9 @@ const Profile = () => {
                               className='absolute right-3 top-1/2 transform -translate-y-1/2'
                             >
                               {showNewPassword ? (
-                                <EyeOff className='h-4 w-4 text-gray-500' />
+                                <EyeOff className='size-4 text-gray-500' />
                               ) : (
-                                <Eye className='h-4 w-4 text-gray-500' />
+                                <Eye className='size-4 text-gray-500' />
                               )}
                             </button>
                           </div>
@@ -1023,7 +1053,7 @@ const Profile = () => {
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button variant='outline'>
-                        <User className='h-4 w-4 mr-2' />
+                        <User className='size-4 mr-2' />
                         Manage Avatar
                       </Button>
                     </DialogTrigger>
@@ -1062,7 +1092,7 @@ const Profile = () => {
                           htmlFor='avatar-upload'
                           className='cursor-pointer inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2'
                         >
-                          <Upload className='h-4 w-4 mr-2' />
+                          <Upload className='size-4 mr-2' />
                           Select New Avatar
                         </Label>
 
@@ -1085,7 +1115,7 @@ const Profile = () => {
                           disabled={!user.avatarUrl && !avatarPreview}
                           className='w-fit text-xs sm:text-sm'
                         >
-                          <Trash2 className='h-4 w-4 mr-2' />
+                          <Trash2 className='size-4 mr-2' />
                           Remove Avatar
                         </Button>
                         <div className='space-x-2 grid grid-cols-2 gap-2 justify-items-center'>
@@ -1125,7 +1155,7 @@ const Profile = () => {
                         variant='destructive'
                         className='w-full sm:w-auto'
                       >
-                        <Trash2 className='h-4 w-4 mr-2' />
+                        <Trash2 className='size-4 mr-2' />
                         Delete Account
                       </Button>
                     </AlertDialogTrigger>
@@ -1194,6 +1224,32 @@ const Profile = () => {
               </div>
             </div>
           )}
+          {activeTab === 'security' && (
+            <div className='flex flex-col space-y-5 space-x-5 justify-center'>
+              <div>
+                <div>
+                  <h4 className='leading-7 text-lg font-semibold'>
+                    Multi-factor Authentication
+                  </h4>
+                  <p className='text-sm'>
+                    Require an extra security challenge when logging in. If you
+                    are unable to pass this challenge, you will have the option
+                    to recover your account via email.
+                  </p>
+                </div>
+              </div>
+              <div>
+                <h4 className='leading-7 text-lg font-semibold'>
+                  Logout All Devices
+                </h4>
+                <p className='text-sm'>
+                  Log out of all active sessions across all devices, including
+                  your current session. It may take up to 30 minutes for other
+                  devices to be logged out.
+                </p>
+              </div>
+            </div>
+          )}
           {activeTab === 'admin' && (
             <div value='admin' className='space-y-4'>
               <div className='p-4 border rounded-md bg-yellow-50 dark:bg-yellow-900/20 space-y-2'>
@@ -1218,7 +1274,7 @@ const Profile = () => {
                 </Link>
               </div>
               {showUserManagement && (
-                <Suspense fallback={<p>Loading...</p>}>
+                <Suspense fallback={<Loading />}>
                   <UserManagement />
                 </Suspense>
               )}

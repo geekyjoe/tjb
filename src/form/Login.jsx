@@ -423,10 +423,10 @@ const LoginModal = ({ isOpen, onClose }) => {
               )}
 
               {/* Show email for context */}
-              <div className='p-3 bg-gray-50 dark:bg-gray-800 rounded-md'>
+              <div className='p-3 bg-emerald-50/75 dark:bg-gray-800 rounded-md'>
                 <p className='text-sm text-gray-600 dark:text-gray-300'>
                   Logging in as:{' '}
-                  <span className='font-medium'>{formData.email}</span>
+                  <span className='font-semibold'>{formData.email}</span>
                 </p>
               </div>
 
@@ -940,7 +940,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
             {renderForm()}
           </CardContent>
-          <CardFooter className='flex flex-col space-y-2'>
+          <CardFooter className='justify-center p-4 pt-0'>
             <p className='text-sm text-center text-zinc-700 dark:text-zinc-300'>
               {mode === 'login'
                 ? "Don't have an account? "

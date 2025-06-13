@@ -9,7 +9,6 @@
 .logo {
   fill: none;
   stroke-dasharray: 20px;
-  stroke: black;
   animation: load 10s infinite linear;
 }
 

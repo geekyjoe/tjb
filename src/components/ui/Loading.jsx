@@ -5,7 +5,7 @@ const Loading = () => {
     <div className='flex justify-center items-center h-screen'>
       <div className='loader'>
         <svg
-          className='logo'
+          className='logo stroke-black dark:stroke-white'
           xmlns='http://www.w3.org/2000/svg'
           viewBox='0 0 24 24'
           width='120'

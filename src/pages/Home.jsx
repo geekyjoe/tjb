@@ -221,8 +221,8 @@ const Home = () => {
             </div>
           </div>
 
-          <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center gap-2 text-gray-400 mb-4 md:mb-0">
+          <div className="border-t border-gray-700 pt-8 flex flex-row justify-between items-center">
+            <div className="flex items-center pt-4 md:p-0 gap-2 text-gray-400 mb-4 md:mb-0">
               <CopyrightCircleOutlined />
               <span>2025 The JewellerBee. All rights reserved.</span>
             </div>

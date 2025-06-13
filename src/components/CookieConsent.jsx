@@ -196,7 +196,7 @@ const CookieSettings = ({ preferences, setPreferences }) => {
 
       <div className="space-y-4">
         {Object.entries(cookieTypes).map(([key, { title, description }]) => (
-          <div key={key} className="flex items-start justify-between gap-4">
+          <div key={key} className="flex items-center justify-between gap-4">
             <div className="space-y-1">
               <p className="font-bold text-xs sm:text-sm leading-5">{title}</p>
               <p className="flex items-center text-xs md:text-sm text-muted-foreground">
@@ -215,9 +215,9 @@ const CookieSettings = ({ preferences, setPreferences }) => {
               onCheckedChange={(checked) =>
                 setPreferences((prev) => ({ ...prev, [key]: checked }))
               }
-              className={`mt-1 ${
+              className={` ${
                 key === "essential"
-                  ? "opacity-50 cursor-not-allowed data-[state=checked]:bg-black"
+                  ? "opacity-50 data-[state=checked]:bg-black"
                   : "data-[state=checked]:bg-yellow-300"
               }`}
             />
