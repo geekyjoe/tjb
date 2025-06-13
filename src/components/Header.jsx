@@ -1,20 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { ProductOutlined, ShoppingCartOutlined } from "@ant-design/icons";
-import { ThemeToggle } from "../ThemeToggle";
 import { MdOutlineShoppingBag } from "react-icons/md";
 import { useCart } from "./CartContext";
-import { LogIn, Search, X } from "lucide-react";
 import SearchBar from "./SearchBar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "../components/ui/popover";
-import { TbMenu } from "react-icons/tb";
-import MobileMenu from "./MobileMenu";
 import { UserAuthButton } from "../context/authContext";
-import Tooltip from "./ui/Tooltip";
 
 const Header = () => {
   const { totalItems } = useCart();
@@ -82,11 +71,6 @@ const Header = () => {
         <div className="inline-flex mr-2">
           <UserAuthButton />
         </div>
-        <div className="hover:bg-cornsilk-hover rounded-full">
-          <Tooltip content="Toggle Theme">
-            <ThemeToggle />
-          </Tooltip>
-        </div>
       </div>
 
       <div
@@ -106,7 +90,6 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           <SearchBar />
-          <ThemeToggle />
         </div>
       </div>
     </header>

@@ -31,6 +31,7 @@
     "@radix-ui/react-switch": "^1.2.5",
     "@radix-ui/react-tabs": "^1.1.2",
     "@radix-ui/react-toast": "^1.2.4",
+    "@react-spring/web": "^10.0.1",
     "@tippyjs/react": "^4.2.6",
     "antd": "^5.25.4",
     "axios": "^1.7.9",

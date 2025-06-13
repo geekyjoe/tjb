@@ -30,7 +30,10 @@
   --color-cornsilk: #fffdf5;
   --color-button: #fefae0;
   --color-cornsilk-dark: #1c1b1b;
-  --color-cornsilk-d1: #231E1A;
+  --color-cornsilk-d1: #121822;
+  --color-cornsilk-d2: #263431;
+  --color-cornsilk-d3: #111a19;
+  --color-cornsilk-d4: #2c3639;
   --color-cornsilk-dhover: #bb4d00;
 
   @keyframes animloader {

@@ -38,7 +38,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
   if (viewMode === "list") {
     return (
       <div
-        className="flex gap-4 border dark:border-neutral-600 dark:hover:border-neutral-500 bg-white dark:bg-neutral-800 p-4 rounded-lg hover:shadow-sm cursor-pointer"
+        className="flex gap-4 border dark:border-neutral-600 dark:hover:border-neutral-500 bg-white dark:bg-cornsilk-d1 p-4 rounded-lg hover:shadow-sm cursor-pointer"
         onClick={handleProductClick}
       >
         <div className="s:w-16 s:h-16 m:w-24 m:h-24 shrink-0">
@@ -96,7 +96,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
 
   return (
     <Card
-      className={`w-full h-full rounded-md border-none my-1 mx-1 dark:shadow-neutral-600 cursor-pointer ${className}`}
+      className={`w-full h-full rounded-md border-none my-1 mx-1 dark:shadow-neutral-600 cursor-pointer dark:bg-cornsilk-d ${className}`}
       onClick={handleProductClick}
     >
       <CardHeader className="p-0 border dark:border-cornsilk/30 rounded-t-md">

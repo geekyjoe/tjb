@@ -234,7 +234,11 @@ const Products = () => {
   };
 
   if (setInitialLoading && products.length === 0) {
-    return <Loading />;
+    return (
+      <div className='fixed inset-0 bg-black/20 backdrop-blur-sm z-50'>
+        <Loading />
+      </div>
+    );
   }
 
   return (
@@ -245,7 +249,7 @@ const Products = () => {
           {/* Desktop Sidebar */}
           <aside className='max-lg:hidden w-64 shrink-0'>
             <h4 className='leading-14 font-semibold px-0.5'>Filter by</h4>
-            <div className='bg-white dark:bg-neutral-700 p-4 rounded-lg border dark:border-neutral-600'>
+            <div className='bg-white dark:bg-cornsilk-d3 p-4 rounded-lg border dark:border-neutral-600'>
               <div className='flex justify-between items-center mb-4'>
                 <h3 className='font-semibold text-lg'>Categories</h3>
                 {selectedCategories.size > 0 && (

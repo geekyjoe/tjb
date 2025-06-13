@@ -6,7 +6,7 @@ import {
   Moon,
   Sun,
   User,
-  Settings,
+  CircleUser,
   Pencil,
   Save,
   X,
@@ -24,6 +24,8 @@ import {
   Calendar,
   AtSign,
   User2,
+  IdCard,
+  LayoutPanelLeft,
 } from 'lucide-react';
 import { Switch } from '../components/ui/switch';
 import { Label } from '../components/ui/label';
@@ -246,7 +248,7 @@ const Profile = () => {
       username: AtSign,
     };
     const Icon = icons[field] || User;
-    return <Icon className='size-4 text-slate-500' />;
+    return <Icon className='size-4 text-slate-500 dark:text-slate-300/75' />;
   };
 
   const handleFieldEdit = (field, value) => {
@@ -351,6 +353,63 @@ const Profile = () => {
     setTheme(newTheme);
     showToast('Theme Updated', `Theme switched to ${newTheme} mode`, 'success');
   };
+    const ThemeSelector = () => (
+    <div className='flex items-center justify-between'>
+      <div className='space-y-0.5'>
+        <Label className='sm:text-base'>Theme</Label>
+        <div className='sm:text-sm text-xs text-muted-foreground'>
+          Choose your preferred theme
+        </div>
+      </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant='outline'>
+            {theme === 'light' && 'Light'}
+            {theme === 'dark' && 'Dark'}
+            {theme === 'system' && 'System'}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align='end'>
+          <DropdownMenuItem
+            className={`${
+              theme === 'light'
+                ? 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20'
+                : ''
+            }`}
+            onClick={() => handleThemeChange('light')}
+          >
+            <Sun className='mr-1 size-4' />
+            <span>Light</span>
+            {theme === 'light' && <Check className='ml-auto size-4' />}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={`${
+              theme === 'dark'
+                ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
+                : ''
+            }`}
+            onClick={() => handleThemeChange('dark')}
+          >
+            <Moon className='mr-1 size-4' />
+            <span>Dark</span>
+            {theme === 'dark' && <Check className='ml-auto size-4' />}
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={`${
+              theme === 'system'
+                ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
+                : ''
+            }`}
+            onClick={() => handleThemeChange('system')}
+          >
+            <Laptop className='mr-1 size-4' />
+            <span>System</span>
+            {theme === 'system' && <Check className='ml-auto size-4' />}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  );
 
   const handleLogout = () => {
     AuthService.logout();
@@ -499,64 +558,6 @@ const Profile = () => {
     }
   };
 
-  const ThemeSelector = () => (
-    <div className='flex items-center justify-between'>
-      <div className='space-y-0.5'>
-        <Label className='sm:text-base'>Theme</Label>
-        <div className='sm:text-sm text-xs text-muted-foreground'>
-          Choose your preferred theme
-        </div>
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant='outline'>
-            {theme === 'light' && 'Light'}
-            {theme === 'dark' && 'Dark'}
-            {theme === 'system' && 'System'}
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align='end'>
-          <DropdownMenuItem
-            className={`${
-              theme === 'light'
-                ? 'text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20'
-                : ''
-            }`}
-            onClick={() => handleThemeChange('light')}
-          >
-            <Sun className='mr-2 size-4' />
-            <span>Light</span>
-            {theme === 'light' && <Check className='ml-auto size-4' />}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={`${
-              theme === 'dark'
-                ? 'text-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                : ''
-            }`}
-            onClick={() => handleThemeChange('dark')}
-          >
-            <Moon className='mr-2 size-4' />
-            <span>Dark</span>
-            {theme === 'dark' && <Check className='ml-auto size-4' />}
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className={`${
-              theme === 'system'
-                ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
-                : ''
-            }`}
-            onClick={() => handleThemeChange('system')}
-          >
-            <Laptop className='mr-2 size-4' />
-            <span>System</span>
-            {theme === 'system' && <Check className='ml-auto size-4' />}
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-
   if (loading) {
     return (
       <div className='flex items-center justify-center min-h-screen'>
@@ -588,32 +589,32 @@ const Profile = () => {
     {
       id: 'profile',
       label: 'Profile',
-      icon: <User className='size-4.5 md:mr-2' />,
+      icon: <IdCard className='size-5 md:mr-1.5' />,
     },
     {
       id: 'appearance',
       label: 'Appearance',
-      icon: <Sun className='size-4.5 md:mr-2' />,
+      icon: <LayoutPanelLeft className='size-4.5 md:mr-1.5' />,
     },
     {
       id: 'notifications',
       label: 'Notifications',
-      icon: <Bell className='size-4.5 md:mr-2' />,
+      icon: <Bell className='size-4.5 md:mr-1.5' />,
     },
     {
       id: 'security',
       label: 'Security',
-      icon: <MdOutlineSecurity className='size-4.5 md:mr-2' />,
+      icon: <MdOutlineSecurity className='size-4.5 md:mr-1.5' />,
     },
     {
       id: 'account',
       label: 'Account',
-      icon: <Settings className='size-4.5 md:mr-2' />,
+      icon: <CircleUser className='size-4.5 md:mr-1.5' />,
     },
     {
       id: 'cookies',
       label: 'Cookies',
-      icon: <Cookie className='size-4.5 md:mr-2' />,
+      icon: <Cookie className='size-4.5 md:mr-1.5' />,
     },
   ];
 
@@ -622,7 +623,7 @@ const Profile = () => {
     tabs.push({
       id: 'admin',
       label: 'Admin',
-      icon: <Shield className='size-4.5 md:mr-2' />,
+      icon: <Shield className='size-4.5 md:mr-1.5' />,
     });
   }
 
@@ -633,8 +634,8 @@ const Profile = () => {
         {/* Left sidebar with tabs */}
         <div className='col-span-1 md:col-span-2 h-fit p-2'>
           <div className='fixed left-2.5 md:absolute sm:left-3 md:left-4.5 lg:left-15 xl:left-25 top-20 w-12 md:w-48'>
-            <div className='shadow-md rounded-lg border-black/10 dark:border-white/10 p-1 bg-cornsilk dark:bg-cornsilk-d1'>
-              <h3 className='font-medium sm:text-lg mb-4 hidden md:block'>
+            <div className='shadow-xs rounded-lg border border-black/10 dark:border-white/10 p-1 bg-cornsilk dark:bg-cornsilk-d3/25'>
+              <h3 className='font-medium sm:text-lg mb-3 border-b border-black/25 dark:border-white/50 leading-10 hidden md:block'>
                 Profile Settings
               </h3>
               <nav className='flex flex-col space-y-1.5'>
@@ -645,8 +646,8 @@ const Profile = () => {
                     className={`w-10 h-10 md:w-full md:h-auto flex items-center justify-center md:justify-start md:px-3 md:py-2 rounded-md
                   ${
                     activeTab === tab.id
-                      ? 'bg-stone-200 dark:bg-stone-700 font-semibold'
-                      : 'hover:bg-cornsilk-d1/5 dark:hover:bg-cornsilk-d1/50'
+                      ? 'bg-[#eeefa8]/30 border-2 dark:border-stone-600 dark:bg-cornsilk-d2 font-semibold'
+                      : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50'
                   }`}
                   >
                     {tab.icon}
@@ -742,11 +743,11 @@ const Profile = () => {
                       <div className='group flex items-center justify-between gap-6'>
                         <Label
                           htmlFor={field}
-                          className='text-sm font-medium text-slate-700 min-w-24 sm:min-w-25 md:min-w-30 lg:min-w-40 flex-shrink-0'
+                          className='text-sm font-medium text-slate-700 dark:text-slate-300 flex-1 sm:flex-2 flex-shrink-0'
                         >
                           {label}
                         </Label>
-                        <div className='relative flex-1'>
+                        <div className='relative flex-2'>
                           <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
                             <span> {getFieldIcon(field)}</span>
                           </div>
@@ -773,14 +774,14 @@ const Profile = () => {
                   <div className='flex items-center justify-between gap-6'>
                     <Label
                       htmlFor='dob'
-                      className='text-sm font-medium text-slate-700 min-w-24 sm:min-w-25 md:min-w-30 lg:min-w-40 flex-shrink-0'
+                      className='text-sm font-medium text-slate-700 dark:text-slate-300 flex-1 sm:flex-2 flex-shrink-0'
                     >
                       Date Of Birth
                     </Label>{' '}
-                    <div className='relative flex-1'>
+                    <div className='relative flex-2'>
                       {!editingField && (
                         <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                          <Calendar className='size-4 text-slate-500' />
+                          <Calendar className='size-4 text-slate-500 dark:text-slate-300/75' />
                         </div>
                       )}
                       <Input
@@ -799,17 +800,17 @@ const Profile = () => {
 
                   {/* Email section remains unchanged */}
                   <div className='group flex items-center justify-between gap-6'>
-                    <label className='text-sm font-medium text-slate-700 min-w-24 sm:min-w-25 md:min-w-30 lg:min-w-40'>
+                    <Label className='text-sm font-medium text-slate-700 dark:text-slate-300 flex-1 sm:flex-2'>
                       Email Address
-                    </label>
-                    <div className='flex items-center gap-3 p-3 flex-1'>
+                    </Label>
+                    <div className='flex items-center gap-3 p-3 flex-2'>
                       <MailCheck className='size-4 text-emerald-400' />
                       <span className='text-slate-500 font-medium'>
                         {userProfile.email}
                       </span>
                     </div>
                   </div>
-                  <p className='text-xs text-slate-400 -mt-4 underline underline-offset-2'>
+                  <p className='text-xs text-slate-400 -mt-4 underline underline-offset-3'>
                     Email cannot be changed. Contact support if needed.
                   </p>
                 </div>

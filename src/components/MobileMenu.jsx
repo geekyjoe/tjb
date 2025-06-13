@@ -8,7 +8,7 @@ const MobileMenu = ({}) => {
   const { totalItems } = useCart();
   return (
     <>
-      <div className="md:hidden z-10 sticky bottom-0 flex justify-between items-center p-2 bg-linear-to-tr from-cornsilk to-cornsilk-hover dark:from-cornsilk-d1 dark:to-zinc-800">
+      <div className="md:hidden z-10 sticky bottom-0 flex justify-between items-center p-2 bg-linear-to-tr from-cornsilk to-cornsilk-hover dark:from-cornsilk-d1 dark:to-cornsilk-d4">
         <Link
           to="/collections"
           className={

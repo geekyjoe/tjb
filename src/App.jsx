@@ -20,7 +20,11 @@ const ProtectedRoute = ({ children, requiredRole }) => {
   const { isAuthenticated, userProfile, loading } = useAuth();
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className='fixed inset-0 bg-black/20 backdrop-blur-sm z-50'>
+        <Loading />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
@@ -38,7 +42,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
 const RouteWrapper = ({ element }) => (
   <Suspense
     fallback={
-      <div className='min-h-screen flex items-center justify-center'>
+      <div className='fixed inset-0 bg-black/20 backdrop-blur-sm z-50'>
         <Loading />
       </div>
     }

@@ -2,7 +2,7 @@ import React from 'react';
 import './loading.css';
 const Loading = () => {
   return (
-    <div className='flex justify-center items-center h-screen'>
+    <div className='fixed inset-0 w-full h-full flex justify-center dark:bg-cornsilk-d1 items-center'>
       <div className='loader'>
         <svg
           className='logo stroke-black dark:stroke-white'
