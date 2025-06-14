@@ -18,7 +18,7 @@ const ProductCard = ({ product, viewMode = "grid", className = "" }) => {
   const isInCart = cartItems.some((item) => item.id === product.id);
 
   const handleProductClick = () => {
-    navigate(`/products/${product.id}`);
+    navigate(`/collections/${product.id}`);
   };
 
   const handleAddToCart = (e) => {

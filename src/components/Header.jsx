@@ -4,6 +4,7 @@ import { MdOutlineShoppingBag } from "react-icons/md";
 import { useCart } from "./CartContext";
 import SearchBar from "./SearchBar";
 import { UserAuthButton } from "../context/authContext";
+import Cart from "./SidebarCart";
 
 const Header = () => {
   const { totalItems } = useCart();
@@ -57,17 +58,7 @@ const Header = () => {
         >
           Catalogue
         </NavLink>
-        <Link
-          to="..\cart"
-          className="relative text-cornsilk-dark hover:bg-cornsilk-hover dark:hover:bg-zinc-800 p-2 rounded-full"
-        >
-          <MdOutlineShoppingBag size={23} className="dark:text-cornsilk"/>
-          {totalItems > 0 && (
-            <span className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center">
-              {totalItems}
-            </span>
-          )}
-        </Link>
+            <Cart />
         <div className="inline-flex mr-2">
           <UserAuthButton />
         </div>
@@ -90,6 +81,7 @@ const Header = () => {
 
         <div className="flex items-center gap-2">
           <SearchBar />
+          <Cart />
         </div>
       </div>
     </header>

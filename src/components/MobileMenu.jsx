@@ -2,13 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useCart } from "./CartContext";
 import { Link } from "react-router-dom";
 import { UserAuthButton } from "../context/authContext";
-import { MdOutlineShoppingBag } from "react-icons/md";
 
 const MobileMenu = ({}) => {
   const { totalItems } = useCart();
   return (
     <>
-      <div className="md:hidden z-10 sticky bottom-0 flex justify-between items-center p-2 bg-linear-to-tr from-cornsilk to-cornsilk-hover dark:from-cornsilk-d1 dark:to-cornsilk-d4">
+      <div className="md:hidden z-9 sticky bottom-0 flex justify-between items-center p-2 bg-linear-to-tl from-cornsilk to-cornsilk-hover dark:from-cornsilk-d1 dark:to-cornsilk-d4">
         <Link
           to="/collections"
           className={
@@ -19,7 +18,7 @@ const MobileMenu = ({}) => {
         </Link>
         <div className="flex items-center gap-2">
           <UserAuthButton />
-          <Link
+          {/* <Link
             to="..\cart"
             className="relative md:hidden text-cornsilk-dark dark:text-cornsilk hover:bg-cornsilk-hover dark:hover:bg-zinc-600 p-2 rounded-full"
           >
@@ -29,7 +28,7 @@ const MobileMenu = ({}) => {
                 {totalItems}
               </span>
             )}
-          </Link>
+          </Link> */}
         </div>
       </div>
     </>

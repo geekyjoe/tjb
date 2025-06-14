@@ -373,7 +373,7 @@ const Products = () => {
             </div>
 
             {/* Products Grid/List */}
-            {products.length > 0 ? (
+            {!products.length > 0 ? (
               <>
                 <div
                   className={
@@ -414,17 +414,23 @@ const Products = () => {
                 )}
               </>
             ) : (
-              <div className='flex justify-center items-center min-h-[calc(100vh-300px)]'>
-                <Empty
-                  description={
-                    <span className='text-gray-500 dark:text-gray-200'>
-                      No products found
-                      {selectedCategories.size > 0
-                        ? ` in ${Array.from(selectedCategories)[0]} category`
-                        : ''}
-                    </span>
-                  }
-                />
+              <div className='flex flex-col justify-center items-center min-h-[calc(100vh-150px)]'>
+                <div className='p-1 transform-gpu'>
+                  <video
+                    className='size-50 md:size-80'
+                    src='/empty.mp4'
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                  ></video>
+                </div>
+                <span className='text-gray-500 dark:text-gray-200 font-medium text-lg'>
+                  No products found
+                  {selectedCategories.size > 0
+                    ? ` in ${Array.from(selectedCategories)[0]} category`
+                    : ''}
+                </span>
               </div>
             )}
           </div>

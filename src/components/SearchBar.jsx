@@ -114,9 +114,9 @@ const SearchBar = () => {
 
   return (
     <div
-      className={`relative ${
+      className={`md:relative ${
         open
-          ? 'md:w-fit max-md:fixed max-md:left-0 max-md:right-0 max-md:top-0 max-md:w-full max-md:bg-cornsilk dark:max-md:bg-cornsilk-d1 max-md:z-20'
+          ? 'fixed left-0 right-0 top-0 w-full bg-cornsilk dark:bg-cornsilk-d1 z-20'
           : 'w-fit'
       }`}
       ref={searchRef}
@@ -124,11 +124,7 @@ const SearchBar = () => {
       <div
         className={`relative flex items-center ${
           open && 'text-cornsilk-dark dark:text-cornsilk focus:outline-hidden'
-        } ${
-          open
-            ? 'max-md:px-4 max-md:py-3 max-md:w-full max-md:justify-between'
-            : ''
-        }`}
+        } ${open ? 'max-md:px-2 max-md:py-3 ' : ''}`}
       >
         {/* Desktop search bar */}
         <animated.div
@@ -137,34 +133,37 @@ const SearchBar = () => {
         >
           {open && (
             <>
-              <input
-                type='text'
-                value={query}
-                onChange={handleInputChange}
-                onFocus={() => setShowResults(true)}
-                placeholder='Search...'
-                className='w-90 border-b border-cornsilk-dark dark:border-neutral-600 py-1 text-sm focus:outline-hidden bg-transparent ml-2'
-                autoFocus={open}
-              />
+              <div className='relative flex items-center'>
+                <Search className='absolute left-2.5 h-4 w-4 text-cornsilk-dark/50 dark:text-cornsilk/50 pointer-events-none' />
+                <input
+                  type='text'
+                  value={query}
+                  onChange={handleInputChange}
+                  onFocus={() => setShowResults(true)}
+                  placeholder='Search...'
+                  className='w-90 border-b border-cornsilk-dark dark:border-neutral-600 py-1 pl-6 text-sm focus:outline-hidden bg-transparent ml-2'
+                  autoFocus={open}
+                />
+              </div>
             </>
           )}
         </animated.div>
 
         {/* Mobile search bar */}
         {open && (
-          <animated.div
-            style={mobileSearchSpring}
-            className='md:hidden flex-1'
-          >
-            <input
-              type='text'
-              value={query}
-              onChange={handleInputChange}
-              onFocus={() => setShowResults(true)}
-              placeholder='Search...'
-              className='w-full border-b border-cornsilk-dark dark:border-neutral-600 py-1 text-sm focus:outline-hidden bg-transparent'
-              autoFocus={open}
-            />
+          <animated.div style={mobileSearchSpring} className='md:hidden flex-1'>
+            <div className='relative flex items-center'>
+              <Search className='absolute left-0 h-4 w-4 text-cornsilk-dark/50 dark:text-cornsilk/50 pointer-events-none' />
+              <input
+                type='text'
+                value={query}
+                onChange={handleInputChange}
+                onFocus={() => setShowResults(true)}
+                placeholder='Search...'
+                className='w-full border-b border-cornsilk-dark dark:border-neutral-600 py-1 pl-6 text-sm focus:outline-hidden bg-transparent'
+                autoFocus={open}
+              />
+            </div>
           </animated.div>
         )}
         {open ? (
@@ -191,7 +190,7 @@ const SearchBar = () => {
       {showResults && query.length > 0 && (
         <animated.div
           style={resultsSpring}
-          className='absolute right-0 md:left-0 md:w-95 w-full bg-white dark:bg-cornsilk-d3 rounded shadow-lg border border-neutral-200 dark:border-neutral-700 max-h-72 overflow-y-auto z-50'
+          className='absolute right-2 left-0 md:w-95 w-[calc(100%-1rem)] mx-2 md:mx-0 bg-white dark:bg-cornsilk-d3 rounded shadow-lg border border-neutral-200 dark:border-neutral-700 max-h-72 overflow-y-auto z-50'
         >
           {isSearching ? (
             <div className='p-2 text-center text-sm text-neutral-600 dark:text-neutral-400'>

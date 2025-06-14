@@ -59,15 +59,27 @@ const LazyProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
 const LazyCart = lazy(() => import('./pages/Cart'));
 const LazyProductPanel = lazy(() => import('./pages/ProductPanel'));
 const LazyUserManagement = lazy(() => import('./services/UM'));
+const LazyNotFound = lazy(() => import('./pages/NotFound'));
 
-const AppContent = () => {
+const Contents = () => {
   const location = useLocation();
   const hideHeaderPaths = ['/login', '/signup'];
-  const showHeader = !hideHeaderPaths.includes(location.pathname);
+  const showHeader = !hideHeaderPaths.includes(location.pathname) && location.pathname !== '*' && !location.pathname.match(/^\/.*/) || hideHeaderPaths.includes(location.pathname);
+  
+  // Check if current path matches any defined routes
+  const isValidRoute = [
+    '/',
+    '/collections',
+    '/account',
+    '/adminpanel',
+    '/manageproducts',
+  ].includes(location.pathname) || location.pathname.startsWith('/collections/');
+  
+  const showHeaderAndFooter = !hideHeaderPaths.includes(location.pathname) && isValidRoute;
 
   return (
     <>
-      {showHeader && <Header />}
+      {showHeaderAndFooter && <Header />}
       <Routes>
         <Route path='/' element={<RouteWrapper element={<LazyHome />} />} />
         <Route
@@ -99,21 +111,24 @@ const AppContent = () => {
           }
         />
         <Route
-          path='/products/:id'
+          path='/collections/:id'
           element={<RouteWrapper element={<LazyProductDetailPage />} />}
         />
-        <Route path='/cart' element={<RouteWrapper element={<LazyCart />} />} />
+        {/* <Route path='/cart' element={<RouteWrapper element={<LazyCart />} />} /> */}
+        {/* 404 catch-all route - must be last */}
+        <Route path='*' element={<RouteWrapper element={<LazyNotFound />} />} />
       </Routes>
-      <MobileMenu />
+      {showHeaderAndFooter && <MobileMenu />}
     </>
   );
 };
+
 const App = () => {
   return (
     <ThemeProvider>
       <CartProvider storagePreference='both'>
         <Router>
-          <AppContent />
+          <Contents />
           <CookieConsent />
           <Toaster />
         </Router>
