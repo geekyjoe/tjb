@@ -24,8 +24,8 @@ const SearchBar = () => {
   });
 
   const mobileSearchSpring = useSpring({
-    opacity: open ? 1 : 0,
-    transform: open ? 'translateY(0px)' : 'translateY(-10px)',
+    opacity: open ? 1 : 0.5,
+    transform: open ? 'translateY(0px)' : 'translateY(-20px)',
     config: config.gentle,
   });
 
@@ -56,7 +56,7 @@ const SearchBar = () => {
     setIsSearching(true);
     try {
       const searchResults = await searchProducts(searchQuery);
-      setResults(searchResults.slice(0, 5));
+      setResults(searchResults.slice(0, 8));
     } catch (error) {
       console.error('Search failed:', error);
     } finally {
@@ -64,23 +64,48 @@ const SearchBar = () => {
     }
   };
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     if (searchRef.current && !searchRef.current.contains(event.target)) {
-  //       setShowResults(false);
-  //       // Smooth closing animation when clicking outside
-  //       if (open) {
-  //         setTimeout(() => {
-  //           setQuery('');
-  //           setOpen(false);
-  //         }, 200);
-  //       }
-  //     }
-  //   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Ignore if search is not open
+      if (!open) return;
 
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => document.removeEventListener('mousedown', handleClickOutside);
-  // }, [open]);
+      // Check if the click is outside search component
+      if (searchRef.current && !searchRef.current.contains(event.target)) {
+        setShowResults(false);
+        // Smooth closing animation when clicking outside
+        setTimeout(() => {
+          setQuery('');
+          setOpen(false);
+        }, 200);
+      }
+    };
+
+    const handleResize = () => {
+      if (open) {
+        setShowResults(false);
+        setTimeout(() => {
+          setQuery('');
+          setOpen(false);
+        }, 200);
+      }
+    };
+
+    // Handle both mouse and touch events
+    const events = ['mousedown', 'touchstart'];
+
+    events.forEach((event) => {
+      document.addEventListener(event, handleClickOutside, { passive: true });
+    });
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      events.forEach((event) => {
+        document.removeEventListener(event, handleClickOutside);
+      });
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [open]);
 
   const handleInputChange = (e) => {
     const value = e.target.value;
@@ -116,7 +141,7 @@ const SearchBar = () => {
     <div
       className={`md:relative ${
         open
-          ? 'fixed left-0 right-0 top-0 w-full bg-cornsilk dark:bg-cornsilk-d1 z-20'
+          ? 'fixed left-0 right-0 top-0 md:w-fit bg-white dark:bg-cornsilk-d1 z-20'
           : 'w-fit'
       }`}
       ref={searchRef}
@@ -124,7 +149,11 @@ const SearchBar = () => {
       <div
         className={`relative flex items-center ${
           open && 'text-cornsilk-dark dark:text-cornsilk focus:outline-hidden'
-        } ${open ? 'max-md:px-2 max-md:py-3 ' : ''}`}
+        } ${
+          open
+            ? 'max-md:px-2 max-md:py-3 bg-white dark:bg-cornsilk-d1 z-30'
+            : ''
+        }`}
       >
         {/* Desktop search bar */}
         <animated.div
@@ -180,7 +209,7 @@ const SearchBar = () => {
             variant='ghost'
             size='icon'
             onClick={toggleSearch}
-            className={`rounded-full hover:bg-cornsilk-hover focus:outline-hidden flex-shrink-0`}
+            className={`rounded-full hover:bg-neutral-200 focus:outline-hidden flex-shrink-0`}
           >
             <Search className='h-4 w-4 text-cornsilk-dark dark:text-cornsilk' />
           </Button>
@@ -188,50 +217,79 @@ const SearchBar = () => {
       </div>
 
       {showResults && query.length > 0 && (
-        <animated.div
-          style={resultsSpring}
-          className='absolute right-2 left-0 md:w-95 w-[calc(100%-1rem)] mx-2 md:mx-0 bg-white dark:bg-cornsilk-d3 rounded shadow-lg border border-neutral-200 dark:border-neutral-700 max-h-72 overflow-y-auto z-50'
-        >
-          {isSearching ? (
-            <div className='p-2 text-center text-sm text-neutral-600 dark:text-neutral-400'>
-              Searching...
-            </div>
-          ) : results.length > 0 ? (
-            <ul className='py-1'>
-              {trail.map((style, index) => {
-                const product = results[index];
-                return (
-                  <animated.li
-                    key={product.id}
-                    style={style}
-                    onClick={() => handleResultClick(product.id)}
-                    className='px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer'
-                  >
-                    <div className='flex items-center gap-2'>
-                      <img
-                        src={product.thumbnail}
-                        alt={product.title}
-                        className='w-16 h-16 object-cover'
-                      />
-                      <div>
-                        <div className='text-md font-medium text-neutral-900 dark:text-neutral-100'>
-                          {product.title}
-                        </div>
-                        <div className='text-sm text-neutral-500 dark:text-neutral-400'>
-                          ${product.price}
+        <>
+          {/* Overlay */}
+          {open && (
+            <div
+              className='fixed inset-0 top-10.5 bg-black/50 z-10 transition-opacity duration-300 ease-in-out'
+              onClick={() => {
+                setShowResults(false);
+                setTimeout(() => {
+                  setQuery('');
+                  setOpen(false);
+                }, 200);
+              }}
+            />
+          )}
+          <animated.div
+            style={resultsSpring}
+            className='absolute right-2 left-0 md:w-95 w-[calc(100%-0.5rem)] mx-0.5 md:mx-0 bg-white dark:bg-cornsilk-d3 rounded-b shadow-lg border border-neutral-200 dark:border-neutral-700 max-h-130 overflow-y-auto z-50'
+          >
+            {isSearching ? (
+              <div className='p-2 text-center text-sm text-neutral-600 dark:text-neutral-400'>
+                Searching...
+              </div>
+            ) : results.length > 0 ? (
+              <ul className='py-1'>
+                {trail.map((style, index) => {
+                  const product = results[index];
+                  return (
+                    <animated.li
+                      key={product.id}
+                      style={style}
+                      onClick={() => handleResultClick(product.id)}
+                      className='px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer'
+                    >
+                      <div className='flex items-center gap-2'>
+                        <img
+                          src={product.thumbnail}
+                          alt={product.title}
+                          className='w-16 h-16 object-cover'
+                        />
+                        <div>
+                          <div className='text-md font-medium text-neutral-900 dark:text-neutral-100 whitespace-normal'>
+                            {product.title}
+                          </div>
+                          <div className='text-sm text-neutral-500 dark:text-neutral-400'>
+                            ${product.price}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  </animated.li>
-                );
-              })}
-            </ul>
-          ) : (
-            <div className='p-2 text-center text-sm text-neutral-600 dark:text-neutral-400'>
-              No products found
-            </div>
-          )}
-        </animated.div>
+                    </animated.li>
+                  );
+                })}
+              </ul>
+            ) : (
+              <div className='p-2 flex flex-col items-center justify-center text-center text-sm text-neutral-600 dark:text-neutral-300'>
+                <video
+                  src='/searching1.mp4'
+                  className='size-40 md:size-60 '
+                  autoPlay
+                  muted
+                  loop
+                ></video>
+                <span className='mt-2 md:text-base'>
+                  Oops! No results for
+                  <span className='font-semibold ml-1'>'{query}'</span>
+                </span>
+                <p className='my-1 px-2 text-xs leading-5 whitespace-normal'>
+                  We didn’t find any matching products. Try adjusting your
+                  search or browse through our featured collections.
+                </p>
+              </div>
+            )}
+          </animated.div>
+        </>
       )}
     </div>
   );

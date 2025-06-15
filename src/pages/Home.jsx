@@ -34,7 +34,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className='min-h-screen font-host bg-cornsilk dark:bg-cornsilk-d3 text-gray-900 dark:text-gray-100'>
+    <div className='min-h-screen font-host bg-white dark:bg-cornsilk-d3 text-gray-900 dark:text-gray-100'>
       <HeroCarousel />
 
       {/* Featured Collections */}

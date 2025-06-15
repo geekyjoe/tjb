@@ -376,7 +376,7 @@ export const UserAuthButton = () => {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className='text-red-600'>
+        <DropdownMenuItem onClick={handleSignOut} className='text-red-600 hover:text-red-400'>
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

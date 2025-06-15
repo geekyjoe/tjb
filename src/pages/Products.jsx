@@ -242,12 +242,12 @@ const Products = () => {
   }
 
   return (
-    <div className='pt-3 w-full min-h-screen text-gray-700 dark:text-cornsilk bg-cornsilk dark:bg-cornsilk-d1'>
+    <div className='pt-3 w-full min-h-screen text-gray-700 dark:text-cornsilk bg-white dark:bg-cornsilk-d1'>
       <Toaster richColors />
       <div className='px-1 lg:px-2'>
-        <div className='flex gap-2'>
+        <div className='flex gap-2 relative'>
           {/* Desktop Sidebar */}
-          <aside className='max-lg:hidden w-64 shrink-0'>
+          <aside className='max-lg:hidden w-64 shrink-0 sticky top-0 h-[calc(100vh-100px)]'>
             <h4 className='leading-14 font-semibold px-0.5'>Filter by</h4>
             <div className='bg-white dark:bg-cornsilk-d3 p-4 rounded-lg border dark:border-neutral-600'>
               <div className='flex justify-between items-center mb-4'>
@@ -373,12 +373,12 @@ const Products = () => {
             </div>
 
             {/* Products Grid/List */}
-            {!products.length > 0 ? (
+            {products.length > 0 ? (
               <>
                 <div
                   className={
                     viewMode === 'grid'
-                      ? 'pr-2 lg:p-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 lg:gap-3'
+                      ? 'pr-0.5 lg:p-0 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5 lg:gap-3'
                       : 'space-y-3 px-2'
                   }
                 >

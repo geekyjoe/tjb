@@ -11,17 +11,17 @@ const Footer = () => {
     <footer className='dark:bg-cornsilk-d1 dark:text-white py-8 px-4'>
       <div className='grid md:grid-cols-4 grid-flow-col grid-rows-4 md:grid-rows-1 gap-4 items-start md:justify-items-center p-1'>
         <div className='col-span-2 md:col-span-1'>
-          <h3 className='text-2xl font-bold mb-4 text-amber-500/74'>
+          <h3 className='text-xl font-bold mb-4 '>
             The Jeweller Bee Store
           </h3>
-          <p className='dark:text-gray-300 leading-relaxed'>
+          <p className='dark:text-gray-300 text-sm leading-relaxed'>
             Crafting memories, one piece at a time. Where every jewelry tells a
             story of love, commitment, and timeless elegance.
           </p>
         </div>
         <div className='row-span-3 md:row-span-1'>
           <h4 className='text-lg font-semibold mb-4'>Collections</h4>
-          <ul className='space-y-2 dark:text-gray-300'>
+          <ul className='space-y-2 dark:text-gray-300 text-sm'>
             <li>
               <a className='hover:text-amber-500 transition-colors'>
                 Engagement Rings
@@ -49,7 +49,7 @@ const Footer = () => {
         </div>
         <div>
           <h4 className='text-lg font-semibold mb-4'>Connect</h4>
-          <div className='space-y-3'>
+          <div className='space-y-3 text-sm'>
             <a
               href='https://www.instagram.com/_thejewelerbee_'
               target='_blank'
