@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const handleTokenExpiration = () => {
       console.log('Token expired, clearing auth state...');
-      
+
       setAuthState({
         isAuthenticated: false,
         userProfile: null,
@@ -307,7 +307,7 @@ export const UserAuthButton = () => {
       <>
         <Button
           variant='ghost'
-          className='flex items-center gap-2'
+          className='rounded-full'
           onClick={() => setIsLoginModalOpen(true)}
           size='icon'
         >
@@ -350,11 +350,6 @@ export const UserAuthButton = () => {
             <p className='text-xs leading-none text-muted-foreground'>
               {userProfile.email}
             </p>
-            {userProfile.authProvider && (
-              <p className='text-xs leading-none text-muted-foreground'>
-                Auth: {userProfile.authProvider}
-              </p>
-            )}
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
@@ -376,7 +371,10 @@ export const UserAuthButton = () => {
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className='text-red-600 hover:text-red-400'>
+        <DropdownMenuItem
+          onClick={handleSignOut}
+          className='text-red-600 hover:text-red-400'
+        >
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

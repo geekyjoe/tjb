@@ -219,7 +219,9 @@ const LoginModal = ({ isOpen, onClose }) => {
       // Save token to cookie
       Cookies.set(TOKEN_COOKIE_NAME, token, cookieOptions);
       // Store expiration timestamp in localStorage for tracking
-      const expiryTime = new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000 ).getTime();
+      const expiryTime = new Date(
+        Date.now() + expiryDays * 24 * 60 * 60 * 1000
+      ).getTime();
       localStorage.setItem('tokenExpiry', expiryTime.toString());
 
       console.log(`Token saved with ${expiryDays} day expiry`);
@@ -404,7 +406,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             >
               <div className='flex items-center gap-2'>
                 <Mail className='w-4 h-4' />
-                Continue
+                <span className='mb-0.5'>Continue</span>
                 <ChevronRight className='w-4 h-4' />
               </div>
             </Button>
@@ -871,7 +873,7 @@ const LoginModal = ({ isOpen, onClose }) => {
       <DialogOverlay className='backdrop-blur-xs bg-black/1' />
       <DialogContent
         aria-describedby={'Login or Sign Up'}
-        className='max-w-sm sm:max-w-md p-0 overflow-hidden rounded-lg'
+        className='max-w-xs sm:max-w-md p-0 overflow-hidden rounded-lg'
       >
         <DialogTitle className='sr-only'>Login or Sign Up</DialogTitle>
         <Card className='border-0 shadow-none'>
@@ -908,7 +910,7 @@ const LoginModal = ({ isOpen, onClose }) => {
                     )}
                     Google
                   </Button> */}
-                  <GoogleLoginButton disabled={isLoading} className='mb-4' />
+                  <GoogleLoginButton disabled className='mb-4' />
                   <Button
                     type='button'
                     variant='outline'

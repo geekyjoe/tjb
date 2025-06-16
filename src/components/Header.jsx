@@ -1,84 +1,78 @@
-import React, { useState } from "react";
-import { Link, NavLink, useLocation } from "react-router-dom";
-import {
-  Navbar,
-  NavbarBrand,
-  NavbarContent,
-  NavbarItem,
-} from "@heroui/react";
-import SearchBar from "./SearchBar";
-import { UserAuthButton } from "../context/authContext";
-import Cart from "./SidebarCart";
+import React from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { Navbar, NavbarBrand, NavbarContent, NavbarItem } from '@heroui/navbar';
+import SearchBar from './SearchBar';
+import { UserAuthButton } from '../context/authContext';
+import Cart from './SidebarCart';
+import Menu from './Menu';
 
 const Header = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuItems = [
+    { name: 'Home', path: '/' },
+    { name: 'Catalogue', path: '/collections' },
+  ];
+
+  const isActive = (path) => window.location.pathname === path;
 
   return (
     <Navbar
-      onMenuOpenChange={setIsMenuOpen}
-      isMenuOpen={isMenuOpen}
-      className="sticky top-0 inset-x-0 bg-white/75 backdrop-blur-sm dark:bg-cornsilk-d1 py-1.5"
-      maxWidth="full"
+      className='sticky top-0 inset-x-0 z-5 bg-white/75 border-b-2 dark:border-white/20 backdrop-blur-sm dark:bg-cornsilk-d1 py-1.5'
+      maxWidth='full'
       shouldHideOnScroll
-      isBordered
     >
-      {/* Mobile menu toggle */}
-      {/* <NavbarContent className="md:hidden" justify="start">
-        <NavbarMenuToggle
-          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-          className="md:hidden"
-        />
-      </NavbarContent> */}
-
       {/* Mobile Brand */}
-      <NavbarContent className="md:hidden">
+      <NavbarContent className='sm:hidden' justify='center'>
         <NavbarBrand>
           <Link
-            to="/"
-            className="font-karla font-bold dark:text-cornsilk focus:outline-none"
+            to='/'
+            className='font-karla font-bold dark:text-cornsilk focus:outline-none'
           >
-            <h2 className="text-sm p-1">The Jeweller Bee Store</h2>
+            <h2 className='text-sm p-1'>The Jeweller Bee Store</h2>
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
       {/* Mobile actions */}
-      <NavbarContent className="md:hidden">
+      <NavbarContent className='sm:hidden w-auto gap-0.5' justify='end'>
         <NavbarItem>
           <SearchBar />
         </NavbarItem>
         <NavbarItem>
           <Cart />
         </NavbarItem>
+        <NavbarItem>
+          <Menu
+            menuItems={menuItems}
+            isActive={isActive}
+          />
+        </NavbarItem>
       </NavbarContent>
 
       {/* Desktop Brand */}
-      <NavbarContent className="hidden md:flex" justify="start">
+      <NavbarContent className='hidden sm:flex' justify='start'>
         <NavbarBrand>
           <Link
-            to="/"
-            className="font-karla font-bold dark:text-cornsilk focus:outline-none"
+            to='/'
+            className='font-karla font-bold dark:text-cornsilk focus:outline-none'
           >
-            <h2 className="max-xl:text-xl p-1">
-              The Jeweller Bee Store
-            </h2>
+            <h2 className='max-xl:text-xl p-1'>The Jeweller Bee Store</h2>
           </Link>
         </NavbarBrand>
       </NavbarContent>
 
       {/* Desktop Navigation */}
-      <NavbarContent className="hidden md:flex gap-2">
+      <NavbarContent className='hidden sm:flex gap-2' justify='end'>
         <NavbarItem>
           <SearchBar />
         </NavbarItem>
         <NavbarItem>
           <NavLink
-            to="/collections"
+            to='/collections'
             className={({ isActive }) =>
               `px-2.5 py-3.5 hover:bg-cornsilk-hover dark:hover:bg-zinc-800 focus:outline-none focus:underline focus:decoration-solid focus:underline-offset-4 text-cornsilk-dark dark:text-cornsilk dark:hover:text-neutral-100 hover:text-neutral-900 hover:underline hover:decoration-solid hover:underline-offset-4 ${
                 isActive
-                  ? "text-neutral-900 dark:text-cornsilk underline underline-offset-4"
-                  : ""
+                  ? 'text-neutral-900 dark:text-cornsilk underline underline-offset-4'
+                  : ''
               }`
             }
           >
@@ -88,34 +82,12 @@ const Header = () => {
         <NavbarItem>
           <Cart />
         </NavbarItem>
-        <NavbarItem className="inline-flex">
+        <NavbarItem className='inline-flex'>
           <UserAuthButton />
         </NavbarItem>
       </NavbarContent>
 
-      {/* Mobile Menu */}
-      {/* <NavbarMenu className="pt-6">
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item.name}-${index}`}>
-            <Link
-              to={item.path}
-              className={`w-full text-lg ${
-                isActive(item.path)
-                  ? "text-neutral-900 dark:text-cornsilk font-semibold"
-                  : "text-cornsilk-dark dark:text-cornsilk"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              {item.name}
-            </Link>
-          </NavbarMenuItem>
-        ))}
-        <NavbarMenuItem>
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
-            <UserAuthButton />
-          </div>
-        </NavbarMenuItem>
-      </NavbarMenu> */}
+      {/* Mobile Sidebar - removed since it's now self-contained */}
     </Navbar>
   );
 };

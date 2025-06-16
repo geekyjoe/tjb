@@ -89,7 +89,7 @@ export default function HeroCarousel() {
 
   return (
     <div
-      className="relative overflow-hidden dark:bg-cornsilk-d1 py-2 md:py-12 "
+      className="relative overflow-hidden dark:bg-cornsilk-d1 py-0.5 md:py-12 "
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}

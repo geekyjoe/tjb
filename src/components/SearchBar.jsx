@@ -65,6 +65,19 @@ const SearchBar = () => {
   };
 
   useEffect(() => {
+    // Prevent background scroll when results are shown
+    if (showResults && query.length > 0) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [showResults, query]);
+
+  useEffect(() => {
     const handleClickOutside = (event) => {
       // Ignore if search is not open
       if (!open) return;
@@ -141,18 +154,15 @@ const SearchBar = () => {
     <div
       className={`md:relative ${
         open
-          ? 'fixed left-0 right-0 top-0 md:w-fit bg-white dark:bg-cornsilk-d1 z-20'
+          ? 'absolute left-0 right-0 top-0 md:w-fit bg-white dark:bg-cornsilk-d1 z-20'
           : 'w-fit'
       }`}
       ref={searchRef}
     >
       <div
         className={`relative flex items-center ${
-          open && 'text-cornsilk-dark dark:text-cornsilk focus:outline-hidden'
-        } ${
-          open
-            ? 'max-md:px-2 max-md:py-3 bg-white dark:bg-cornsilk-d1 z-30'
-            : ''
+          open &&
+          'pl-2.5 py-1.5 z-12 backdrop-blur-sm bg-white dark:bg-cornsilk-d1 text-cornsilk-dark dark:text-cornsilk focus:outline-hidden'
         }`}
       >
         {/* Desktop search bar */}
@@ -209,7 +219,7 @@ const SearchBar = () => {
             variant='ghost'
             size='icon'
             onClick={toggleSearch}
-            className={`rounded-full hover:bg-neutral-200 focus:outline-hidden flex-shrink-0`}
+            className={`rounded-full dark:hover:bg-gray-800 focus:outline-hidden flex-shrink-0`}
           >
             <Search className='h-4 w-4 text-cornsilk-dark dark:text-cornsilk' />
           </Button>
@@ -219,9 +229,9 @@ const SearchBar = () => {
       {showResults && query.length > 0 && (
         <>
           {/* Overlay */}
-          {open && (
+          {showResults && (
             <div
-              className='fixed inset-0 top-10.5 bg-black/50 z-10 transition-opacity duration-300 ease-in-out'
+              className='fixed inset-0 top-10.5 md:top-14 h-screen bg-black/50 z-10 transition-opacity duration-300 ease-in-out'
               onClick={() => {
                 setShowResults(false);
                 setTimeout(() => {

@@ -563,7 +563,6 @@ const Profile = () => {
       <div className='flex items-center justify-center min-h-screen'>
         <div className='text-center space-y-2'>
           <Loading />
-          <p>Loading profile...</p>
         </div>
       </div>
     );
@@ -635,7 +634,7 @@ const Profile = () => {
         <div className='col-span-1 md:col-span-2 h-fit p-2'>
           <div className='fixed left-2.5 md:absolute sm:left-3 md:left-4.5 lg:left-15 xl:left-25 top-20 w-12 md:w-48'>
             <div className='shadow-xs rounded-lg border border-black/10 dark:border-white/10 p-1 bg-white dark:bg-cornsilk-d3/25'>
-              <h3 className='font-medium sm:text-lg mb-3 border-b border-black/25 dark:border-white/50 leading-10 hidden md:block'>
+              <h3 className='font-medium sm:text-lg mb-3 border-b border-black/25 dark:border-white/50 leading-10 hidden md:block px-1.5'>
                 Profile Settings
               </h3>
               <nav className='flex flex-col space-y-1.5'>
@@ -646,7 +645,7 @@ const Profile = () => {
                     className={`w-10 h-10 md:w-full md:h-auto flex items-center justify-center md:justify-start md:px-3 md:py-2 rounded-md
                   ${
                     activeTab === tab.id
-                      ? 'bg-neutral-200 border-2 dark:border-stone-600 dark:bg-cornsilk-d2 font-semibold'
+                      ? 'bg-neutral-200 dark:bg-cornsilk-d2'
                       : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50'
                   }`}
                   >

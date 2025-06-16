@@ -4,7 +4,13 @@ import { Button } from '../components/ui/button';
 import { Separator } from '../components/ui/separator';
 import { useCart } from '../components/CartContext';
 import { Link } from 'react-router-dom';
-import { useSpring, animated, useTransition, useSprings } from '@react-spring/web';
+import {
+  useSpring,
+  animated,
+  useTransition,
+  useSprings,
+  config,
+} from '@react-spring/web';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,11 +37,12 @@ const Cart = () => {
     clearCart,
     totalItems,
   } = useCart();
+
   const openCart = () => {
     setIsOpen(true);
     setIsClosing(false);
   };
-  
+
   const closeCart = () => {
     setIsClosing(true);
     // Delay the actual closing to allow animation to complete
@@ -48,33 +55,19 @@ const Cart = () => {
   // Enhanced React Spring animations with better easing
   const overlayAnimation = useSpring({
     opacity: isOpen && !isClosing ? 1 : 0,
-    config: { 
-      tension: 220, 
-      friction: 26,
-      // Use different easing for opening vs closing
-      easing: isClosing ? 'ease-in' : 'ease-out'
-    }
+    config: config.molasses,
   });
 
   const sidebarAnimation = useSpring({
     transform: isOpen && !isClosing ? 'translateX(0%)' : 'translateX(100%)',
-    config: { 
-      tension: 240, 
-      friction: 24,
-      // Slightly faster closing animation
-      duration: isClosing ? 250 : undefined
-    }
+    config: config.stiff,
   });
 
   // Enhanced content animation for smooth fade
   const contentAnimation = useSpring({
     opacity: isOpen && !isClosing ? 1 : 0,
     transform: isOpen && !isClosing ? 'translateY(0px)' : 'translateY(-10px)',
-    config: { 
-      tension: 280, 
-      friction: 30,
-      delay: isOpen && !isClosing ? 100 : 0 // Slight delay on open for stagger effect
-    }
+    config: config.gentle,
   });
 
   // Cart items staggered animations using useSprings
@@ -84,7 +77,7 @@ const Cart = () => {
       opacity: isOpen && !isClosing ? 1 : 0,
       transform: isOpen && !isClosing ? 'translateY(0px)' : 'translateY(20px)',
       delay: isOpen && !isClosing ? index * 50 : 0,
-      config: { tension: 280, friction: 30 }
+      config: { tension: 280, friction: 30 },
     }))
   );
 
@@ -111,8 +104,6 @@ const Cart = () => {
     document.addEventListener('keydown', handleEscape);
     return () => document.removeEventListener('keydown', handleEscape);
   }, [isOpen, isClosing]);
-  
-
 
   const handleClearCart = () => {
     clearCart();
@@ -135,7 +126,7 @@ const Cart = () => {
       {/* Cart Trigger Button */}
       <button
         onClick={openCart}
-        className='relative text-cornsilk-dark hover:bg-neutral-200 dark:hover:bg-zinc-800 p-2 rounded-full transition-colors duration-200'
+        className='relative text-cornsilk-dark hover:bg-neutral-100 dark:hover:bg-gray-800 p-2 rounded-full transition-colors duration-200'
       >
         <MdOutlineShoppingBag size={23} className='dark:text-cornsilk' />
         {totalItems > 0 && (
@@ -149,7 +140,7 @@ const Cart = () => {
       {isOpen && (
         <animated.div
           style={overlayAnimation}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm h-screen z-[100] cursor-pointer"
+          className='fixed inset-0 bg-black/50 backdrop-blur-sm h-screen z-[100] cursor-pointer'
           onClick={handleOverlayClick}
         />
       )}
@@ -158,9 +149,12 @@ const Cart = () => {
       {isOpen && (
         <animated.div
           style={sidebarAnimation}
-          className="fixed top-0 right-0 h-screen w-full sm:w-110 bg-white dark:bg-gray-900 shadow-2xl z-[101] will-change-transform"
+          className='fixed top-0 right-0 h-screen w-full sm:w-110 bg-white dark:bg-gray-900 shadow-2xl z-[101] will-change-transform'
         >
-          <animated.div style={contentAnimation} className='flex flex-col h-full'>
+          <animated.div
+            style={contentAnimation}
+            className='flex flex-col h-full'
+          >
             {/* Header */}
             <div className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700'>
               <div className='flex items-center gap-2'>
@@ -189,8 +183,8 @@ const Cart = () => {
                           orientation='horizontal'
                         />
                         <AlertDialogDescription className='text-sm md:text-md text-center px-2.5 pt-2.5 w-full'>
-                          Are you sure, you want to remove all the items from your
-                          cart?
+                          Are you sure, you want to remove all the items from
+                          your cart?
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter
@@ -237,11 +231,16 @@ const Cart = () => {
                       playsInline
                     ></video>
                   </div>
-                  <h3 className='text-lg font-medium mb-2'>Your cart is empty</h3>
+                  <h3 className='text-lg font-medium mb-2'>
+                    Your cart is empty
+                  </h3>
                   <p className='text-gray-500 mb-4'>
                     Add some items to get started
                   </p>
-                  <Button onClick={closeCart} className='w-fit transition-all duration-200 hover:scale-105'>
+                  <Button
+                    onClick={closeCart}
+                    className='w-fit transition-all duration-200 hover:scale-105'
+                  >
                     <Link to='/collections' className='w-full'>
                       Continue Shopping
                     </Link>

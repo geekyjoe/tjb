@@ -10,7 +10,6 @@ import Header from './components/Header';
 import { ThemeProvider } from './ThemeToggle';
 import { CartProvider } from './components/CartContext';
 import CookieConsent from './components/CookieConsent';
-import MobileMenu from './components/MobileMenu';
 import { Toaster } from './components/ui/toaster';
 import { useAuth } from './context/authContext';
 import Loading from './components/ui/Loading';
@@ -118,7 +117,6 @@ const Contents = () => {
         {/* 404 catch-all route - must be last */}
         <Route path='*' element={<RouteWrapper element={<LazyNotFound />} />} />
       </Routes>
-      {showHeaderAndFooter && <MobileMenu />}
     </>
   );
 };
