@@ -60,7 +60,11 @@ const Cart = () => {
 
   const sidebarAnimation = useSpring({
     transform: isOpen && !isClosing ? 'translateX(0%)' : 'translateX(100%)',
-    config: config.stiff,
+    config: {
+      tension: 280,
+      friction: 30,
+      delay: isOpen && !isClosing ? 100 : 0, // Slight delay on open for stagger effect
+    },
   });
 
   // Enhanced content animation for smooth fade
