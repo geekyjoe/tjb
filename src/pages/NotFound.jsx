@@ -1,6 +1,6 @@
 const NotFound = () => {
   return (
-    <div className='place-content-center flex flex-col items-center justify-center h-screen text-neutral-900'>
+    <div className='place-content-center bg-white dark:bg-cornsilk-d1 dark:text-white flex flex-col items-center justify-center h-screen text-neutral-900'>
       <div className='p-1 transform-gpu'>
         <video
           className='size-75 md:size-100 object-cover rounded-lg'

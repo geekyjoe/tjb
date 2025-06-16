@@ -55,11 +55,11 @@ const Cart = () => {
   // Enhanced React Spring animations with better easing
   const overlayAnimation = useSpring({
     opacity: isOpen && !isClosing ? 1 : 0,
-    config: config.molasses,
+    config: config.gentle,
   });
 
-  const sidebarAnimation = useSpring({
-    transform: isOpen && !isClosing ? 'translateY(0%)' : 'translateY(100%)',
+  const cartAnimation = useSpring({
+    transform: isOpen && !isClosing ? 'translateX(0%)' : 'translateX(100%)',
     config: {
       tension: 280,
       friction: 30,
@@ -68,11 +68,11 @@ const Cart = () => {
   });
 
   // Enhanced content animation for smooth fade
-  const contentAnimation = useSpring({
-    opacity: isOpen && !isClosing ? 1 : 0,
-    transform: isOpen && !isClosing ? 'translateY(0px)' : 'translateY(-10px)',
-    config: config.gentle,
-  });
+  // const contentAnimation = useSpring({
+  //   opacity: isOpen && !isClosing ? 1 : 0,
+  //   transform: isOpen && !isClosing ? 'translateY(0px)' : 'translateY(0px)',
+  //   config: config.gentle,
+  // });
 
   // Cart items staggered animations using useSprings
   const cartItemSprings = useSprings(
@@ -88,14 +88,35 @@ const Cart = () => {
   // Prevent background scroll when sidebar is open
   useEffect(() => {
     if (isOpen) {
-      const originalStyle = window.getComputedStyle(document.body).overflow;
+      // Store the original overflow value (or empty string if not set)
+      const originalOverflow = document.body.style.overflow || '';
+
+      // Set body overflow to hidden to prevent scrolling
       document.body.style.overflow = 'hidden';
 
+      // Add resize event listener to close cart on window resize
+      window.addEventListener('resize', closeCart);
+
+      // Cleanup function
       return () => {
-        document.body.style.overflow = originalStyle;
+        // Restore original overflow style
+        document.body.style.overflow = originalOverflow;
+        // Remove the resize event listener
+        window.removeEventListener('resize', closeCart);
       };
+    } else {
+      // Ensure overflow is restored when cart is closed
+      document.body.style.overflow = '';
     }
-  }, [isOpen]);
+  }, [isOpen, closeCart]);
+
+  // Additional safety net - restore overflow on component unmount
+  useEffect(() => {
+    return () => {
+      // Reset overflow when component unmounts completely
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   // Handle escape key to close cart
   useEffect(() => {
@@ -134,7 +155,7 @@ const Cart = () => {
       >
         <MdOutlineShoppingBag size={23} className='dark:text-cornsilk' />
         {totalItems > 0 && (
-          <span className='absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full h-4 w-4 flex items-center justify-center animate-pulse'>
+          <span className='absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full size-4 flex items-center justify-center'>
             {totalItems}
           </span>
         )}
@@ -144,7 +165,7 @@ const Cart = () => {
       {isOpen && (
         <animated.div
           style={overlayAnimation}
-          className='fixed inset-0 bg-black/50 backdrop-blur-sm h-screen z-[100] cursor-pointer'
+          className='fixed inset-0 bg-linear-to-l md:from-black/75 from-black/100 to-black/40 h-screen z-49 cursor-pointer'
           onClick={handleOverlayClick}
         />
       )}
@@ -152,11 +173,11 @@ const Cart = () => {
       {/* Enhanced Animated Sidebar */}
       {isOpen && (
         <animated.div
-          style={sidebarAnimation}
-          className='fixed top-0 right-0 h-screen w-full sm:w-110 bg-white dark:bg-gray-900 shadow-2xl z-[101] will-change-transform'
+          style={cartAnimation}
+          className='fixed top-0 right-0 h-screen w-full sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 will-change-transform'
         >
           <animated.div
-            style={contentAnimation}
+            // style={contentAnimation}
             className='flex flex-col h-full'
           >
             {/* Header */}
@@ -172,12 +193,12 @@ const Cart = () => {
                       <Button
                         variant='destructive'
                         size='icon'
-                        className='bg-red-400 hover:bg-red-500 hover:ring-2 hover:ring-offset-1 hover:ring-red-400 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200'
+                        className='bg-red-400 dark:bg-red-600 hover:bg-red-500 hover:ring-2 hover:ring-offset-1 hover:ring-red-400 focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200'
                       >
                         <Trash2 className='size-4' />
                       </Button>
                     </AlertDialogTrigger>
-                    <AlertDialogContent className='p-0 rounded-xl w-5/6 sm:w-full'>
+                    <AlertDialogContent className='p-0 rounded-xl w-5/6 sm:w-full dark:bg-cornsilk-d2'>
                       <AlertDialogHeader>
                         <AlertDialogTitle className='text-left text-lg leading-7 px-2.5 pt-2.5'>
                           Clear Your Shopping Cart
@@ -193,15 +214,15 @@ const Cart = () => {
                       </AlertDialogHeader>
                       <AlertDialogFooter
                         className={
-                          'flex flex-row-reverse items-center gap-1 mb-2 px-2'
+                          'flex justify-end items-center gap-1 mb-2 px-2'
                         }
                       >
-                        <AlertDialogCancel className='rounded-lg'>
+                        <AlertDialogCancel className='rounded-lg px-2.5 md:px-4'>
                           Cancel
                         </AlertDialogCancel>
                         <AlertDialogAction
                           onClick={clearCart}
-                          className='rounded-lg m-0'
+                          className='rounded-lg m-0 dark:bg-red-700 px-2.5 md:px-4'
                         >
                           Remove
                         </AlertDialogAction>
@@ -224,10 +245,10 @@ const Cart = () => {
             {/* Content */}
             <div className='flex-1 overflow-y-auto'>
               {cartItems.length === 0 ? (
-                <div className='flex flex-col items-center justify-center h-full p-8 text-center'>
+                <div className='flex flex-col items-center justify-center h-full p-4 text-center'>
                   <div className='p-1 transform-gpu'>
                     <video
-                      className='size-70 md:size-80 object-cover rounded-lg'
+                      className='h-60 w-40 md:size-80 transform-gpu object-cover rounded-t-full'
                       src='/cart.mp4'
                       autoPlay
                       loop
@@ -235,23 +256,21 @@ const Cart = () => {
                       playsInline
                     ></video>
                   </div>
-                  <h3 className='text-lg font-medium mb-2'>
+                  <h3 className='text-lg font-medium leading-12'>
                     Your cart is empty
                   </h3>
-                  <p className='text-gray-500 mb-4'>
+                  <p className='dark:text-gray-300 mb-2'>
                     Add some items to get started
                   </p>
-                  <Button
-                    onClick={closeCart}
-                    className='w-fit transition-all duration-200 hover:scale-105'
+                  <Link
+                    to='/collections'
+                    className='w-full hover:underline hover:underline-offset-4'
                   >
-                    <Link to='/collections' className='w-full'>
-                      Continue Shopping
-                    </Link>
-                  </Button>
+                    Continue Shopping
+                  </Link>
                 </div>
               ) : (
-                <div className='flex flex-col gap-4 mt-5 mx-5'>
+                <div className='flex flex-col gap-4 mt-2 mx-1'>
                   {/* Cart Items */}
                   <div className='space-y-2 flex-1'>
                     {cartItems.map((item, index) => (
@@ -269,7 +288,6 @@ const Cart = () => {
                   </div>
 
                   {/* Responsive Separator */}
-                  <Separator className='my-4' />
                 </div>
               )}
             </div>

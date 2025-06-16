@@ -162,7 +162,7 @@ const SearchBar = () => {
       <div
         className={`relative flex items-center ${
           open &&
-          'pl-2.5 py-1.5 z-12 backdrop-blur-sm bg-white dark:bg-cornsilk-d1 text-cornsilk-dark dark:text-cornsilk focus:outline-hidden'
+          'pl-2.5 py-1.5 md:p-0 z-12 backdrop-blur-sm bg-white dark:bg-cornsilk-d1 text-cornsilk-dark dark:text-cornsilk focus:outline-hidden'
         }`}
       >
         {/* Desktop search bar */}
@@ -231,12 +231,11 @@ const SearchBar = () => {
           {/* Overlay */}
           {showResults && (
             <div
-              className='fixed inset-0 top-10.5 md:top-14 h-screen bg-black/50 z-10 transition-opacity duration-300 ease-in-out'
+              className='fixed inset-0 top-10.5 md:top-12 h-screen bg-black/50 z-10 transition-opacity duration-300 ease-in-out'
               onClick={() => {
                 setShowResults(false);
                 setTimeout(() => {
                   setQuery('');
-                  setOpen(false);
                 }, 200);
               }}
             />
