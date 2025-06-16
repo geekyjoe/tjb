@@ -59,7 +59,7 @@ const Cart = () => {
   });
 
   const sidebarAnimation = useSpring({
-    transform: isOpen && !isClosing ? 'translateX(0%)' : 'translateX(100%)',
+    transform: isOpen && !isClosing ? 'translateY(0%)' : 'translateY(100%)',
     config: {
       tension: 280,
       friction: 30,
