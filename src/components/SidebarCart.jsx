@@ -85,38 +85,15 @@ const Cart = () => {
     }))
   );
 
-  // Prevent background scroll when sidebar is open
-  useEffect(() => {
-    if (isOpen) {
-      // Store the original overflow value (or empty string if not set)
-      const originalOverflow = document.body.style.overflow || '';
-
-      // Set body overflow to hidden to prevent scrolling
-      document.body.style.overflow = 'hidden';
-
-      // Add resize event listener to close cart on window resize
-      window.addEventListener('resize', closeCart);
-
-      // Cleanup function
-      return () => {
-        // Restore original overflow style
-        document.body.style.overflow = originalOverflow;
-        // Remove the resize event listener
-        window.removeEventListener('resize', closeCart);
-      };
-    } else {
-      // Ensure overflow is restored when cart is closed
-      document.body.style.overflow = '';
-    }
-  }, [isOpen, closeCart]);
-
-  // Additional safety net - restore overflow on component unmount
-  useEffect(() => {
-    return () => {
-      // Reset overflow when component unmounts completely
-      document.body.style.overflow = '';
-    };
-  }, []);
+ useEffect(() => {
+  document.body.style.overflow = isOpen ? 'hidden' : '';
+  
+  if (isOpen) {
+    const handleResize = () => closeCart();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }
+}, [isOpen, closeCart]);
 
   // Handle escape key to close cart
   useEffect(() => {
