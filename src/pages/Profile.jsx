@@ -62,7 +62,7 @@ import {
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
 import { AuthService, UserService } from '../api/client';
-import { Separator } from '../components/ui/separator';
+import * as Separator from '@radix-ui/react-separator';
 import Loading from '../components/ui/Loading';
 import { MdOutlineSecurity } from 'react-icons/md';
 
@@ -353,7 +353,7 @@ const Profile = () => {
     setTheme(newTheme);
     showToast('Theme Updated', `Theme switched to ${newTheme} mode`, 'success');
   };
-    const ThemeSelector = () => (
+  const ThemeSelector = () => (
     <div className='flex items-center justify-between'>
       <div className='space-y-0.5'>
         <Label className='sm:text-base'>Theme</Label>
@@ -629,14 +629,18 @@ const Profile = () => {
   return (
     <section className='bg-white dark:bg-cornsilk-d1 p-2 md:p-5'>
       {/* Main content with sidebar and content area */}
-      <div className='md:max-w-6xl mx-auto grid ml-16 md:ml-20 md:grid-cols-12 gap-0 md:gap-6'>
-        {/* Left sidebar with tabs */}
-        <div className='col-span-1 md:col-span-2 h-fit p-2'>
-          <div className='fixed left-2.5 md:absolute sm:left-3 md:left-4.5 lg:left-15 xl:left-25 top-20 w-12 md:w-48'>
+      <div className='md:max-w-6xl mx-auto flex md:grid md:ml-20 md:grid-cols-12 gap-0 md:gap-6'>
+        {/* Left sidebar with tabs - now sticky */}
+        <div className='md:col-span-2 h-fit p-2 left-2 sticky top-12'>
+          <div className=' -left-14 top-0 w-12 md:w-48'>
             <div className='shadow-xs rounded-lg border border-black/10 dark:border-white/10 p-1 bg-white dark:bg-cornsilk-d3/25'>
-              <h3 className='font-medium sm:text-lg mb-3 border-b border-black/25 dark:border-white/50 leading-10 hidden md:block px-1.5'>
+              <h3 className='font-medium sm:text-lg leading-10 hidden md:block px-1.5'>
                 Profile Settings
               </h3>
+              <Separator.Root
+                className='hidden md:block h-px bg-black/10 dark:bg-white/25 my-2'
+                orientation='horizontal'
+              />
               <nav className='flex flex-col space-y-1.5'>
                 {tabs.map((tab) => (
                   <button
@@ -645,8 +649,8 @@ const Profile = () => {
                     className={`w-10 h-10 md:w-full md:h-auto flex items-center justify-center md:justify-start md:px-3 md:py-2 rounded-md
                   ${
                     activeTab === tab.id
-                      ? 'bg-neutral-200 dark:bg-cornsilk-d2'
-                      : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50'
+                      ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white'
+                      : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50 dark:text-white/75 hover:dark:text-white/90'
                   }`}
                   >
                     {tab.icon}
@@ -659,14 +663,19 @@ const Profile = () => {
         </div>
 
         {/* Main content area */}
-        <div className='col-span-9 sm:px-2 lg:px-8 md:px-6 min-h-svh'>
-          <h1 className='text-2xl font-semibold mb-4 border-b border-black/10 dark:border-white/20 pb-2 md:hidden'>{tabs.find(tab => tab.id === activeTab)?.label || ''}</h1>
-
+        <div className='flex-1 py-2.5 md:col-span-9 sm:px-2 lg:px-8 md:px-6 min-h-svh'>
+          <h1 className='text-lg leading-8 md:text-2xl font-semibold pb-2 md:hidden'>
+            {tabs.find((tab) => tab.id === activeTab)?.label || ''}
+          </h1>
+          <Separator.Root
+            className='md:hidden h-px bg-black/10 dark:bg-white/25 my-2'
+            orientation='horizontal'
+          />
           {/* Profile Tab */}
           {activeTab === 'profile' && (
-            <div className='space-y-6'>
+            <div className='space-y-3'>
               {/* Header section */}
-              <div className='p-2 border-b border-black/10 dark:border-white/20 flex items-center gap-4'>
+              <div className='p-2 flex items-center gap-4'>
                 <img
                   src={
                     userProfile.avatarUrl ||
@@ -684,12 +693,18 @@ const Profile = () => {
                       {fullName || 'User'}
                     </span>
                   </h2>
-                  <div className='flex items-center bg-stone-200 dark:bg-cornsilk-d1 dark:text-cornsilk w-fit p-0.5 px-1 rounded-md text-sm text-muted-foreground'>
-                    <Shield className='h-3 w-3 mr-1' />
-                    {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
-                  </div>
+                  {userRole === 'admin' && (
+                    <div className='flex items-center bg-stone-200 dark:bg-cornsilk-d4 dark:text-cornsilk w-fit p-0.5 px-1 rounded-md text-sm text-muted-foreground'>
+                      <Shield className='h-3 w-3 mr-1' />
+                      {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
+                    </div>
+                  )}
                 </div>
               </div>
+              <Separator.Root
+                className='h-px bg-black/10 dark:bg-white/25'
+                orientation='horizontal'
+              />
               <div className='sm:p-5'>
                 <div className='flex items-center justify-between mb-4'>
                   <h3 className='sm:text-lg font-medium'>
@@ -778,11 +793,9 @@ const Profile = () => {
                       Date Of Birth
                     </Label>{' '}
                     <div className='relative flex-2'>
-                      {!editingField && (
-                        <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-                          <Calendar className='size-4 text-slate-500 dark:text-slate-300/75' />
-                        </div>
-                      )}
+                      <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${editingField && 'opacity-25'}`}>
+                        <Calendar className='size-4 text-slate-500 dark:text-slate-300/75' />
+                      </div>
                       <Input
                         id='dob'
                         type={editingField ? 'date' : 'text'}
@@ -795,8 +808,10 @@ const Profile = () => {
                       />
                     </div>
                   </div>
-                  <Separator />
-
+                  <Separator.Root
+                    className='h-px bg-black/10 dark:bg-white/25'
+                    orientation='horizontal'
+                  />
                   {/* Email section remains unchanged */}
                   <div className='group flex items-center justify-between gap-6'>
                     <Label className='text-sm font-medium text-slate-700 dark:text-slate-300 flex-1 sm:flex-2'>
@@ -864,6 +879,7 @@ const Profile = () => {
                         onCheckedChange={(checked) =>
                           handleNotificationChange(key, checked)
                         }
+                        className='dark:data-[state=checked]:bg-cornsilk-d4'
                       />
                     </div>
                   ))}
@@ -906,6 +922,7 @@ const Profile = () => {
                           handleCookieChange(key, checked)
                         }
                         disabled={key === 'essential'}
+                        className='dark:data-[state=checked]:bg-cornsilk-d4'
                       />
                     </div>
                   ))}
@@ -1153,7 +1170,7 @@ const Profile = () => {
                     <AlertDialogTrigger asChild>
                       <Button
                         variant='destructive'
-                        className='w-full sm:w-auto'
+                        className='w-full dark:bg-red-700 sm:w-auto'
                       >
                         <Trash2 className='size-4 mr-2' />
                         Delete Account

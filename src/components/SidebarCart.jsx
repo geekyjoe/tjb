@@ -138,7 +138,7 @@ const Cart = () => {
       {isOpen && (
         <animated.div
           style={cartAnimation}
-          className='fixed top-0 right-0 h-screen w-full sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 will-change-transform flex flex-col'
+          className='fixed top-0 right-0 min-h-[100dvh] w-full sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 overflow-y-auto will-change-transform flex flex-col'
         >
           {/* Header */}
           <div className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700'>
@@ -203,7 +203,7 @@ const Cart = () => {
                 />
                 <h3 className='text-lg font-medium leading-12'>Your cart is empty</h3>
                 <p className='dark:text-gray-300 mb-2'>Add some items to get started</p>
-                <Link to='/collections' className='w-full hover:underline hover:underline-offset-4'>
+                <Link to='/collections' className='w-full hover:underline hover:underline-offset-4' onClick={closeCart}>
                   Continue Shopping
                 </Link>
               </div>

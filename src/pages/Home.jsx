@@ -6,7 +6,6 @@ import { FaGifts } from 'react-icons/fa6';
 import { ImGift } from 'react-icons/im';
 import { BsBox2HeartFill } from 'react-icons/bs';
 import { IoHeartCircleSharp } from 'react-icons/io5';
-import Footer from '../components/Footer';
 import HeroCarousel from '../components/HC';
 import * as Separator from '@radix-ui/react-separator';
 
@@ -151,7 +150,6 @@ const Home = () => {
         className='h-px bg-black/25 dark:bg-white/50 mt-8'
         orientation='horizontal'
       />
-      <Footer />
     </div>
   );
 };

@@ -1,9 +1,15 @@
+import { useEffect } from "react";
+
 const NotFound = () => {
+  useEffect(() => {
+    document.title = 'Something Went Wrong - TJB Store'; // Set the document title
+  }, []);
+
   return (
     <div className='place-content-center bg-white dark:bg-cornsilk-d1 dark:text-white flex flex-col items-center justify-center h-screen text-neutral-900'>
       <div className='p-1 transform-gpu'>
         <video
-          className='size-75 md:size-100 object-cover rounded-lg'
+          className='transition-all duration-500 size-75 md:size-100 object-cover rounded-lg'
           src='/4041.mp4'
           autoPlay
           loop
@@ -28,7 +34,7 @@ const NotFound = () => {
       </div>
       <div className='relative flex justify-between'>
         <video
-          className='size-20 md:size-50 fixed -rotate-10 md:-bottom-4 left-1'
+          className='transition-all duration-500 size-15 md:size-30 lg:size-50 rounded-md fixed -rotate-10 bottom-2 left-1'
           src='/Warehouse_Worker.mp4'
           autoPlay
           loop
@@ -36,7 +42,7 @@ const NotFound = () => {
           playsInline
         ></video>
         <video
-          className='size-20 md:size-50 fixed rotate-5 top-2 left-1'
+          className='transition-all duration-500 size-15 md:size-30 lg:size-50 rounded-md fixed rotate-5 top-2 left-1'
           src='/Business Website.mp4'
           autoPlay
           loop
@@ -44,7 +50,7 @@ const NotFound = () => {
           playsInline
         ></video>
         <video
-          className='size-20 md:size-50 fixed -rotate-5 top-2 right-1'
+          className='transition-all duration-500 size-15 md:size-30 lg:size-50 rounded-md fixed -rotate-5 top-2 right-1'
           src='/main-worker.mp4'
           autoPlay
           loop
@@ -52,7 +58,7 @@ const NotFound = () => {
           playsInline
         ></video>
         <video
-          className='size-20 md:size-50 fixed rotate-10 md:-bottom-4 right-1'
+          className='transition-all duration-500 size-15 md:size-30 lg:size-50 rounded-md fixed rotate-10 bottom-2 right-1'
           src='/Warehouse_Worker1.mp4'
           autoPlay
           loop

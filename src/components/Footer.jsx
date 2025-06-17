@@ -15,16 +15,16 @@ const Footer = () => {
         orientation='horizontal'
       />
       <footer className='dark:bg-cornsilk-d1 dark:text-white py-4 pb-6 px-4'>
-        <div className='grid md:grid-cols-4 grid-flow-col grid-rows-4 md:grid-rows-1 gap-4 items-start md:justify-items-center p-1'>
+        <div className='grid md:grid-cols-4 grid-flow-col grid-rows-4 md:grid-rows-1 gap-2 md:gap-4 items-start md:justify-items-center p-1'>
           <div className='col-span-2 md:col-span-1'>
-            <h3 className='text-xl font-bold mb-4 '>The Jeweller Bee Store</h3>
+            <h3 className='md:text-xl font-bold leading-7'>The Jeweller Bee Store</h3>
             <p className='dark:text-gray-300 text-sm leading-relaxed'>
               Crafting memories, one piece at a time. Where every jewelry tells
               a story of love, commitment, and timeless elegance.
             </p>
           </div>
-          <div className='row-span-3 md:row-span-1'>
-            <h4 className='text-lg font-semibold mb-4'>Collections</h4>
+          <div className='row-span-2 md:row-span-1'>
+            <h4 className='text-lg font-semibold leading-10'>Collections</h4>
             <ul className='space-y-2 dark:text-gray-300 text-sm'>
               <li>
                 <a className='hover:text-amber-500 transition-colors'>
@@ -53,8 +53,8 @@ const Footer = () => {
               </li>
             </ul>
           </div>
-          <div>
-            <h4 className='text-lg font-semibold mb-4'>Connect</h4>
+          <div className='row-span-2'>
+            <h4 className='text-lg font-semibold leading-10 '>Connect</h4>
             <div className='space-y-3 text-sm'>
               <a
                 href='https://www.instagram.com/_thejewelerbee_'
@@ -70,8 +70,8 @@ const Footer = () => {
               </p>
             </div>
           </div>
-          <div className='text-lg font-semibold rounded-full w-fit space-y-3'>
-            <p>Appearance</p>
+          <div className='w-fit space-y-1.5'>
+            <h4 className='text-lg font-semibold leading-10'>Appearance</h4>
             <ThemeToggle />
           </div>
         </div>
