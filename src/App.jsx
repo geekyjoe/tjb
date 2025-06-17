@@ -13,6 +13,7 @@ import CookieConsent from './components/CookieConsent';
 import { Toaster } from './components/ui/toaster';
 import { useAuth } from './context/authContext';
 import Loading from './components/ui/Loading';
+import Footer from './components/Footer';
 
 // Add this ProtectedRoute component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -117,6 +118,7 @@ const Contents = () => {
         {/* 404 catch-all route - must be last */}
         <Route path='*' element={<RouteWrapper element={<LazyNotFound />} />} />
       </Routes>
+      {showHeaderAndFooter && <Footer />}
     </>
   );
 };
