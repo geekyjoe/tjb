@@ -113,7 +113,7 @@ export default function HeroCarousel() {
 
   return (
     <div
-      className="relative overflow-hidden dark:bg-cornsilk-d1 py-0.5 md:py-12 select-none"
+      className="relative overflow-hidden dark:bg-cornsilk-d1 p-2.5 md:py-12 select-none"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -186,7 +186,7 @@ export default function HeroCarousel() {
             >
               {/* Mobile: Background Image + Overlay + Content */}
               <div
-                className="md:hidden relative w-full h-full flex flex-col justify-center items-center bg-cover bg-center p-6"
+                className="md:hidden relative w-full h-full flex flex-col justify-center items-center bg-cover bg-center rounded-xl p-6"
                 style={{
                   backgroundImage: `url(${slide.image})`,
                   backgroundPosition: "center",
@@ -194,7 +194,7 @@ export default function HeroCarousel() {
                 }}
               >
                 {/* Dark overlay for better text visibility */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent rounded-l-xl"></div>
 
                 {/* Content on top of background */}
                 <div className="relative z-0 text-left backdrop-opacity-100 backdrop-blur-xs rounded-md p-4 max-w-2xl">
@@ -256,7 +256,7 @@ export default function HeroCarousel() {
       </div>
 
       {/* Carousel Controls - Bottom Right, with responsive positioning */}
-      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-1 md:space-x-2 sm:bg-transparent bg-black/15 backdrop-blur-sm md:backdrop-blur-none p-1 md:p-0 rounded-full z-1">
+      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-1 md:space-x-2 sm:bg-transparent bg-black/15 backdrop-blur-sm md:backdrop-blur-none rounded-lg z-1">
         <button
           onClick={() => {
             prevSlide();
@@ -280,8 +280,8 @@ export default function HeroCarousel() {
         </button>
 
         <div className="flex items-center justify-center rounded-full px-3 py-1 md:px-3 md:py-1">
-          <span className="md:text-cornsilk-dark dark:md:text-neutral-200 text-neutral-200 text-xs md:text-sm font-medium">
-            <span className="md:text-black dark:md:text-white text-white text-base md:text-xl font-bold">
+          <span className="md:text-cornsilk-dark dark:md:text-neutral-200 text-neutral-200 text-[0.575rem] md:text-sm font-medium">
+            <span className="md:text-black dark:md:text-white text-white text-[0.8rem] md:text-xl font-bold">
               {currentSlide + 1}
             </span>
             <span className="mx-1">/</span>

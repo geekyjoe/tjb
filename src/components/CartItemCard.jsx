@@ -22,7 +22,7 @@ const CartItemCard = ({ item, onUpdateQuantity, onRemove }) => (
       className='size-18 md:size-24 object-cover rounded-md'
     />
     <div className='w-full'>
-      <h4 className='text-xs md:text-[0.9rem] truncate'>{item.title}</h4>
+      <h4 className='text-xs md:text-[0.9rem] truncate hyphens-auto'>{item.title}</h4>
       <p className='text-xs md:text-sm text-gray-600 dark:text-gray-300'>
         ${item.price.toFixed(2)} each
       </p>
