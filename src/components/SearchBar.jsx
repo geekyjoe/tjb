@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, X } from 'lucide-react';
+import { Clock, Search, X } from 'lucide-react';
 import { useTrail, animated, useSpring, config } from '@react-spring/web';
 import { searchProducts } from '../api/api';
 import { Button } from './ui/button';
@@ -13,6 +13,10 @@ const SearchBar = () => {
   const [open, setOpen] = useState(false);
   const searchRef = useRef(null);
   const navigate = useNavigate();
+  const [searchHistory, setSearchHistory] = useState(() => {
+    const saved = localStorage.getItem('searchHistory');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // React Spring animations
   const searchBarSpring = useSpring({
@@ -30,9 +34,8 @@ const SearchBar = () => {
   });
 
   const resultsSpring = useSpring({
-    opacity: showResults && query.length > 0 ? 1 : 0,
-    transform:
-      showResults && query.length > 0 ? 'translateY(0px)' : 'translateY(-10px)',
+    opacity: showResults ? 1 : 0,
+    transform: showResults ? 'translateY(0px)' : 'translateY(-10px)',
     config: { tension: 200, friction: 20 },
   });
 
@@ -82,6 +85,9 @@ const SearchBar = () => {
       // Ignore if search is not open
       if (!open) return;
 
+      const isSearchButton = event.target.closest('button');
+      if (isSearchButton) return;
+
       // Check if the click is outside search component
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowResults(false);
@@ -94,59 +100,82 @@ const SearchBar = () => {
     };
 
     const handleResize = () => {
-      if (open) {
+      // Only close on resize if window width changes significantly
+      const width = window.innerWidth;
+      if (open && Math.abs(width - previousWidth) > 100) {
         setShowResults(false);
         setTimeout(() => {
           setQuery('');
           setOpen(false);
         }, 200);
       }
+      previousWidth = width;
     };
 
-    // Handle both mouse and touch events
-    const events = ['mousedown', 'touchstart'];
+    let previousWidth = window.innerWidth;
 
-    events.forEach((event) => {
-      document.addEventListener(event, handleClickOutside, { passive: true });
-    });
-
+    // Use mousedown for desktop and touchend for mobile
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchend', handleClickOutside);
     window.addEventListener('resize', handleResize);
 
     return () => {
-      events.forEach((event) => {
-        document.removeEventListener(event, handleClickOutside);
-      });
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchend', handleClickOutside);
       window.removeEventListener('resize', handleResize);
     };
   }, [open]);
 
   const handleInputChange = (e) => {
+    e.preventDefault(); // Prevent any default behavior
     const value = e.target.value;
     setQuery(value);
     handleSearch(value);
     setShowResults(true);
   };
 
+  const toggleSearch = (e) => {
+    e.preventDefault(); // Prevent event bubbling
+    e.stopPropagation(); // Stop event propagation
+
+    if (open) {
+      setShowResults(false);
+      setTimeout(() => {
+        setQuery('');
+        setOpen(false);
+      }, 200);
+    } else {
+      setOpen(true);
+    }
+  };
+
+  // Add this function after other handlers
+  const addToSearchHistory = (searchTerm) => {
+    const newHistory = [
+      searchTerm,
+      ...searchHistory.filter((term) => term !== searchTerm),
+    ].slice(0, 5); // Keep only last 5 searches
+    setSearchHistory(newHistory);
+    localStorage.setItem('searchHistory', JSON.stringify(newHistory));
+  };
+
+  // Modify handleResultClick to include search history
   const handleResultClick = (productId) => {
-    navigate(`/products/${productId}`);
+    addToSearchHistory(query);
+    navigate(`/collections/${productId}`);
     setShowResults(false);
-    // Smooth closing animation when selecting a result
     setTimeout(() => {
       setQuery('');
       setOpen(false);
     }, 200);
   };
 
-  const toggleSearch = () => {
-    if (open) {
-      // Close animation: hide results first, then clear query after animation
+  // Add function to clear search history
+  const clearSearchHistory = () => {
+    setSearchHistory([]);
+    localStorage.removeItem('searchHistory');
+    if (!query) {
       setShowResults(false);
-      setTimeout(() => {
-        setQuery('');
-        setOpen(false);
-      }, 200); // Delay to allow closing animation
-    } else {
-      setOpen(true);
     }
   };
 
@@ -226,25 +255,60 @@ const SearchBar = () => {
         )}
       </div>
 
-      {showResults && query.length > 0 && (
+      {showResults && (
         <>
           {/* Overlay */}
-          {showResults && (
-            <div
-              className='fixed inset-0 top-10.5 md:top-12 h-screen bg-black/50 z-10 transition-opacity duration-300 ease-in-out'
-              onClick={() => {
-                setShowResults(false);
-                setTimeout(() => {
-                  setQuery('');
-                }, 200);
-              }}
-            />
-          )}
+          <div
+            className='fixed inset-0 top-10.5 md:top-12 h-screen bg-black/50 z-10 transition-opacity duration-300 ease-in-out'
+            onClick={() => {
+              setShowResults(false);
+              setTimeout(() => {
+                setQuery('');
+              }, 200);
+            }}
+          />
+
           <animated.div
             style={resultsSpring}
             className='absolute right-2 left-0 md:w-95 w-[calc(100%-0.5rem)] mx-0.5 md:mx-0 bg-white dark:bg-cornsilk-d3 rounded-b shadow-lg border border-neutral-200 dark:border-neutral-700 max-h-130 overflow-y-auto z-50'
           >
-            {isSearching ? (
+            {query.length === 0 ? (
+              searchHistory.length > 0 ? (
+                // Show search history
+                <div className='p-2'>
+                  <div className='flex items-center justify-between px-2 py-1.5'>
+                    <div className='flex items-center gap-2'>
+                      <Clock className='size-4 text-neutral-400' />
+                      <h3 className='text-sm font-medium text-neutral-600 dark:text-neutral-400'>
+                        Recent Searches
+                      </h3>
+                    </div>
+                    <button
+                      onClick={clearSearchHistory}
+                      className='text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-black/15 dark:hover:bg-white/50 p-1 rounded'
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                  <ul className=''>
+                    {searchHistory.map((term, index) => (
+                      <li
+                        key={index}
+                        className='text-sm md:text-lg text-neutral-700 dark:text-neutral-200 px-2 py-1 hover:bg-black/15 dark:hover:bg-white/50 rounded-sm'
+                        onClick={() => {
+                          setQuery(term);
+                          handleSearch(term);
+                        }}
+                      >
+                        {term}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                setShowResults(false)
+              )
+            ) : isSearching ? (
               <div className='p-2 text-center text-sm text-neutral-600 dark:text-neutral-400'>
                 Searching...
               </div>
@@ -257,7 +321,7 @@ const SearchBar = () => {
                       key={product.id}
                       style={style}
                       onClick={() => handleResultClick(product.id)}
-                      className='px-3 py-1.5 hover:bg-neutral-100 dark:hover:bg-neutral-700 cursor-pointer'
+                      className='px-3 py-1.5 hover:bg-black/15 dark:hover:bg-white/50 cursor-pointer'
                     >
                       <div className='flex items-center gap-2'>
                         <img
@@ -278,7 +342,7 @@ const SearchBar = () => {
                   );
                 })}
               </ul>
-            ) : (
+            ) : query.length > 0 ? (
               <div className='p-2 flex flex-col items-center justify-center text-center text-sm text-neutral-600 dark:text-neutral-300'>
                 <video
                   src='/searching1.mp4'
@@ -296,7 +360,7 @@ const SearchBar = () => {
                   search or browse through our featured collections.
                 </p>
               </div>
-            )}
+            ) : null}
           </animated.div>
         </>
       )}

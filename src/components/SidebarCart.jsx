@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Separator } from '../components/ui/separator';
+import * as Separator from '@radix-ui/react-separator';
 import { useCart } from '../components/CartContext';
 import { Link } from 'react-router-dom';
 import { useSpring, animated, useSprings, config } from '@react-spring/web';
@@ -23,7 +23,14 @@ import OrderSummaryCard from '../components/OrderSummaryCard';
 const Cart = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
-  const { cartItems, removeFromCart, updateQuantity, calculateTotal, clearCart, totalItems } = useCart();
+  const {
+    cartItems,
+    removeFromCart,
+    updateQuantity,
+    calculateTotal,
+    clearCart,
+    totalItems,
+  } = useCart();
 
   const openCart = () => {
     setIsOpen(true);
@@ -46,7 +53,11 @@ const Cart = () => {
 
   const cartAnimation = useSpring({
     transform: isOpen && !isClosing ? 'translateX(0%)' : 'translateX(100%)',
-    config: { tension: 280, friction: 30, delay: isOpen && !isClosing ? 100 : 0 },
+    config: {
+      tension: 280,
+      friction: 30,
+      delay: isOpen && !isClosing ? 100 : 0,
+    },
   });
 
   const cartItemSprings = useSprings(
@@ -65,7 +76,7 @@ const Cart = () => {
 
     const body = document.body;
     const scrollY = window.scrollY;
-    
+
     // Store original styles
     const originalStyles = {
       overflow: body.style.overflow,
@@ -88,7 +99,7 @@ const Cart = () => {
       Object.entries(originalStyles).forEach(([key, value]) => {
         body.style[key] = value || '';
       });
-      
+
       // Restore scroll position
       window.scrollTo(0, scrollY);
       window.removeEventListener('resize', handleResize);
@@ -141,7 +152,7 @@ const Cart = () => {
           className='fixed top-0 right-0 min-h-[100dvh] w-full sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 overflow-y-auto will-change-transform flex flex-col'
         >
           {/* Header */}
-          <div className='flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700'>
+          <div className='flex items-center justify-between p-4'>
             <h2 className='text-lg font-semibold'>Your Shopping Cart</h2>
             <div className='flex items-center gap-2'>
               {cartItems.length > 0 && (
@@ -160,13 +171,19 @@ const Cart = () => {
                       <AlertDialogTitle className='text-left text-lg leading-7 px-2.5 pt-2.5'>
                         Clear Your Shopping Cart
                       </AlertDialogTitle>
-                      <Separator className='bg-gray-300 dark:bg-gray-600' orientation='horizontal' />
+                      <Separator.Root
+                        className='h-px bg-black/25 dark:bg-white/25'
+                        orientation='horizontal'
+                      />
                       <AlertDialogDescription className='text-sm md:text-md text-center px-2.5 pt-2.5'>
-                        Are you sure you want to remove all items from your cart?
+                        Are you sure you want to remove all items from your
+                        cart?
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter className='flex justify-end items-center gap-1 mb-2 px-2'>
-                      <AlertDialogCancel className='rounded-lg px-2.5 md:px-4'>Cancel</AlertDialogCancel>
+                      <AlertDialogCancel className='rounded-lg px-2.5 md:px-4'>
+                        Cancel
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={clearCart}
                         className='rounded-lg m-0 dark:bg-red-700 px-2.5 md:px-4'
@@ -188,11 +205,14 @@ const Cart = () => {
               </Button>
             </div>
           </div>
-
+          <Separator.Root
+            className='h-px bg-black/25 dark:bg-white/25'
+            orientation='horizontal'
+          />
           {/* Content */}
           <div className='flex-1 overflow-y-auto'>
             {cartItems.length === 0 ? (
-              <div className='flex flex-col items-center justify-center h-full p-4 text-center'>
+              <div className='flex flex-col items-center justify-center min-h-[90dvh] p-4 text-center'>
                 <video
                   className='h-60 w-40 md:size-80 object-cover rounded-t-full'
                   src='/cart.mp4'
@@ -201,9 +221,17 @@ const Cart = () => {
                   muted
                   playsInline
                 />
-                <h3 className='text-lg font-medium leading-12'>Your cart is empty</h3>
-                <p className='dark:text-gray-300 mb-2'>Add some items to get started</p>
-                <Link to='/collections' className='w-full hover:underline hover:underline-offset-4' onClick={closeCart}>
+                <h3 className='text-lg font-medium leading-12'>
+                  Your cart is empty
+                </h3>
+                <p className='dark:text-gray-300 mb-2'>
+                  Add some items to get started
+                </p>
+                <Link
+                  to='/collections'
+                  className='w-full hover:underline hover:underline-offset-4'
+                  onClick={closeCart}
+                >
                   Continue Shopping
                 </Link>
               </div>
@@ -226,7 +254,12 @@ const Cart = () => {
 
           {/* Order Summary */}
           {cartItems.length > 0 && (
-            <OrderSummaryCard totalItems={totalItems} totalCost={calculateTotal()} />
+            <div className='p-1.5'>
+              <OrderSummaryCard
+                totalItems={totalItems}
+                totalCost={calculateTotal()}
+              />
+            </div>
           )}
         </animated.div>
       )}
