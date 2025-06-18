@@ -198,7 +198,7 @@ export default function HeroCarousel() {
 
                 {/* Content on top of background */}
                 <div className="relative z-0 text-left backdrop-opacity-100 backdrop-blur-xs rounded-md p-4 max-w-2xl">
-                  <h1 className="text-xl sm:text-3xl font-bold leading-12 text-white">
+                  <h1 className="text-2xl sm:text-3xl font-bold md:leading-12 text-white">
                     {slide.title}
                   </h1>
                   <p className="text-lg sm:text-xl max-w-2xl text-left leading-8 font-semibold text-white/90">

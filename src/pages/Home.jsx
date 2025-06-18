@@ -10,24 +10,6 @@ import HeroCarousel from '../components/HC';
 import * as Separator from '@radix-ui/react-separator';
 
 const Home = () => {
-  const featuredCollections = [
-    {
-      title: 'Elegant Rings',
-      description: 'Timeless designs that capture your unique style',
-      icon: <GiGlobeRing className='text-6xl text-amber-500' />,
-    },
-    {
-      title: 'Love Collection',
-      description: 'Pieces that symbolize eternal love and connection',
-      icon: <IoHeartCircleSharp size={70} className='text-6xl text-pink-500' />,
-    },
-    {
-      title: 'Gift Sets',
-      description: 'Perfect presents for your loved ones',
-      icon: <FaGifts className='text-6xl text-emerald-500' />,
-    },
-  ];
-
   useEffect(() => {
     document.title = 'Home - TJB Store'; // Set the document title
   }, []);
@@ -42,7 +24,28 @@ const Home = () => {
           Our Featured Collections
         </h2>
         <div className='grid md:grid-cols-3 gap-8'>
-          {featuredCollections.map((collection, index) => (
+          {[
+            {
+              title: 'Elegant Rings',
+              description: 'Timeless designs that capture your unique style',
+              icon: <GiGlobeRing className='text-6xl text-amber-500' />,
+            },
+            {
+              title: 'Love Collection',
+              description: 'Pieces that symbolize eternal love and connection',
+              icon: (
+                <IoHeartCircleSharp
+                  size={70}
+                  className='text-6xl text-pink-500'
+                />
+              ),
+            },
+            {
+              title: 'Gift Sets',
+              description: 'Perfect presents for your loved ones',
+              icon: <FaGifts className='text-6xl text-emerald-500' />,
+            },
+          ].map((collection, index) => (
             <div
               key={index}
               className='text-center p-6 bg-white dark:bg-neutral-800 rounded-xl shadow-md hover:shadow-lg transition duration-75'
@@ -60,33 +63,37 @@ const Home = () => {
       </section>
 
       {/* Why Choose Us */}
-      <section className='bg-cornsilk dark:bg-cornsilk-d1 py-16'>
+      <section className='dark:bg-cornsilk-d1 py-16'>
         <div className='container mx-auto px-4'>
-          <h2 className='text-4xl font-bold text-center mb-12 dark:text-white'>
+          <h2 className='text-2xl md:text-4xl font-bold text-center mb-12 dark:text-white'>
             Why Choose
             <br /> The JewellerBee
           </h2>
           <div className='grid md:grid-cols-2 lg:grid-cols-4 gap-6'>
             {[
               {
-                icon: <StarOutlined className='text-4xl text-amber-500' />,
+                icon: (
+                  <StarOutlined className='text-2xl md:text-4xl text-amber-500' />
+                ),
                 title: 'Premium Quality',
                 description: 'Handcrafted with the finest materials',
               },
               {
                 icon: (
-                  <SiAffinitydesigner className='text-4xl text-fuchsia-500' />
+                  <SiAffinitydesigner className='text-2xl md:text-4xl text-fuchsia-500' />
                 ),
                 title: 'Unique Designs',
                 description: "Exclusive collections you won't find elsewhere",
               },
               {
-                icon: <ImGift className='text-4xl text-red-600' />,
+                icon: <ImGift className='text-2xl md:text-4xl text-red-600' />,
                 title: 'Perfect Gifts',
                 description: 'Memorable pieces for special moments',
               },
               {
-                icon: <BsBox2HeartFill className='text-4xl text-rose-400' />,
+                icon: (
+                  <BsBox2HeartFill className='text-2xl md:text-4xl text-rose-400' />
+                ),
                 title: 'Custom Orders',
                 description: 'Personalize your jewelry experience',
               },
@@ -112,11 +119,11 @@ const Home = () => {
         orientation='horizontal'
       />
       {/* Newsletter Signup */}
-      <section className='container mx-auto px-4 py-10 text-center'>
-        <h2 className='text-4xl font-bold mb-6 dark:text-white'>
+      <section className='container mx-auto p-3 md:px-4 md:py-10 text-center'>
+        <h2 className='text-xl md:text-4xl font-medium mb-6 dark:text-white'>
           Stay Connected
         </h2>
-        <p className='mb-8 text-gray-600 dark:text-gray-300 max-w-xl mx-auto'>
+        <p className='mb-8 text-sm md:text-base text-gray-600 dark:text-gray-300 max-w-xl mx-auto'>
           Subscribe to our newsletter and be the first to know about our new
           collections, exclusive offers, and special events.
         </p>
@@ -126,7 +133,7 @@ const Home = () => {
               id='emailInput'
               type='email'
               placeholder='Enter your email'
-              className='w-full px-4 py-3 rounded-l-full border dark:bg-neutral-700 dark:border-neutral-600 dark:text-white'
+              className='w-full px-2 py-1.5 md:px-4 md:py-3 rounded-l-full border dark:bg-neutral-700 dark:border-neutral-600 dark:text-white'
             />
             <button
               onClick={() => {
@@ -139,7 +146,7 @@ const Home = () => {
                   subject
                 )}&body=${encodeURIComponent(body)}`;
               }}
-              className='px-6 py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-r-full transition duration-75'
+              className='px-3 md:px-6 py-1.5 md:py-3 bg-yellow-500 hover:bg-yellow-600 text-white rounded-r-full transition duration-75'
             >
               Subscribe
             </button>
