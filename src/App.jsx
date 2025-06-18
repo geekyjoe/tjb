@@ -14,6 +14,7 @@ import { Toaster } from './components/ui/toaster';
 import { useAuth } from './context/authContext';
 import Loading from './components/ui/Loading';
 import Footer from './components/Footer';
+import TouchStateDemo from './pages/TouchStateDemo';
 
 // Add this ProtectedRoute component
 const ProtectedRoute = ({ children, requiredRole }) => {
@@ -73,6 +74,7 @@ const Contents = () => {
     '/account',
     '/adminpanel',
     '/manageproducts',
+    '/touch',
   ].includes(location.pathname) || location.pathname.startsWith('/collections/');
   
   const showHeaderAndFooter = !hideHeaderPaths.includes(location.pathname) && isValidRoute;
@@ -82,6 +84,7 @@ const Contents = () => {
       {showHeaderAndFooter && <Header />}
       <Routes>
         <Route path='/' element={<RouteWrapper element={<LazyHome />} />} />
+        <Route path='/touch' element={<RouteWrapper element={<TouchStateDemo />} />} />
         <Route
           path='/collections'
           element={<RouteWrapper element={<LazyProducts />} />}

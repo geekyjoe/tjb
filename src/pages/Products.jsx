@@ -392,7 +392,7 @@ const Products = () => {
                 </div>
 
                 {hasMore && (
-                  <div className='text-center mt-8'>
+                  <div className='text-center my-8'>
                     <Button
                       onClick={handleLoadMore}
                       className='bg-stone-800 hover:bg-stone-700 text-white'

@@ -196,9 +196,9 @@ const Cart = () => {
               )}
               <Button
                 variant='ghost'
-                size='sm'
+                size='icon'
                 onClick={closeCart}
-                className='size-7.5 md:size-9 p-0 hover:bg-gray-100 dark:hover:bg-gray-800'
+                className='size-7.5 rounded-full md:size-9 p-0 hover:bg-gray-100 dark:hover:bg-gray-800'
                 disabled={isClosing}
               >
                 <X className='size-5' />
@@ -229,7 +229,7 @@ const Cart = () => {
                 </p>
                 <Link
                   to='/collections'
-                  className='w-full hover:underline hover:underline-offset-4'
+                  className='w-full hover:underline hover:underline-offset-4 focus:underline focus:underline-offset-4'
                   onClick={closeCart}
                 >
                   Continue Shopping

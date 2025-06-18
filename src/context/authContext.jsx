@@ -307,11 +307,11 @@ export const UserAuthButton = () => {
       <>
         <Button
           variant='ghost'
-          className='rounded-full'
+          className='rounded-md  hover:dark:bg-gray-800 focus:dark:bg-gray-800 focus:underline focus:underline-offset-4'
           onClick={() => setIsLoginModalOpen(true)}
-          size='icon'
         >
-          <LogIn className='h-4 w-4' />
+          <LogIn className='size-3 md:size-4' />
+          <span>Login</span>
         </Button>
 
         <LoginModal

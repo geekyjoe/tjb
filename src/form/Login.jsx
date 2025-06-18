@@ -870,7 +870,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogOverlay className='backdrop-blur-xs bg-black/1' />
+      <DialogOverlay className='backdrop-blur-xs h-screen bg-black/2' />
       <DialogContent
         aria-describedby={'Login or Sign Up'}
         className='max-w-xs sm:max-w-md p-0 overflow-hidden rounded-lg'
