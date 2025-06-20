@@ -49,10 +49,10 @@ const Tooltip = ({
     };
   }, []);
 
-  // Only render the tooltip if the screen width is 768px or larger
-  if (screenWidth < 768) {
-    return children;
-  }
+  // // Only render the tooltip if the screen width is 768px or larger
+  // if (screenWidth < 768) {
+  //   return children;
+  // }
 
   const tooltipTheme = theme || (isDarkMode ? 'translucent' : 'light-border');
 

@@ -303,6 +303,10 @@ const LoginModal = ({ isOpen, onClose }) => {
         }
       }
     } catch (error) {
+      toast({
+        title: 'Token Expired',
+        description: 'token expired. please login again'
+      });
       console.error(`${mode} error:`, error);
       setAuthError(
         error.message ||
