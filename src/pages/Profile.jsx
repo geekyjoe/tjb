@@ -52,7 +52,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../components/ui/alert-dialog';
-import { Toaster } from '../components/ui/toaster';
+import { PiAddressBook } from "react-icons/pi";
 import { useToast } from '../hooks/use-toast';
 import { useTheme } from '../ThemeToggle';
 import {
@@ -65,6 +65,7 @@ import { AuthService, UserService } from '../api/client';
 import * as Separator from '@radix-ui/react-separator';
 import Loading from '../components/ui/Loading';
 import { MdOutlineSecurity } from 'react-icons/md';
+import { Address } from '../components/Address';
 
 const UserManagement = lazy(() => import('../services/UM'));
 
@@ -112,7 +113,21 @@ const Profile = () => {
   // Avatar preview state
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [selectedAvatarFile, setSelectedAvatarFile] = useState(null);
-
+  const [userAddress, setUserAddress] = useState({
+    houseNumber: '',
+    buildingName: '',
+    locality: '',
+    landmark: '',
+    street: '',
+    area: '',
+    city: '',
+    district: '',
+    state: '',
+    pinCode: '',
+    country: 'India',
+    addressType: 'home',
+    isDefault: false,
+  });
   useEffect(() => {
     document.title = 'Profile - TJB Store'; // Set the document title
   }, []);
@@ -591,6 +606,11 @@ const Profile = () => {
       icon: <IdCard className='size-5 md:mr-1.5' />,
     },
     {
+      id: 'address',
+      // label: 'Address',
+      icon: <PiAddressBook className='size-5 md:mr-1.5' />,
+    },
+    {
       id: 'appearance',
       label: 'Appearance',
       icon: <LayoutPanelLeft className='size-4.5 md:mr-1.5' />,
@@ -667,10 +687,14 @@ const Profile = () => {
           <h1 className='text-lg leading-8 md:text-2xl font-semibold pb-2 md:hidden'>
             {tabs.find((tab) => tab.id === activeTab)?.label || ''}
           </h1>
-          <Separator.Root
-            className='md:hidden h-px bg-black/10 dark:bg-white/25 my-2'
-            orientation='horizontal'
-          />
+          {activeTab === 'address' ? (
+            ''
+          ) : (
+            <Separator.Root
+              className='md:hidden h-px bg-black/10 dark:bg-white/25 my-2'
+              orientation='horizontal'
+            />
+          )}
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className='space-y-3'>
@@ -793,7 +817,11 @@ const Profile = () => {
                       Date Of Birth
                     </Label>{' '}
                     <div className='relative flex-2'>
-                      <div className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${editingField && 'opacity-25'}`}>
+                      <div
+                        className={`absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none ${
+                          editingField && 'opacity-25'
+                        }`}
+                      >
                         <Calendar className='size-4 text-slate-500 dark:text-slate-300/75' />
                       </div>
                       <Input
@@ -830,6 +858,17 @@ const Profile = () => {
                 </div>
               </div>
             </div>
+          )}
+
+          {activeTab === 'address' && (
+            <>
+              <Address
+                user={user}
+                userAddress={userAddress}
+                setUserAddress={setUserAddress}
+                showToast={showToast}
+              />
+            </>
           )}
 
           {/* Appearance Tab */}

@@ -239,6 +239,7 @@ const LoginModal = ({ isOpen, onClose }) => {
 
     setIsLoading(true);
     setAuthError('');
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     try {
       if (mode === 'login') {
@@ -303,10 +304,6 @@ const LoginModal = ({ isOpen, onClose }) => {
         }
       }
     } catch (error) {
-      toast({
-        title: 'Token Expired',
-        description: 'token expired. please login again'
-      });
       console.error(`${mode} error:`, error);
       setAuthError(
         error.message ||
@@ -526,20 +523,34 @@ const LoginModal = ({ isOpen, onClose }) => {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <div className='flex items-center gap-2'>
-                      <div className='typing-indicator'>
-                        <div className='typing-circle'></div>
-                        <div className='typing-circle'></div>
-                        <div className='typing-circle'></div>
-                        <div className='typing-shadow'></div>
-                        <div className='typing-shadow'></div>
-                        <div className='typing-shadow'></div>
-                      </div>
+                    // <div className='flex items-center gap-2'>
+                    //   <div className='typing-indicator'>
+                    //     <div className='typing-circle'></div>
+                    //     <div className='typing-circle'></div>
+                    //     <div className='typing-circle'></div>
+                    //     <div className='typing-shadow'></div>
+                    //     <div className='typing-shadow'></div>
+                    //     <div className='typing-shadow'></div>
+                    //   </div>
+                    // </div>
+                    <div class='loader'>
+                      <div class='bar1'></div>
+                      <div class='bar2'></div>
+                      <div class='bar3'></div>
+                      <div class='bar4'></div>
+                      <div class='bar5'></div>
+                      <div class='bar6'></div>
+                      <div class='bar7'></div>
+                      <div class='bar8'></div>
+                      <div class='bar9'></div>
+                      <div class='bar10'></div>
+                      <div class='bar11'></div>
+                      <div class='bar12'></div>
                     </div>
                   ) : (
                     <div className='flex items-center gap-2'>
-                      <LogIn className='w-4 h-4' />
                       Login
+                      <LogIn className='w-4 h-4' />
                     </div>
                   )}
                 </Button>
