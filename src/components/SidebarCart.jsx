@@ -126,9 +126,9 @@ const Cart = () => {
       {/* Cart Trigger */}
       <button
         onClick={openCart}
-        className='relative text-cornsilk-dark hover:bg-neutral-100 dark:hover:bg-gray-800 p-2 rounded-full transition-colors duration-200'
+        className='relative text-cornsilk-dark hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none p-2 rounded-full transition-colors duration-200'
       >
-        <MdOutlineShoppingBag size={23} className='dark:text-cornsilk' />
+        <MdOutlineShoppingBag size={23} className='text-black/75 dark:text-white/75' />
         {totalItems > 0 && (
           <span className='absolute top-0 right-0 bg-red-500 text-white text-xs font-bold rounded-full size-4 flex items-center justify-center'>
             {totalItems}
@@ -198,7 +198,7 @@ const Cart = () => {
                 variant='ghost'
                 size='icon'
                 onClick={closeCart}
-                className='size-7.5 rounded-full md:size-9 p-0 hover:bg-gray-100 dark:hover:bg-gray-800'
+                className='size-7.5 rounded-full md:size-9 p-0 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-2 hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
                 disabled={isClosing}
               >
                 <X className='size-5' />
@@ -214,7 +214,7 @@ const Cart = () => {
             {cartItems.length === 0 ? (
               <div className='flex flex-col items-center justify-center min-h-[90dvh] p-4 text-center'>
                 <video
-                  className='h-60 w-40 md:size-80 object-cover rounded-t-full'
+                  className='h-60 w-40 md:h-80 md:w-50 object-cover p-0.5 rounded-t-full'
                   src='/cart.mp4'
                   autoPlay
                   loop

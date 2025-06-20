@@ -11,9 +11,26 @@ const apiClient = axios.create({
   },
 });
 
+// Flag to prevent multiple refresh attempts
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach(prom => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  
+  failedQueue = [];
+};
+
 // Function to clear auth data and redirect
 const clearAuthAndRedirect = () => {
-  localStorage.removeItem('token');
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
 
   // Redirect to home page
@@ -21,14 +38,42 @@ const clearAuthAndRedirect = () => {
     window.location.href = '/';
   }
 
-  // You can also dispatch a custom event to notify components
+  // Dispatch custom event to notify components
   window.dispatchEvent(new CustomEvent('auth:expired'));
+};
+
+// Function to refresh access token
+const refreshAccessToken = async () => {
+  const refreshToken = localStorage.getItem('refreshToken');
+  
+  if (!refreshToken) {
+    throw new Error('No refresh token available');
+  }
+
+  try {
+    const response = await axios.post(`${API_URL}/api/auth/refresh`, {
+      refreshToken
+    });
+
+    if (response.data.success) {
+      const { accessToken, refreshToken: newRefreshToken } = response.data.data;
+      localStorage.setItem('accessToken', accessToken);
+      localStorage.setItem('refreshToken', newRefreshToken);
+      return accessToken;
+    }
+    
+    throw new Error('Failed to refresh token');
+  } catch (error) {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    throw error;
+  }
 };
 
 // Interceptor to include auth token in requests
 apiClient.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -37,22 +82,58 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Response interceptor to handle token expiration
+// Response interceptor to handle token expiration and refresh
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const originalRequest = error.config;
+
     // Check if the error is due to token expiration
     if (error.response && error.response.status === 401) {
-      // Check if the error message indicates token expiration
+      const errorCode = error.response.data?.code;
       const errorMessage = error.response.data?.message?.toLowerCase() || '';
-      const isTokenExpired =
+      
+      const isTokenExpired = 
+        errorCode === 'TOKEN_EXPIRED' ||
         errorMessage.includes('expired') ||
-        errorMessage.includes('invalid token') ||
-        errorMessage.includes('unauthorized') ||
-        error.response.data?.code === 'TOKEN_EXPIRED';
+        errorMessage.includes('invalid token');
 
-      if (isTokenExpired) {
-        console.warn('Token expired, clearing auth data and redirecting...');
+      if (isTokenExpired && !originalRequest._retry) {
+        if (isRefreshing) {
+          // If already refreshing, queue the request
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          }).then(token => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return apiClient(originalRequest);
+          }).catch(err => {
+            return Promise.reject(err);
+          });
+        }
+
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        try {
+          const newToken = await refreshAccessToken();
+          processQueue(null, newToken);
+          
+          // Retry original request with new token
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+          return apiClient(originalRequest);
+        } catch (refreshError) {
+          processQueue(refreshError, null);
+          console.warn('Token refresh failed, clearing auth data and redirecting...');
+          clearAuthAndRedirect();
+          return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
+        }
+      }
+
+      // If not token expired or refresh failed, clear auth
+      if (!isTokenExpired || originalRequest._retry) {
+        console.warn('Authentication failed, clearing auth data and redirecting...');
         clearAuthAndRedirect();
       }
     }
@@ -68,8 +149,10 @@ const AuthService = {
     try {
       const response = await apiClient.post('/api/auth/register', userData);
       if (response.data.success) {
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        const { accessToken, refreshToken, user } = response.data.data;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
       }
       return response.data;
     } catch (error) {
@@ -85,8 +168,10 @@ const AuthService = {
         password,
       });
       if (response.data.success) {
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        const { accessToken, refreshToken, user } = response.data.data;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
       }
       return response.data;
     } catch (error) {
@@ -94,21 +179,41 @@ const AuthService = {
     }
   },
 
+  // Refresh access token
+  refreshToken: async () => {
+    try {
+      return await refreshAccessToken();
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // Logout user
   logout: () => {
-    localStorage.removeItem('token');
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
   },
 
   // Check if user is authenticated
   isAuthenticated: () => {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('accessToken');
   },
 
   // Get current user from localStorage
   getCurrentUser: () => {
     const user = localStorage.getItem('user');
     return user ? JSON.parse(user) : null;
+  },
+
+  // Get current access token
+  getAccessToken: () => {
+    return localStorage.getItem('accessToken');
+  },
+
+  // Get current refresh token
+  getRefreshToken: () => {
+    return localStorage.getItem('refreshToken');
   },
 
   // Google OAuth login/register
@@ -118,8 +223,10 @@ const AuthService = {
         credential,
       });
       if (response.data.success) {
-        localStorage.setItem('token', response.data.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.data.user));
+        const { accessToken, refreshToken, user } = response.data.data;
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+        localStorage.setItem('user', JSON.stringify(user));
       }
       return response.data;
     } catch (error) {

@@ -632,8 +632,8 @@ const Profile = () => {
       <div className='md:max-w-6xl mx-auto flex md:grid md:ml-20 md:grid-cols-12 gap-0 md:gap-6'>
         {/* Left sidebar with tabs - now sticky */}
         <div className='md:col-span-2 h-fit p-2 left-2 sticky top-12'>
-          <div className=' -left-14 top-0 w-12 md:w-48'>
-            <div className='shadow-xs rounded-lg border border-black/10 dark:border-white/10 p-1 bg-white dark:bg-cornsilk-d3/25'>
+          <div className='relative xl:left-0 lg:-left-14 md:-left-22 top-0 w-fit md:w-48'>
+            <div className='shadow-xs rounded-lg border border-black/10 dark:border-white/10 p-1.5 bg-white dark:bg-cornsilk-d3/25'>
               <h3 className='font-medium sm:text-lg leading-10 hidden md:block px-1.5'>
                 Profile Settings
               </h3>
@@ -649,7 +649,7 @@ const Profile = () => {
                     className={`w-10 h-10 md:w-full md:h-auto flex items-center justify-center md:justify-start md:px-3 md:py-2 rounded-md
                   ${
                     activeTab === tab.id
-                      ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white'
+                      ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white ring md:ring-2 ring-stone-300 dark:ring-stone-700'
                       : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50 dark:text-white/75 hover:dark:text-white/90'
                   }`}
                   >
@@ -722,7 +722,7 @@ const Profile = () => {
                         }}
                         size='icon'
                         variant='ghost'
-                        className='h-8 w-8'
+                        className='h-8 w-8 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
                       >
                         <Save className='size-4' />
                       </Button>
@@ -730,7 +730,7 @@ const Profile = () => {
                         onClick={() => setEditingField(null)}
                         size='icon'
                         variant='ghost'
-                        className='h-8 w-8'
+                        className='h-8 w-8 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
                       >
                         <X className='size-4' />
                       </Button>
@@ -740,7 +740,7 @@ const Profile = () => {
                       onClick={() => setEditingField('all')}
                       size='icon'
                       variant='ghost'
-                      className='h-8 w-8 hover:bg-cornsilk-hover hover:shadow'
+                      className='h-8 w-8 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none hover:shadow'
                     >
                       <Pencil className='size-4' />
                     </Button>

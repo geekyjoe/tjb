@@ -1,17 +1,19 @@
 import { useState, useEffect, createContext, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AuthService } from '../api/client';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '../components/ui/dropdown-menu';
+import { AuthService } from '../api/client'; // Updated import
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Button } from '../components/ui/button';
 import { useToast } from '../hooks/use-toast';
-import { LogIn, User } from 'lucide-react';
+import {
+  LogIn,
+  User,
+  ChevronDown,
+  Settings,
+  LogOut,
+  MoveUpRight,
+  Package,
+} from 'lucide-react';
+import { HiOutlineViewGridAdd } from 'react-icons/hi';
 import LoginModal from '../form/Login';
 
 // Create Auth Context
@@ -19,11 +21,13 @@ export const AuthContext = createContext({
   isAuthenticated: false,
   userProfile: null,
   login: () => {},
+  register: () => {},
   logout: () => {},
   updateUser: () => {},
   googleLogin: () => {},
   linkGoogleAccount: () => {},
   unlinkGoogleAccount: () => {},
+  refreshToken: () => {},
 });
 
 // Auth Provider Component
@@ -59,6 +63,12 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (error) {
         console.error('Error initializing auth state:', error);
+        // Clear invalid tokens on initialization error
+        AuthService.logout();
+        setAuthState({
+          isAuthenticated: false,
+          userProfile: null,
+        });
       } finally {
         setLoading(false);
       }
@@ -93,6 +103,76 @@ export const AuthProvider = ({ children }) => {
     };
   }, [toast]);
 
+  // Periodic token refresh check
+  useEffect(() => {
+    let refreshInterval;
+
+    if (authState.isAuthenticated) {
+      // Check and refresh token every 10 minutes
+      refreshInterval = setInterval(async () => {
+        try {
+          const accessToken = AuthService.getAccessToken();
+          if (accessToken) {
+            // Decode token to check expiry (basic check)
+            const tokenPayload = JSON.parse(atob(accessToken.split('.')[1]));
+            const currentTime = Date.now() / 1000;
+
+            // If token expires in next 2 minutes, refresh it
+            if (tokenPayload.exp - currentTime < 120) {
+              console.log('Proactively refreshing token...');
+              await AuthService.refreshToken();
+            }
+          }
+        } catch (error) {
+          console.error('Error in token refresh check:', error);
+        }
+      }, 10 * 60 * 1000); // 10 minutes
+    }
+
+    return () => {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+      }
+    };
+  }, [authState.isAuthenticated]);
+
+  const register = async (userData) => {
+    try {
+      const response = await AuthService.register(userData);
+
+      if (response.success) {
+        const currentUser = AuthService.getCurrentUser();
+        setAuthState({
+          isAuthenticated: true,
+          userProfile: {
+            userId: currentUser.id,
+            firstName: currentUser.firstName || '',
+            lastName: currentUser.lastName || '',
+            email: currentUser.email || '',
+            avatarUrl: currentUser.avatarUrl || '',
+            role: currentUser.role || 'user',
+            authProvider: currentUser.authProvider || 'local',
+            googleId: currentUser.googleId || null,
+          },
+        });
+
+        toast({
+          title: 'Success',
+          description: 'Account created and signed in successfully',
+        });
+      }
+
+      return response;
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Registration failed',
+        variant: 'destructive',
+      });
+      throw error;
+    }
+  };
+
   const login = async (email, password, rememberMe = false) => {
     try {
       const response = await AuthService.login(email, password);
@@ -112,9 +192,19 @@ export const AuthProvider = ({ children }) => {
             googleId: currentUser.googleId || null,
           },
         });
+
+        toast({
+          title: 'Success',
+          description: 'Signed in successfully',
+        });
       }
       return response;
     } catch (error) {
+      toast({
+        title: 'Error',
+        description: error.message || 'Sign in failed',
+        variant: 'destructive',
+      });
       throw error;
     }
   };
@@ -222,6 +312,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshToken = async () => {
+    try {
+      const newAccessToken = await AuthService.refreshToken();
+      console.log('Token refreshed successfully');
+      return newAccessToken;
+    } catch (error) {
+      console.error('Failed to refresh token:', error);
+      // On refresh failure, logout user
+      logout();
+      throw error;
+    }
+  };
+
   const logout = () => {
     AuthService.logout();
     setAuthState({
@@ -252,12 +355,14 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         ...authState,
+        register,
         login,
         logout,
         updateUser,
         googleLogin,
         linkGoogleAccount,
         unlinkGoogleAccount,
+        refreshToken,
         loading,
       }}
     >
@@ -272,6 +377,7 @@ export const useAuth = () => useContext(AuthContext);
 // Updated UserAuthButton component that integrates with the LoginModal
 export const UserAuthButton = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, userProfile, logout, loading } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -279,10 +385,6 @@ export const UserAuthButton = () => {
   const handleSignOut = async () => {
     try {
       logout();
-      toast({
-        title: 'Success',
-        description: 'Signed out successfully',
-      });
       navigate('/');
     } catch (error) {
       toast({
@@ -307,7 +409,7 @@ export const UserAuthButton = () => {
       <>
         <Button
           variant='ghost'
-          className='rounded-md  hover:dark:bg-gray-800 focus:dark:bg-gray-800 focus:underline focus:underline-offset-4'
+          className='rounded-md hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none focus:underline focus:underline-offset-4'
           onClick={() => setIsLoginModalOpen(true)}
         >
           <LogIn className='size-3 md:size-4' />
@@ -323,9 +425,9 @@ export const UserAuthButton = () => {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <button className='focus:outline-none rounded-full'>
+    <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenu.Trigger asChild>
+        <button className='inline-flex gap-1 p-0.5 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'>
           <img
             src={
               userProfile.avatarUrl ||
@@ -334,51 +436,89 @@ export const UserAuthButton = () => {
               }+${userProfile.lastName || ''}`
             }
             alt={userProfile.firstName || 'User'}
-            className='rounded-full size-8'
+            className='rounded-full size-8 select-none'
+          />
+          <ChevronDown
+            className={`h-4 w-4 transition-transform ${
+              isOpen ? 'sm:rotate-180' : 'rotate-180 sm:rotate-0'
+            }`}
           />
         </button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className='w-56' align='end' forceMount>
-        <DropdownMenuLabel className='font-normal'>
-          <div className='flex flex-col space-y-1'>
-            <p className='text-sm font-medium leading-none'>
-              {`${userProfile.firstName} ${userProfile.lastName}`}
-            </p>
-            <p className='text-xs leading-none text-muted-foreground'>
-              {userProfile.role}
-            </p>
-            <p className='text-xs leading-none text-muted-foreground'>
-              {userProfile.email}
-            </p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate('/account')}>
-          Profile
-        </DropdownMenuItem>
-        {userProfile.role === 'admin' && (
-          <DropdownMenuItem
-            onClick={() => {
-              navigate('/manageproducts');
-              // Optional: Add loading state feedback
-              toast({
-                title: 'Loading',
-                description: 'Opening product management panel...',
-              });
-            }}
-          >
-            Manage Products
-          </DropdownMenuItem>
-        )}
-        <DropdownMenuSeparator />
-        <DropdownMenuItem
-          onClick={handleSignOut}
-          className='text-red-600 hover:text-red-400'
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          className='min-w-[220px] bg-white dark:bg-[#1F2421] rounded-md p-1 shadow-lg border border-gray-200 dark:border-white/10 z-50'
+          sideOffset={4}
+          alignOffset={5}
+          align='end'
         >
-          Sign out
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+          <DropdownMenu.Label className='px-2 py-1.5 text-sm text-neutral-800 dark:text-white/90'>
+            <div className='flex flex-col space-y-1'>
+              <p className='text-sm font-medium leading-none'>
+                {`${userProfile.firstName} ${userProfile.lastName}`}
+              </p>
+              <p className='text-xs leading-none text-muted-foreground'>
+                {userProfile.role}
+              </p>
+            </div>
+          </DropdownMenu.Label>
+
+          <DropdownMenu.Separator className='h-px bg-gray-200 dark:bg-white/20 m-1' />
+
+          <DropdownMenu.Item
+            onClick={() => navigate('/account')}
+            className='group text-sm rounded-sm flex gap-2 items-center h-8 px-2 relative select-none outline-none text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white hover:bg-stone-200 dark:hover:bg-white/10 focus:bg-stone-200 cursor-pointer'
+          >
+            <User className='h-4 w-4' />
+            <span>Profile</span>
+            <MoveUpRight className='size-4 hidden group-hover:block ml-auto' />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Item
+            onClick={() => navigate('#')}
+            className='group text-sm rounded-sm flex gap-2 items-center h-8 px-2 relative select-none outline-none text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white hover:bg-stone-200 dark:hover:bg-white/10 focus:bg-stone-200 cursor-pointer'
+          >
+            <Package className='h-4 w-4' />
+            <span>Orders</span>
+            <MoveUpRight className='size-4 hidden group-hover:block ml-auto' />
+          </DropdownMenu.Item>
+
+          {userProfile.role === 'admin' && (
+            <DropdownMenu.Item
+              onClick={() => {
+                navigate('/manageproducts');
+                toast({
+                  title: 'Loading',
+                  description: 'Opening product management panel...',
+                });
+              }}
+              className='group text-sm rounded-sm flex gap-2 items-center h-8 px-2 relative select-none outline-none text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white hover:bg-stone-200 dark:hover:bg-white/10 focus:bg-stone-200 cursor-pointer'
+            >
+              <HiOutlineViewGridAdd className='h-4 w-4' />
+              Manage Products
+              <MoveUpRight className='size-4 hidden group-hover:block ml-auto' />
+            </DropdownMenu.Item>
+          )}
+
+          <DropdownMenu.Item className='group text-sm rounded-sm flex gap-2 items-center h-8 px-2 relative select-none outline-none text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white hover:bg-stone-200 dark:hover:bg-white/10 focus:bg-stone-200 cursor-pointer'>
+            <Settings className='h-4 w-4' />
+            <span>Settings</span>
+            <MoveUpRight className='size-4 hidden group-hover:block ml-auto' />
+          </DropdownMenu.Item>
+
+          <DropdownMenu.Separator className='h-px bg-gray-200 dark:bg-white/20 m-1' />
+
+          <DropdownMenu.Item
+            onClick={handleSignOut}
+            className='group text-sm rounded-sm flex gap-2 items-center h-8 px-2 relative select-none outline-none hover:bg-red-100 focus:bg-red-200 text-red-600 dark:text-red-500  dark:hover:text-white dark:hover:bg-red-500 cursor-pointer'
+          >
+            <LogOut className='h-4 w-4' />
+            <span>Log out</span>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 };
 

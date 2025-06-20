@@ -14,7 +14,7 @@ const Footer = () => {
         className='h-px bg-black/25 dark:bg-white/25 mx-4'
         orientation='horizontal'
       />
-      <footer className='dark:bg-cornsilk-d1 dark:text-white p-2 pb-6 md:p-4'>
+      <footer className='dark:bg-cornsilk-d1 dark:text-white p-2 pb-6 sm:p-4'>
         <div className='grid md:grid-cols-4 grid-flow-row grid-cols-2 grid-rows-1 gap-2 md:gap-4 items-start md:justify-items-center p-0.5'>
           <div className='col-span-2 row-span-2 md:col-span-1'>
             <h3 className='md:text-xl font-medium md:font-bold leading-7'>The Jeweller Bee Store</h3>
@@ -90,7 +90,7 @@ const Footer = () => {
               orientation='vertical'
             />
             <Separator.Root
-              className='block md:hidden h-px bg-black/10 dark:bg-white/25'
+              className='block md:hidden h-px bg-black/25 dark:bg-white/25'
               orientation='horizontal'
             />
             {/* <span className='hidden md:inline'>•</span> */}

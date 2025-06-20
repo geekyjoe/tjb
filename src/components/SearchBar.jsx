@@ -209,7 +209,7 @@ const SearchBar = () => {
                   onChange={handleInputChange}
                   onFocus={() => setShowResults(true)}
                   placeholder='Search...'
-                  className='w-90 border-b border-cornsilk-dark dark:border-neutral-600 py-1 pl-6 text-sm focus:outline-hidden bg-transparent ml-2'
+                  className='md:w-80 lg:w-90 border-b border-cornsilk-dark dark:border-neutral-600 py-1 pl-6 text-sm focus:outline-hidden bg-transparent ml-2'
                   autoFocus={open}
                 />
               </div>
@@ -239,7 +239,7 @@ const SearchBar = () => {
             variant='ghost'
             size='icon'
             onClick={toggleSearch}
-            className='hover:bg-neutral-100 hover:text-neutral-900 dark:hover:bg-neutral-800 dark:hover:text-neutral-50 rounded-full focus:outline-hidden'
+            className='hover:text-neutral-900 dark:hover:text-neutral-50 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none focus:outline-hidden'
           >
             <X className='h-4 w-4 text-cornsilk-dark dark:text-cornsilk' />
           </Button>
@@ -248,9 +248,9 @@ const SearchBar = () => {
             variant='ghost'
             size='icon'
             onClick={toggleSearch}
-            className={`rounded-full dark:hover:bg-gray-800 focus:outline-hidden flex-shrink-0`}
+            className={`rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none focus:outline-hidden shrink-0 `}
           >
-            <Search className='h-4 w-4 text-cornsilk-dark dark:text-cornsilk' />
+            <Search className='h-4 w-4 text-black/75 dark:text-white/75' />
           </Button>
         )}
       </div>
@@ -270,7 +270,7 @@ const SearchBar = () => {
 
           <animated.div
             style={resultsSpring}
-            className='absolute right-2 left-0 md:w-95 w-[calc(100%-0.5rem)] mx-0.5 md:mx-0 bg-white dark:bg-cornsilk-d3 rounded-b shadow-lg border border-neutral-200 dark:border-neutral-700 max-h-130 overflow-y-auto z-50'
+            className='absolute right-2 left-0 md:w-90 lg:w-95 w-[calc(100%-0.5rem)] mx-0.5 md:mx-0 bg-white dark:bg-cornsilk-d3 rounded-b shadow-lg border border-neutral-200 dark:border-neutral-700 max-h-130 overflow-y-auto z-50'
           >
             {query.length === 0 ? (
               searchHistory.length > 0 ? (
@@ -285,7 +285,7 @@ const SearchBar = () => {
                     </div>
                     <button
                       onClick={clearSearchHistory}
-                      className='text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-black/15 dark:hover:bg-white/50 p-1 rounded'
+                      className='text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none p-1 rounded'
                     >
                       Clear All
                     </button>
@@ -294,7 +294,7 @@ const SearchBar = () => {
                     {searchHistory.map((term, index) => (
                       <li
                         key={index}
-                        className='text-sm md:text-lg text-neutral-700 dark:text-neutral-200 px-2 py-1 hover:bg-black/15 dark:hover:bg-white/50 rounded-sm'
+                        className='text-sm md:text-lg text-neutral-700 dark:text-neutral-200 px-2 py-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none rounded-sm'
                         onClick={() => {
                           setQuery(term);
                           handleSearch(term);
@@ -321,7 +321,7 @@ const SearchBar = () => {
                       key={product.id}
                       style={style}
                       onClick={() => handleResultClick(product.id)}
-                      className='px-3 py-1.5 hover:bg-black/15 dark:hover:bg-white/50 cursor-pointer'
+                      className='px-3 py-1.5 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none cursor-pointer'
                     >
                       <div className='flex items-center gap-2'>
                         <img

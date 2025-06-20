@@ -247,9 +247,9 @@ const Products = () => {
       <div className='px-1 lg:px-2'>
         <div className='flex gap-2 relative'>
           {/* Desktop Sidebar */}
-          <aside className='max-lg:hidden w-64 shrink-0 sticky top-0 h-[calc(100vh-100px)]'>
+          <aside className='max-lg:hidden w-64 shrink-0 '>
             <h4 className='leading-14 font-semibold px-0.5'>Filter by</h4>
-            <div className='bg-white dark:bg-cornsilk-d3 p-4 rounded-lg border dark:border-neutral-600'>
+            <div className='bg-white dark:bg-cornsilk-d3 p-4 rounded-lg border dark:border-neutral-600 sticky top-14'>
               <div className='flex justify-between items-center mb-4'>
                 <h3 className='font-semibold text-lg'>Categories</h3>
                 {selectedCategories.size > 0 && (

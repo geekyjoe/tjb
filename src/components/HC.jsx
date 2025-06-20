@@ -121,67 +121,122 @@ export default function HeroCarousel() {
       {/* Container with fixed height to prevent layout shifts */}
       <div className="relative h-full min-h-96">
         {/* Carousel Slides */}
-        {slides.map((slide, index) => {
-          // Calculate transform based on slide position and drag offset
-          let transform = '';
-          let opacity = 1;
-          
-          if (isDragging) {
-            // Calculate relative position for each slide during drag
-            const relativeIndex = (index - currentSlide + slides.length) % slides.length;
-            const dragPercent = dragOffset;
-            
-            if (relativeIndex === 0) {
-              // Current slide
-              transform = `translateX(${dragPercent}%)`;
-              opacity = Math.max(0.3, 1 - Math.abs(dragPercent) / 150);
-            } else if (relativeIndex === 1) {
-              // Next slide (appears when dragging left)
-              const slidePosition = 100 + dragPercent;
-              transform = `translateX(${slidePosition}%)`;
-              opacity = dragPercent < 0 ? Math.min(1, Math.abs(dragPercent) / 50) : 0;
-            } else if (relativeIndex === slides.length - 1) {
-              // Previous slide (appears when dragging right)
-              const slidePosition = -100 + dragPercent;
-              transform = `translateX(${slidePosition}%)`;
-              opacity = dragPercent > 0 ? Math.min(1, Math.abs(dragPercent) / 50) : 0;
-            } else {
-              // Other slides stay hidden
-              transform = index > currentSlide ? 'translateX(100%)' : 'translateX(-100%)';
-              opacity = 0;
-            }
-          } else {
-            // Smooth slide transitions with spring-like easing
-            const slidePosition = index - currentSlide;
-            
-            if (slidePosition === 0) {
-              // Current slide
-              transform = 'translateX(0%) scale(1)';
-              opacity = 1;
-            } else if (slidePosition === 1 || slidePosition === -(slides.length - 1)) {
-              // Next slide
-              transform = 'translateX(100%) scale(0.95)';
-              opacity = 0;
-            } else if (slidePosition === -1 || slidePosition === slides.length - 1) {
-              // Previous slide
-              transform = 'translateX(-100%) scale(0.95)';
-              opacity = 0;
-            } else {
-              // Other slides
-              transform = slidePosition > 0 ? 'translateX(100%) scale(0.9)' : 'translateX(-100%) scale(0.9)';
-              opacity = 0;
-            }
-          }
+  {slides.map((slide, index) => {
+  // Calculate transform based on slide position and drag offset
+  let transform = '';
+  let opacity = 1;
+  let scale = 1;
+  let zIndex = 1;
+  
+  // Create infinite slide positions by calculating all possible positions
+  const getInfiniteSlidePositions = (currentIndex, slideIndex, totalSlides) => {
+    const positions = [];
+    
+    // Calculate base position
+    let basePosition = slideIndex - currentIndex;
+    
+    // Add wrapped positions (for infinite effect)
+    positions.push(basePosition); // Original position
+    positions.push(basePosition + totalSlides); // Wrapped forward
+    positions.push(basePosition - totalSlides); // Wrapped backward
+    
+    return positions;
+  };
+  
+  if (isDragging) {
+    const dragPercent = dragOffset;
+    const absDragPercent = Math.abs(dragPercent);
+    
+    // Get all possible positions for this slide in infinite carousel
+    const positions = getInfiniteSlidePositions(currentSlide, index, slides.length);
+    
+    // Find the most relevant position based on drag direction
+    let relevantPosition;
+    if (dragPercent > 0) {
+      // Dragging right, prioritize left positions
+      relevantPosition = positions.reduce((best, pos) => 
+        pos <= 1 && pos > best ? pos : best, -Infinity);
+      if (relevantPosition === -Infinity) relevantPosition = positions[0];
+    } else if (dragPercent < 0) {
+      // Dragging left, prioritize right positions  
+      relevantPosition = positions.reduce((best, pos) => 
+        pos >= -1 && pos < best ? pos : best, Infinity);
+      if (relevantPosition === Infinity) relevantPosition = positions[0];
+    } else {
+      relevantPosition = positions.find(pos => pos === 0) || positions[0];
+    }
+    
+    if (relevantPosition === 0) {
+      // Current slide
+      transform = `translateX(${dragPercent}%)`;
+      opacity = Math.max(0.3, 1 - absDragPercent / 150);
+      scale = 1;
+      zIndex = 10;
+    } else if (relevantPosition === 1 || relevantPosition === -(slides.length - 1)) {
+      // Next slide (appears when dragging left)
+      const slidePosition = 100 + dragPercent;
+      transform = `translateX(${slidePosition}%) scale(0.85)`;
+      opacity = dragPercent < 0 ? Math.min(0.7, Math.abs(dragPercent) / 50) : 0.4;
+      scale = 0.85;
+      zIndex = 5;
+    } else if (relevantPosition === -1 || relevantPosition === slides.length - 1) {
+      // Previous slide (appears when dragging right)
+      const slidePosition = -100 + dragPercent;
+      transform = `translateX(${slidePosition}%) scale(0.85)`;
+      opacity = dragPercent > 0 ? Math.min(0.7, Math.abs(dragPercent) / 50) : 0.4;
+      scale = 0.85;
+      zIndex = 5;
+    } else {
+      // Other slides stay hidden
+      transform = relevantPosition > 0 ? 'translateX(100%) scale(0.8)' : 'translateX(-100%) scale(0.8)';
+      opacity = 0;
+      scale = 0.8;
+      zIndex = 1;
+    }
+  } else {
+    // Calculate infinite positions for static display
+    const positions = getInfiniteSlidePositions(currentSlide, index, slides.length);
+    
+    // Choose the position closest to center for display
+    const displayPosition = positions.reduce((best, pos) => 
+      Math.abs(pos) < Math.abs(best) ? pos : best);
+    
+    if (displayPosition === 0) {
+      // Current slide - centered
+      transform = 'translateX(0%) scale(1)';
+      opacity = 1;
+      scale = 1;
+      zIndex = 10;
+    } else if (displayPosition === 1) {
+      // Next slide - partially visible on right (mobile only)
+      transform = 'translateX(85%) scale(0.85)';
+      opacity = window.innerWidth < 1024 ? 0.25 : 0;
+      scale = 0.85;
+      zIndex = 5;
+    } else if (displayPosition === -1) {
+      // Previous slide - partially visible on left (mobile only)
+      transform = 'translateX(-85%) scale(0.85)';
+      opacity = window.innerWidth < 1024 ? 0.25 : 0;
+      scale = 0.85;
+      zIndex = 5;
+    } else {
+      // Other slides - hidden
+      opacity = 0;
+      scale = 0;
+      zIndex = 1;
+    }
+  }
 
           return (
             <section
               key={index}
               className={`absolute top-0 left-0 w-full h-full ${
-                isDragging ? 'transition-none' : 'transition-all duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]'
+                isDragging ? 'transition-all' : 'transition-transform transition-opacity transition-scale md:transition-all duration-700 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]'
               }`}
               style={{
                 transform,
                 opacity,
+                zIndex
               }}
             >
               {/* Mobile: Background Image + Overlay + Content */}
@@ -191,10 +246,11 @@ export default function HeroCarousel() {
                   backgroundImage: `url(${slide.image})`,
                   backgroundPosition: "center",
                   backgroundSize: "cover",
+                  transform: `scale(${scale})`,
                 }}
               >
                 {/* Dark overlay for better text visibility */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent rounded-l-xl"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/25 to-transparent rounded-l-xl" />
 
                 {/* Content on top of background */}
                 <div className="relative z-0 text-left backdrop-opacity-100 backdrop-blur-xs rounded-md p-4 max-w-2xl">
@@ -256,7 +312,7 @@ export default function HeroCarousel() {
       </div>
 
       {/* Carousel Controls - Bottom Right, with responsive positioning */}
-      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-1 md:space-x-2 sm:bg-transparent bg-black/15 backdrop-blur-sm md:backdrop-blur-none rounded-lg z-1">
+      <div className="absolute bottom-4 md:bottom-0 right-4 md:right-6 flex items-center space-x-1 md:space-x-2 sm:bg-transparent bg-black/15 backdrop-blur-sm md:backdrop-blur-none rounded-lg z-10">
         <button
           onClick={() => {
             prevSlide();
@@ -288,6 +344,25 @@ export default function HeroCarousel() {
             <span>{slides.length}</span>
           </span>
         </div>
+      </div>
+
+      {/* Mobile slide indicators - dots at bottom center */}
+      <div className="md:hidden absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
+        {slides.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => {
+              goToSlide(index);
+              resetTimer();
+            }}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === currentSlide 
+                ? 'bg-yellow-500 w-6' 
+                : 'bg-white/50 hover:bg-white/70'
+            }`}
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
       </div>
     </div>
   );

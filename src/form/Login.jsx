@@ -66,7 +66,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   const [errors, setErrors] = useState({});
 
   const { toast } = useToast();
-  const { login, isAuthenticated } = useAuth();
+  const { register, login, isAuthenticated } = useAuth();
 
   // Cookie configuration constants
   const TOKEN_COOKIE_NAME = 'auth_token';
@@ -279,7 +279,7 @@ const LoginModal = ({ isOpen, onClose }) => {
           password: formData.password,
         };
 
-        const response = await AuthService.register(userData);
+        const response = await register(userData);
 
         if (response.success) {
           toast({
