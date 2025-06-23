@@ -150,18 +150,18 @@ const Cart = () => {
       {isOpen && (
         <animated.div
           style={cartAnimation}
-          className='fixed top-0 right-0 min-h-[100dvh] w-full sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 overflow-y-auto will-change-transform flex flex-col sm:rounded-l-xl'
+          className='fixed top-0 right-0 min-h-[100dvh] w-9/10 sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 overflow-y-auto will-change-transform flex flex-col sm:rounded-l-xl'
         >
           {/* Header */}
           <div className='flex items-center justify-between p-4'>
-            <h2 className='text-lg font-semibold'>Your Shopping Cart</h2>
+            <h2 className='text-sm md:text-lg font-semibold'>Your Shopping Cart</h2>
             <div className='flex items-center gap-2'>
               {cartItems.length > 0 && (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
                       size='icon'
-                      className='size-7.5 md:size-9 p-1.5 rounded-lg outline-none text-black/75 dark:text-red-600 bg-transparent shadow-none hover:bg-red-200 dark:hover:bg-red-600 hover:text-red-600 dark:hover:bg-red-600  hover:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:outline-none'
+                      className='size-7.5 md:size-9 p-1.5 rounded-lg outline-none text-black/75 dark:text-white/75 bg-transparent dark:bg-transparent shadow-none hover:bg-red-200 dark:hover:text-white hover:text-red-600 dark:hover:bg-red-600  hover:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:outline-none'
                     >
                       <Trash2 className='size-4' />
                     </Button>
@@ -196,7 +196,7 @@ const Cart = () => {
               )}
               <button
                 onClick={closeCart}
-                className='inline-flex transition-all rounded-lg text-black/75 p-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring-2 hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
+                className='inline-flex transition-all rounded-lg text-black/75 dark:text-white/75 hover:text-black dark:hover:text-white focus:text-black/50 dark:focus:text-white/50 focus:scale-90 p-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
                 disabled={isClosing}
               >
                 <X className='size-5' />
