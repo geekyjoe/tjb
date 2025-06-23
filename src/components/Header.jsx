@@ -18,7 +18,7 @@ import {
 import SearchBar from './SearchBar';
 import { UserAuthButton } from '../context/authContext';
 import Cart from './SidebarCart';
-import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import * as NavigationMenu from '@radix-ui/react-navigation-menu';
 
 const Header = () => {
   const [open, setOpen] = useState(false);
@@ -212,7 +212,7 @@ const Header = () => {
   const overlaySpring = useSpring({
     config: config.stiff,
     opacity: isMenuOpen ? 1 : 0,
-    transform: isMenuOpen ? 'translateX(0px)' : 'translateX(30px)',
+    transform: isMenuOpen ? 'translateY(0px)' : 'translateY(-100px)',
   });
 
   // Optimized trail animation for main menu items only
@@ -222,7 +222,7 @@ const Header = () => {
       friction: 30,
     },
     opacity: showTrail ? 1 : 0,
-    transform: showTrail ? 'translateX(0px)' : 'translateX(20px)',
+    transform: showTrail ? 'translateX(0px)' : 'translateX(18px)',
   });
 
   // Replace dropdownSpring with dropdownTrail
@@ -231,18 +231,17 @@ const Header = () => {
     opacity: open ? 1 : 0,
     transform: open ? 'translateX(0px)' : 'translateX(10px)',
     scale: open ? 1 : 0.95,
+    delay: open ? (index) => index * 50 : 0,
   });
 
-  // Simplified submenu animation using useSpring instead of useTrail
-  const subMenuSpring = useSpring({
+  const subMenuTrail = useTrail(jewelryCategories.length, {
     config: {
       tension: 400,
       friction: 30,
     },
-    opacity: isDropdownOpen && showTrail ? 1 : 0,
-    maxHeight: isDropdownOpen && showTrail ? '300px' : '0px',
+    opacity: showTrail && isDropdownOpen ? 1 : 0,
     transform:
-      isDropdownOpen && showTrail ? 'translateX(0px)' : 'translateX(20px)',
+      showTrail && isDropdownOpen ? 'translateX(0px)' : 'translateX(18px)',
   });
 
   return (
@@ -328,68 +327,56 @@ const Header = () => {
                   Catalogue
                 </NavLink>
 
-                <DropdownMenu.Root
-                  modal={false}
-                  open={open}
-                  onOpenChange={setOpen}
+                <NavigationMenu.Root
+                  onValueChange={(value) => setOpen(!!value)}
+                  className='relative'
+                  delayDuration={500}
                 >
-                  <DropdownMenu.Trigger
-                    className='px-2.5 py-3 hover:bg-neutral-200  dark:hover:bg-neutral-800 focus:outline-none'
-                    onMouseEnter={handleMouseEnter}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    Shop By
-                  </DropdownMenu.Trigger>
-                  <DropdownMenu.Portal>
-                    {open && (
-                      // Find and replace the DropdownMenu.Content section
-                      <DropdownMenu.Content
-                        className='min-w-[220px] bg-white dark:bg-[#1F2421] rounded-lg p-1 shadow-lg z-50'
-                        sideOffset={5}
-                        alignOffset={0}
-                        align='center'
-                        onMouseEnter={handleMouseEnter}
-                        onMouseLeave={handleMouseLeave}
-                        asChild
-                      >
-                        <div>
+                  <NavigationMenu.List>
+                    <NavigationMenu.Item value='shop-by'>
+                      <NavigationMenu.Trigger className='px-2.5 py-3 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:outline-none data-[state=open]:bg-neutral-200 dark:data-[state=open]:bg-neutral-800'>
+                        Shop By
+                      </NavigationMenu.Trigger>
+                      <NavigationMenu.Content className='min-w-[220px] bg-white dark:bg-[#1F2421] rounded-lg p-1 shadow-lg border border-gray-200 dark:border-gray-700 animate-in fade-in-0 zoom-in-95 data-[motion=from-start]:animate-in data-[motion=from-start]:slide-in-from-left-52 data-[motion=from-end]:animate-in data-[motion=from-end]:slide-in-from-right-52 data-[motion=to-start]:animate-out data-[motion=to-start]:slide-out-to-left-52 data-[motion=to-end]:animate-out data-[motion=to-end]:slide-out-to-right-52'>
+                        <div className='flex flex-col space-y-1'>
                           {dropdownTrail.map((style, index) => {
                             const item = jewelryCategories[index];
                             return (
                               <animated.div key={item.name} style={style}>
-                                <DropdownMenu.Item>
+                                <NavigationMenu.Link asChild>
                                   <NavLink
                                     to={item.path}
-                                    className={`group inline-flex items-center gap-2 w-full px-3 py-2 rounded-md hover:bg-stone-200 dark:hover:bg-neutral-700 focus:bg-gray-50 dark:focus:bg-neutral-700 rounded-md outline-none ${
+                                    className={`group inline-flex items-center gap-2 w-full px-3 py-2 rounded-md hover:bg-stone-200 dark:hover:bg-neutral-700 focus:bg-gray-50 dark:focus:bg-neutral-700 outline-none ${
                                       isActive(item.path)
                                         ? 'text-black dark:text-white underline underline-offset-8'
                                         : 'text-gray-600 dark:text-white/69 hover:text-gray-700 focus:text-gray-800 dark:hover:text-white hover:bg-gray-200'
                                     }`}
                                   >
+                                    {item.icon}
                                     {item.name}
-                                    {/* {item.icon} */}
                                     <MoveUpRight
-                                      className={`size-4 hidden ml-auto ${
+                                      className={`size-4 hidden ml-auto transition-all ${
                                         isActive(item.path)
                                           ? 'group-hover:hidden'
                                           : 'group-hover:block group-focus:block'
                                       }`}
                                     />
                                     <Check
-                                      className={`size-4 ml-auto ${
+                                      className={`size-4 ml-auto transition-all ${
                                         isActive(item.path) ? 'block' : 'hidden'
                                       }`}
                                     />
                                   </NavLink>
-                                </DropdownMenu.Item>
+                                </NavigationMenu.Link>
                               </animated.div>
                             );
                           })}
                         </div>
-                      </DropdownMenu.Content>
-                    )}
-                  </DropdownMenu.Portal>
-                </DropdownMenu.Root>
+                      </NavigationMenu.Content>
+                    </NavigationMenu.Item>
+                  </NavigationMenu.List>
+                  <NavigationMenu.Viewport className='absolute top-full left-0 flex justify-center w-full perspective-1000 data-[motion]:animate-in data-[motion]:fade-in data-[motion]:zoom-in-95 data-[motion]:duration-200' />
+                </NavigationMenu.Root>
 
                 <Cart />
                 <UserAuthButton />
@@ -484,46 +471,44 @@ const Header = () => {
                     );
                   })}
 
-                  {/* Submenu items with simplified spring animation */}
-                  {isDropdownOpen && (
-                    <animated.div
-                      style={{
-                        opacity: subMenuSpring.opacity,
-                        maxHeight: subMenuSpring.maxHeight,
-                        transform: subMenuSpring.transform,
-                      }}
-                      className='p-1'
-                    >
-                      {jewelryCategories.map((item, index) => (
-                        <div key={`subitem-${index}`} className='p-1'>
+                  {isDropdownOpen &&
+                    subMenuTrail.map((style, index) => {
+                      const subItem = jewelryCategories[index];
+                      if (!subItem) return null;
+
+                      return (
+                        <animated.div
+                          key={`subitem-${index}`}
+                          style={style}
+                          className='p-1'
+                        >
                           <NavLink
-                            to={item.path}
-                            className={`group inline-flex items-center gap-2 w-full px-3 py-2 rounded-md hover:bg-stone-200 dark:hover:bg-gray-800 focus:bg-gray-50 dark:focus:bg-gray-800 rounded-md ${
-                              isActive(item.path)
+                            to={subItem.path}
+                            className={`group inline-flex items-center gap-2 w-full px-3 py-3 rounded-md text-lg ${
+                              isActive(subItem.path)
                                 ? 'text-black dark:text-white underline underline-offset-8'
-                                : 'text-gray-600 dark:text-white/69 hover:text-gray-700 focus:text-gray-800 dark:hover:text-white hover:bg-gray-200'
+                                : 'text-gray-700 dark:text-gray-300 hover:bg-stone-200 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white focus:bg-gray-200 dark:focus:bg-gray-800 focus:text-gray-900 dark:focus:text-white'
                             }`}
                             onClick={toggleMenu}
                           >
-                            {item.name}
-                            {/* {item.icon} */}
+                            {subItem.icon}
+                            {subItem.name}
                             <MoveUpRight
                               className={`size-4 hidden ml-auto ${
-                                isActive(item.path)
+                                isActive(subItem.path)
                                   ? 'group-hover:hidden'
                                   : 'group-hover:block group-focus:block'
                               }`}
                             />
                             <Check
                               className={`size-4 ml-auto ${
-                                isActive(item.path) ? 'block' : 'hidden'
+                                isActive(subItem.path) ? 'block' : 'hidden'
                               }`}
                             />
                           </NavLink>
-                        </div>
-                      ))}
-                    </animated.div>
-                  )}
+                        </animated.div>
+                      );
+                    })}
                 </div>
               </nav>
             </div>

@@ -57,7 +57,7 @@ const LazyHome = lazy(() => import('./pages/Home'));
 const LazyProducts = lazy(() => import('./pages/Products'));
 const LazyProfile = lazy(() => import('./pages/Profile'));
 const LazyProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
-const LazyCart = lazy(() => import('./pages/Cart'));
+const LazyOrder = lazy(() => import('./pages/Orders'));
 const LazyProductPanel = lazy(() => import('./pages/ProductPanel'));
 const LazyUserManagement = lazy(() => import('./services/UM'));
 const LazyNotFound = lazy(() => import('./pages/NotFound'));
@@ -65,26 +65,37 @@ const LazyNotFound = lazy(() => import('./pages/NotFound'));
 const Contents = () => {
   const location = useLocation();
   const hideHeaderPaths = ['/login', '/signup'];
-  const showHeader = !hideHeaderPaths.includes(location.pathname) && location.pathname !== '*' && !location.pathname.match(/^\/.*/) || hideHeaderPaths.includes(location.pathname);
-  
+  const showHeader =
+    (!hideHeaderPaths.includes(location.pathname) &&
+      location.pathname !== '*' &&
+      !location.pathname.match(/^\/.*/)) ||
+    hideHeaderPaths.includes(location.pathname);
+
   // Check if current path matches any defined routes
-  const isValidRoute = [
-    '/',
-    '/collections',
-    '/account',
-    '/adminpanel',
-    '/manageproducts',
-    '/touch',
-  ].includes(location.pathname) || location.pathname.startsWith('/collections/');
-  
-  const showHeaderAndFooter = !hideHeaderPaths.includes(location.pathname) && isValidRoute;
+  const isValidRoute =
+    [
+      '/',
+      '/collections',
+      '/account',
+      '/orders',
+      '/adminpanel',
+      '/manageproducts',
+      '/touch',
+    ].includes(location.pathname) ||
+    location.pathname.startsWith('/collections/');
+
+  const showHeaderAndFooter =
+    !hideHeaderPaths.includes(location.pathname) && isValidRoute;
 
   return (
     <>
       {showHeaderAndFooter && <Header />}
       <Routes>
         <Route path='/' element={<RouteWrapper element={<LazyHome />} />} />
-        <Route path='/touch' element={<RouteWrapper element={<TouchStateDemo />} />} />
+        <Route
+          path='/touch'
+          element={<RouteWrapper element={<TouchStateDemo />} />}
+        />
         <Route
           path='/collections'
           element={<RouteWrapper element={<LazyProducts />} />}
@@ -94,6 +105,14 @@ const Contents = () => {
           element={
             <ProtectedRoute>
               <RouteWrapper element={<LazyProfile />} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='/orders'
+          element={
+            <ProtectedRoute>
+              <RouteWrapper element={<LazyOrder />} />
             </ProtectedRoute>
           }
         />

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect } from 'react';
 
 const NotFound = () => {
   useEffect(() => {
@@ -21,11 +21,11 @@ const NotFound = () => {
       <p className='text-sm md:text-base font-semibold'>
         Sorry, the page you are looking for does not exist.
       </p>
-      <button className='text-neutral-900 underline-offset-4 hover:underline dark:text-neutral-50 mt-6'>
-        <a href='/' className='font-medium'>
+      <a href='/' className='font-medium rounded-full'>
+        <button className='text-white bg-indigo-600 py-2 px-4 hover:bg-indigo-700 rounded-full duration-800 transition-all underline-offset-4 focus:underline-none hover:underline dark:text-neutral-50 mt-6'>
           Go to Home
-        </a>
-      </button>
+        </button>
+      </a>
       <div className='text-center mt-4'>
         <p className='text-xs md:text-sm leading-5'>
           If you think this is an error, please contact support.

@@ -53,6 +53,7 @@ const Cart = () => {
 
   const cartAnimation = useSpring({
     transform: isOpen && !isClosing ? 'translateX(0%)' : 'translateX(100%)',
+    opacity: isOpen && !isClosing ? 1 : 0,
     config: {
       tension: 280,
       friction: 30,
@@ -63,10 +64,10 @@ const Cart = () => {
   const cartItemSprings = useSprings(
     cartItems.length,
     cartItems.map((_, i) => ({
-      opacity: isOpen && !isClosing ? 1 : 0,
-      transform: isOpen && !isClosing ? 'translateY(0px)' : 'translateY(20px)',
+      // opacity: isOpen && !isClosing ? 1 : 0,
+      transform: isOpen && !isClosing ? 'translateY(0px)' : 'translateY(-20px)',
       delay: isOpen && !isClosing ? i * 50 : 0,
-      config: { tension: 280, friction: 30 },
+      config: config.gentle,
     }))
   );
 
@@ -149,7 +150,7 @@ const Cart = () => {
       {isOpen && (
         <animated.div
           style={cartAnimation}
-          className='fixed top-0 right-0 min-h-[100dvh] w-full sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 overflow-y-auto will-change-transform flex flex-col'
+          className='fixed top-0 right-0 min-h-[100dvh] w-full sm:w-110 bg-white dark:bg-cornsilk-d1 z-50 overflow-y-auto will-change-transform flex flex-col sm:rounded-l-xl'
         >
           {/* Header */}
           <div className='flex items-center justify-between p-4'>
@@ -159,9 +160,8 @@ const Cart = () => {
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
-                      variant='destructive'
                       size='icon'
-                      className='size-7.5 md:size-9 bg-red-400 dark:bg-red-600 hover:bg-red-500 hover:ring-2 hover:ring-offset-1 hover:ring-red-400'
+                      className='size-7.5 md:size-9 p-1.5 rounded-lg outline-none text-black/75 dark:text-red-600 bg-transparent shadow-none hover:bg-red-200 dark:hover:bg-red-600 hover:text-red-600 dark:hover:bg-red-600  hover:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 focus:outline-none'
                     >
                       <Trash2 className='size-4' />
                     </Button>
@@ -194,15 +194,13 @@ const Cart = () => {
                   </AlertDialogContent>
                 </AlertDialog>
               )}
-              <Button
-                variant='ghost'
-                size='icon'
+              <button
                 onClick={closeCart}
-                className='size-7.5 rounded-full md:size-9 p-0 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-2 hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
+                className='inline-flex transition-all rounded-lg text-black/75 p-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring-2 hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
                 disabled={isClosing}
               >
                 <X className='size-5' />
-              </Button>
+              </button>
             </div>
           </div>
           <Separator.Root
@@ -214,7 +212,7 @@ const Cart = () => {
             {cartItems.length === 0 ? (
               <div className='flex flex-col items-center justify-center min-h-[90dvh] p-4 text-center'>
                 <video
-                  className='h-60 w-40 md:h-80 md:w-50 object-cover p-0.5 rounded-t-full'
+                  className='h-60 w-40 md:h-80 md:w-80 md:dark:w-50 object-cover p-0.5 rounded-t-full'
                   src='/cart.mp4'
                   autoPlay
                   loop

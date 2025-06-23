@@ -336,8 +336,8 @@ export const Address = ({ user, userAddress, setUserAddress, showToast }) => {
 
   return (
     <>
-      <div className='flex items-center justify-between mb-4'>
-        <h3 className='sm:text-lg font-medium'>Address</h3>
+      <div className='flex items-center justify-between'>
+        <h3 className='sm:text-lg font-medium leading-8'>Address</h3>
         {editingAddress ? (
           <div className='flex gap-2'>
             <Button
@@ -372,7 +372,7 @@ export const Address = ({ user, userAddress, setUserAddress, showToast }) => {
       </div>
 
       <Separator.Root
-        className='h-px bg-black/10 dark:bg-white/25'
+        className='h-px bg-black/10 dark:bg-white/25 my-2'
         orientation='horizontal'
       />
 
@@ -392,11 +392,11 @@ export const Address = ({ user, userAddress, setUserAddress, showToast }) => {
         }).map(([field, label]) => (
           <div
             key={field}
-            className='group flex items-center justify-between gap-6'
+            className='group flex items-center justify-between gap-3 md:gap-6'
           >
             <Label
               htmlFor={field}
-              className='text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 flex-1 sm:flex-2 flex-shrink-0'
+              className='break-all text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-300 flex-1 sm:flex-2 shrink-0'
             >
               {label}
             </Label>
@@ -420,6 +420,7 @@ export const Address = ({ user, userAddress, setUserAddress, showToast }) => {
                       validationErrors[field] ? 'border-red-500' : ''
                     }`}
                   >
+                    <span className='invisible'>{getAddressFieldIcon('state')}</span>
                     <SelectValue className='text-xs sm:text-sm' placeholder='Select your state' />
                   </SelectTrigger>
                   <SelectContent>
@@ -441,6 +442,7 @@ export const Address = ({ user, userAddress, setUserAddress, showToast }) => {
                   disabled={!editingAddress}
                 >
                   <SelectTrigger className='flex-1 pl-10 pr-4 py-3 disabled:border-none disabled:shadow-none'>
+                    <span className='invisible'>{getAddressFieldIcon(field)}</span>
                     <SelectValue placeholder='Select address type' />
                   </SelectTrigger>
                   <SelectContent>

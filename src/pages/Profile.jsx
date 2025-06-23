@@ -52,7 +52,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '../components/ui/alert-dialog';
-import { PiAddressBook } from "react-icons/pi";
+import { PiAddressBook } from 'react-icons/pi';
 import { useToast } from '../hooks/use-toast';
 import { useTheme } from '../ThemeToggle';
 import {
@@ -607,7 +607,7 @@ const Profile = () => {
     },
     {
       id: 'address',
-      // label: 'Address',
+      label: 'Address',
       icon: <PiAddressBook className='size-5 md:mr-1.5' />,
     },
     {
@@ -649,16 +649,37 @@ const Profile = () => {
   return (
     <section className='bg-white dark:bg-cornsilk-d1 p-2 md:p-5'>
       {/* Main content with sidebar and content area */}
-      <div className='md:max-w-6xl mx-auto flex md:grid md:ml-20 md:grid-cols-12 gap-0 md:gap-6'>
-        {/* Left sidebar with tabs - now sticky */}
-        <div className='md:col-span-2 h-fit p-2 left-2 sticky top-12'>
+      <div className='md:max-w-6xl mx-auto flex flex-col md:grid md:ml-20 md:grid-cols-12 gap-0 md:gap-6'>
+        {/* Mobile tabs - top */}
+        <div className='md:hidden w-full py-1 bg-white dark:bg-cornsilk-d3/25 border-b border-black/10 dark:border-white/10 sticky top-0 z-10'>
+          <div className='flex p-2 overflow-x-auto scrollbar-hide space-x-1'>
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center px-3 py-1.5 rounded-md
+            ${
+              activeTab === tab.id
+                ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white ring ring-stone-300 dark:ring-stone-700'
+                : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50 dark:text-white/75 hover:dark:text-white/90'
+            }`}
+              >
+                {tab.icon}
+                <span className='ml-2 text-sm'>{tab.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Desktop sidebar - left */}
+        <div className='hidden md:block md:col-span-2 h-fit p-2 left-2 sticky top-12'>
           <div className='relative xl:left-0 lg:-left-14 md:-left-22 top-0 w-fit md:w-48'>
             <div className='shadow-xs rounded-lg border border-black/10 dark:border-white/10 p-1.5 bg-white dark:bg-cornsilk-d3/25'>
-              <h3 className='font-medium sm:text-lg leading-10 hidden md:block px-1.5'>
+              <h3 className='font-medium sm:text-lg leading-10 px-1.5'>
                 Profile Settings
               </h3>
               <Separator.Root
-                className='hidden md:block h-px bg-black/10 dark:bg-white/25 my-2'
+                className='h-px bg-black/10 dark:bg-white/25 my-2'
                 orientation='horizontal'
               />
               <nav className='flex flex-col space-y-1.5'>
@@ -666,15 +687,15 @@ const Profile = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`w-10 h-10 md:w-full md:h-auto flex items-center justify-center md:justify-start md:px-3 md:py-2 rounded-md
-                  ${
-                    activeTab === tab.id
-                      ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white ring md:ring-2 ring-stone-300 dark:ring-stone-700'
-                      : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50 dark:text-white/75 hover:dark:text-white/90'
-                  }`}
+                    className={`w-full h-auto flex items-center justify-start px-3 py-2 rounded-md
+                ${
+                  activeTab === tab.id
+                    ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white ring ring-2 ring-stone-300 dark:ring-stone-700'
+                    : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50 dark:text-white/75 hover:dark:text-white/90'
+                }`}
                   >
                     {tab.icon}
-                    <span className='ml-2 hidden md:inline'>{tab.label}</span>
+                    <span className='ml-2'>{tab.label}</span>
                   </button>
                 ))}
               </nav>
@@ -683,17 +704,19 @@ const Profile = () => {
         </div>
 
         {/* Main content area */}
-        <div className='flex-1 py-2.5 md:col-span-9 sm:px-2 lg:px-8 md:px-6 min-h-svh'>
-          <h1 className='text-lg leading-8 md:text-2xl font-semibold pb-2 md:hidden'>
-            {tabs.find((tab) => tab.id === activeTab)?.label || ''}
-          </h1>
+        <div className='flex-1 p-2.5 md:col-span-9 sm:px-2 lg:px-8 md:px-6 min-h-svh'>
           {activeTab === 'address' ? (
             ''
           ) : (
-            <Separator.Root
-              className='md:hidden h-px bg-black/10 dark:bg-white/25 my-2'
-              orientation='horizontal'
-            />
+            <>
+              <h1 className='text-lg leading-8 md:text-2xl font-semibold pb-2 md:hidden'>
+                {tabs.find((tab) => tab.id === activeTab)?.label || ''}
+              </h1>
+              <Separator.Root
+                className='md:hidden h-px bg-black/10 dark:bg-white/25 my-2'
+                orientation='horizontal'
+              />
+            </>
           )}
           {/* Profile Tab */}
           {activeTab === 'profile' && (

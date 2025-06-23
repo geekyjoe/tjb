@@ -476,7 +476,7 @@ export const UserAuthButton = () => {
           </DropdownMenu.Item>
 
           <DropdownMenu.Item
-            onClick={() => navigate('#')}
+            onClick={() => navigate('/orders')}
             className='group text-sm rounded-sm flex gap-2 items-center h-8 px-2 relative select-none outline-none text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white hover:bg-stone-200 dark:hover:bg-white/10 focus:bg-stone-200 cursor-pointer'
           >
             <Package className='h-4 w-4' />
