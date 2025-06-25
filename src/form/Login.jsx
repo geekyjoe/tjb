@@ -501,7 +501,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                 </Label>
               </div>
 
-              <div className='flex gap-2'>
+              <div
+                className={`flex justify-center gap-2 ${isLoading && 'mt-6'}`}
+              >
                 <Button
                   type='button'
                   onClick={prevStep}
@@ -513,47 +515,51 @@ const LoginModal = ({ isOpen, onClose }) => {
                     Back
                   </div>
                 </Button>
-                <Button
-                  type='submit'
-                  className={`${
-                    isLoading
-                      ? 'w-full bg-transparent dark:bg-transparent shadow-none'
-                      : 'w-1/2'
-                  }`}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    // <div className='flex items-center gap-2'>
-                    //   <div className='typing-indicator'>
-                    //     <div className='typing-circle'></div>
-                    //     <div className='typing-circle'></div>
-                    //     <div className='typing-circle'></div>
-                    //     <div className='typing-shadow'></div>
-                    //     <div className='typing-shadow'></div>
-                    //     <div className='typing-shadow'></div>
-                    //   </div>
-                    // </div>
-                    <div class='loader'>
-                      <div class='bar1'></div>
-                      <div class='bar2'></div>
-                      <div class='bar3'></div>
-                      <div class='bar4'></div>
-                      <div class='bar5'></div>
-                      <div class='bar6'></div>
-                      <div class='bar7'></div>
-                      <div class='bar8'></div>
-                      <div class='bar9'></div>
-                      <div class='bar10'></div>
-                      <div class='bar11'></div>
-                      <div class='bar12'></div>
-                    </div>
-                  ) : (
+
+                {isLoading ? (
+                  // <div className='flex items-center gap-2'>
+                  //   <div className='typing-indicator'>
+                  //     <div className='typing-circle'></div>
+                  //     <div className='typing-circle'></div>
+                  //     <div className='typing-circle'></div>
+                  //     <div className='typing-shadow'></div>
+                  //     <div className='typing-shadow'></div>
+                  //     <div className='typing-shadow'></div>
+                  //   </div>
+                  // </div>
+                  <div className='relative w-12 h-12'>
+                    {[...Array(12)].map((_, i) => (
+                      <div
+                        key={i}
+                        className='absolute w-1 h-2.5 bg-gray-800 rounded-full'
+                        style={{
+                          top: '10px',
+                          left: '50%',
+                          transformOrigin: '0.125rem 1.050rem',
+                          transform: `translateX(-50%) rotate(${i * 30}deg)`,
+                          opacity: 0.1,
+                          animation: `iosSpinner 1s linear infinite`,
+                          animationDelay: `${i * (1000 / 12)}ms`,
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                ) : (
+                  <Button
+                    type='submit'
+                    className={`${
+                      isLoading
+                        ? 'w-full bg-transparent dark:bg-transparent shadow-none'
+                        : 'w-1/2'
+                    }`}
+                    disabled={isLoading}
+                  >
                     <div className='flex items-center gap-2'>
                       Login
                       <LogIn className='w-4 h-4' />
                     </div>
-                  )}
-                </Button>
+                  </Button>
+                )}
               </div>
             </div>
           </form>
@@ -837,7 +843,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                 )}
               </div>
 
-              <div className='flex gap-2'>
+              <div
+                className={`flex justify-center gap-2 ${isLoading && 'mt-6'}`}
+              >
                 <Button
                   type='button'
                   onClick={prevStep}
@@ -849,32 +857,39 @@ const LoginModal = ({ isOpen, onClose }) => {
                     Back
                   </div>
                 </Button>
-                <Button
-                  type='submit'
-                  className={`flex-1 ${
-                    isLoading &&
-                    'bg-transparent dark:bg-transparent shadow-none'
-                  }`}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <div className='flex items-center gap-2'>
-                      <div className='typing-indicator'>
-                        <div className='typing-circle'></div>
-                        <div className='typing-circle'></div>
-                        <div className='typing-circle'></div>
-                        <div className='typing-shadow'></div>
-                        <div className='typing-shadow'></div>
-                        <div className='typing-shadow'></div>
-                      </div>
-                    </div>
-                  ) : (
+                {isLoading ? (
+                  <div className='relative w-12 h-12'>
+                    {[...Array(12)].map((_, i) => (
+                      <div
+                        key={i}
+                        className='absolute w-1 h-2.5 bg-gray-800 rounded-full'
+                        style={{
+                          top: '10px',
+                          left: '50%',
+                          transformOrigin: '0.125rem 1.050rem',
+                          transform: `translateX(-50%) rotate(${i * 30}deg)`,
+                          opacity: 0.1,
+                          animation: `spinner 1s linear infinite`,
+                          animationDelay: `${i * (1000 / 12)}ms`,
+                        }}
+                      ></div>
+                    ))}
+                  </div>
+                ) : (
+                  <Button
+                    type='submit'
+                    className={`flex-1 ${
+                      isLoading &&
+                      'bg-transparent dark:bg-transparent shadow-none'
+                    }`}
+                    disabled={isLoading}
+                  >
                     <div className='flex items-center gap-2'>
                       <UserPlus className='w-4 h-4' />
                       Sign Up
                     </div>
-                  )}
-                </Button>
+                  </Button>
+                )}
               </div>
             </div>
           </form>
@@ -884,7 +899,7 @@ const LoginModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={!isOpen} onOpenChange={onClose}>
       <DialogOverlay className='backdrop-blur-xs h-screen bg-black/2' />
       <DialogContent
         aria-describedby={'Login or Sign Up'}

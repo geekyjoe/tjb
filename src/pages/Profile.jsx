@@ -651,17 +651,17 @@ const Profile = () => {
       {/* Main content with sidebar and content area */}
       <div className='md:max-w-6xl mx-auto flex flex-col md:grid md:ml-20 md:grid-cols-12 gap-0 md:gap-6'>
         {/* Mobile tabs - top */}
-        <div className='md:hidden w-full py-1 bg-white dark:bg-cornsilk-d3/25 border-b border-black/10 dark:border-white/10 sticky top-0 z-10'>
-          <div className='flex p-2 overflow-x-auto scrollbar-hide space-x-1'>
+        <div className='md:hidden w-full py-1 bg-white dark:bg-cornsilk-d3/25 sticky top-0 z-10'>
+          <div className='flex p-2 overflow-x-auto scrollbar-hide space-x-1.5'>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center px-3 py-1.5 rounded-md
+                className={`flex items-center px-3 py-1.5 rounded-md outline-none
             ${
               activeTab === tab.id
-                ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white ring ring-stone-300 dark:ring-stone-700'
-                : 'hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50 dark:text-white/75 hover:dark:text-white/90'
+                ? 'bg-neutral-200 dark:bg-cornsilk-d2 dark:text-white ring-2 ring-stone-300 dark:ring-stone-700'
+                : 'hover:ring-2 hover:ring-stone-200 hover:bg-cornsilk-d1/5 dark:hover:bg-[#38413f]/50 dark:text-white/75 hover:dark:text-white/90 focus:ring focus:ring-stone-300 dark:focus:ring-stone-700'
             }`}
               >
                 {tab.icon}
@@ -702,22 +702,16 @@ const Profile = () => {
             </div>
           </div>
         </div>
-
+        <Separator.Root
+          className='md:hidden h-px bg-black/10 dark:bg-white/25 my-2'
+          orientation='horizontal'
+        />
         {/* Main content area */}
         <div className='flex-1 p-2.5 md:col-span-9 sm:px-2 lg:px-8 md:px-6 min-h-svh'>
-          {activeTab === 'address' ? (
-            ''
-          ) : (
-            <>
-              <h1 className='text-lg leading-8 md:text-2xl font-semibold pb-2 md:hidden'>
-                {tabs.find((tab) => tab.id === activeTab)?.label || ''}
-              </h1>
-              <Separator.Root
-                className='md:hidden h-px bg-black/10 dark:bg-white/25 my-2'
-                orientation='horizontal'
-              />
-            </>
-          )}
+          {/* <h1 className='text-lg leading-8 md:text-2xl font-semibold pb-2 md:hidden'>
+            {tabs.find((tab) => tab.id === activeTab)?.label || ''}
+          </h1> */}
+
           {/* Profile Tab */}
           {activeTab === 'profile' && (
             <div className='space-y-3'>

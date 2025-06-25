@@ -427,17 +427,19 @@ export const UserAuthButton = () => {
   return (
     <DropdownMenu.Root open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenu.Trigger asChild>
-        <button className='inline-flex gap-1 p-0.5 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'>
-          <img
-            src={
-              userProfile.avatarUrl ||
-              `https://ui-avatars.com/api/?name=${
-                userProfile.firstName || ''
-              }+${userProfile.lastName || ''}`
-            }
-            alt={userProfile.firstName || 'User'}
-            className='rounded-full size-8 select-none'
-          />
+        <button className='inline-flex gap-1 p-0.5 items-center justify-center rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 outline-none'>
+          {userProfile.avatarUrl ? (
+            <img
+              src={userProfile.avatarUrl}
+              alt={userProfile.firstName || 'User'}
+              className='rounded-full size-8 select-none'
+            />
+          ) : (
+            <div className='rounded-full size-8 select-none bg-amber-100/50 flex items-center justify-center text-black text-xs font-semibold'>
+              {(userProfile.firstName?.[0] || '') +
+                (userProfile.lastName?.[0] || '')}
+            </div>
+          )}
           <ChevronDown
             className={`h-4 w-4 transition-transform ${
               isOpen ? 'sm:rotate-180' : 'rotate-180 sm:rotate-0'
@@ -449,8 +451,8 @@ export const UserAuthButton = () => {
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           className='min-w-[220px] bg-white dark:bg-[#1F2421] rounded-md p-1 shadow-lg border border-gray-200 dark:border-white/10 z-50'
-          sideOffset={4}
-          alignOffset={5}
+          sideOffset={6}
+          alignOffset={-5}
           align='end'
         >
           <DropdownMenu.Label className='px-2 py-1.5 text-sm text-neutral-800 dark:text-white/90'>

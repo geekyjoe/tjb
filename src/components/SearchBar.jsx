@@ -248,7 +248,7 @@ const SearchBar = () => {
             variant='ghost'
             size='icon'
             onClick={toggleSearch}
-            className={`rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none focus:outline-hidden shrink-0 `}
+            className={`rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 outline-none focus:outline-hidden shrink-0 `}
           >
             <Search className='h-4 w-4 text-black/75 dark:text-white/75' />
           </Button>
