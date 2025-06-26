@@ -7,10 +7,10 @@ const NotFound = () => {
 
   return (
     <div className='place-content-center bg-white dark:bg-cornsilk-d1 dark:text-white flex flex-col items-center justify-center h-screen text-neutral-900'>
-      <div className='p-1 transform-gpu'>
+      <div className='p-2.5 outline-none'>
         <video
-          className='transition-all duration-500 size-75 md:size-100 object-cover rounded-lg'
-          src='/4041.mp4'
+          className='transform-gpu transition-all duration-500 size-75 md:h-75 md:w-110 object-fit rounded-lg'
+          src='/404.mp4'
           autoPlay
           loop
           muted
@@ -21,8 +21,8 @@ const NotFound = () => {
       <p className='text-sm md:text-base font-semibold'>
         Sorry, the page you are looking for does not exist.
       </p>
-      <a href='/' className='font-medium rounded-full'>
-        <button className='text-white bg-indigo-600 py-2 px-4 hover:bg-indigo-700 rounded-full duration-800 transition-all underline-offset-4 focus:underline-none hover:underline dark:text-neutral-50 mt-6'>
+      <a href='/' className='font-medium rounded-full mt-6'>
+        <button className='text-white bg-indigo-600 py-2 px-4 hover:bg-indigo-700 rounded-full duration-400 dark:text-neutral-50'>
           Go to Home
         </button>
       </a>

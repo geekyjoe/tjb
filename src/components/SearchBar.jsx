@@ -239,7 +239,7 @@ const SearchBar = () => {
             variant='ghost'
             size='icon'
             onClick={toggleSearch}
-            className='hover:text-neutral-900 dark:hover:text-neutral-50 rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none focus:outline-hidden'
+            className='p-2 text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none focus:outline-hidden shrink-0'
           >
             <X className='h-4 w-4 text-cornsilk-dark dark:text-cornsilk' />
           </Button>
@@ -248,7 +248,7 @@ const SearchBar = () => {
             variant='ghost'
             size='icon'
             onClick={toggleSearch}
-            className={`rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-800 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 outline-none focus:outline-hidden shrink-0 `}
+            className='p-2 text-black/75 hover:text-black dark:text-white/75 dark:hover:text-white rounded-full hover:bg-neutral-200 dark:hover:bg-neutral-80 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 outline-none focus:outline-none shrink-0'
           >
             <Search className='h-4 w-4 text-black/75 dark:text-white/75' />
           </Button>
@@ -277,12 +277,10 @@ const SearchBar = () => {
                 // Show search history
                 <div className='p-2'>
                   <div className='flex items-center justify-between px-2 py-1.5'>
-                    <div className='flex items-center gap-2'>
-                      <Clock className='size-4 text-neutral-400' />
+                      
                       <h3 className='text-sm font-medium text-neutral-600 dark:text-neutral-400'>
                         Recent Searches
                       </h3>
-                    </div>
                     <button
                       onClick={clearSearchHistory}
                       className='text-xs text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-200 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none p-1 rounded'
@@ -294,13 +292,14 @@ const SearchBar = () => {
                     {searchHistory.map((term, index) => (
                       <li
                         key={index}
-                        className='text-sm md:text-lg text-neutral-700 dark:text-neutral-200 px-2 py-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none rounded-sm'
+                        className='flex items-center gap-2 text-sm md:text-lg text-neutral-700 dark:text-neutral-200 px-2 py-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none rounded-sm'
                         onClick={() => {
                           setQuery(term);
                           handleSearch(term);
                         }}
                       >
-                        {term}
+                        <Clock className='size-4 text-neutral-400' />
+                        <span className='mb-1'>{term}</span>
                       </li>
                     ))}
                   </ul>

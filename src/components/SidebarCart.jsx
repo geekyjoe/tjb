@@ -196,7 +196,7 @@ const Cart = () => {
               )}
               <button
                 onClick={closeCart}
-                className='inline-flex transition-all rounded-lg text-black/75 dark:text-white/75 hover:text-black dark:hover:text-white focus:text-black/50 dark:focus:text-white/50 focus:scale-90 p-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
+                className='inline-flex shadow transition-all rounded-lg text-black/75 dark:text-white/75 hover:text-black dark:hover:text-white focus:text-black/50 dark:focus:text-white/50 focus:scale-90 p-1 hover:bg-neutral-200 dark:hover:bg-neutral-800 focus:bg-neutral-300 dark:focus:bg-neutral-700 hover:ring hover:ring-stone-300 dark:hover:ring-stone-700 focus:ring-2 focus:ring-stone-400 dark:focus:ring-stone-700 outline-none'
                 disabled={isClosing}
               >
                 <X className='size-5' />

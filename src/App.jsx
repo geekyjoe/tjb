@@ -64,32 +64,29 @@ const LazyNotFound = lazy(() => import('./pages/NotFound'));
 
 const Contents = () => {
   const location = useLocation();
+
   const hideHeaderPaths = ['/login', '/signup'];
+
+  const validRoutes = [
+    '/',
+    '/collections',
+    '/account',
+    '/orders',
+    '/adminpanel',
+    '/manageproducts',
+    '/touch',
+  ];
+
   const showHeader =
-    (!hideHeaderPaths.includes(location.pathname) &&
-      location.pathname !== '*' &&
-      !location.pathname.match(/^\/.*/)) ||
-    hideHeaderPaths.includes(location.pathname);
+    !hideHeaderPaths.includes(location.pathname) &&
+    (validRoutes.includes(location.pathname) ||
+      location.pathname.startsWith('/collections/'));
 
-  // Check if current path matches any defined routes
-  const isValidRoute =
-    [
-      '/',
-      '/collections',
-      '/account',
-      '/orders',
-      '/adminpanel',
-      '/manageproducts',
-      '/touch',
-    ].includes(location.pathname) ||
-    location.pathname.startsWith('/collections/');
-
-  const showHeaderAndFooter =
-    !hideHeaderPaths.includes(location.pathname) && isValidRoute;
+  const showFooter = showHeader && location.pathname !== '/account';
 
   return (
     <>
-      {showHeaderAndFooter && <Header />}
+      {showHeader && <Header />}
       <Routes>
         <Route path='/' element={<RouteWrapper element={<LazyHome />} />} />
         <Route
@@ -140,7 +137,7 @@ const Contents = () => {
         {/* 404 catch-all route - must be last */}
         <Route path='*' element={<RouteWrapper element={<LazyNotFound />} />} />
       </Routes>
-      {showHeaderAndFooter && <Footer />}
+      {showFooter && <Footer />}
     </>
   );
 };

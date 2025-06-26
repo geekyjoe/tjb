@@ -3,7 +3,7 @@ import './loading.css';
 const Loading = () => {
   return (
     <div className='fixed inset-0 w-full h-full flex justify-center dark:bg-cornsilk-d1 items-center'>
-      <div className='loader'>
+      <div className='loader animate-bounce'>
         <svg
           className='logo stroke-black dark:stroke-white'
           xmlns='http://www.w3.org/2000/svg'
